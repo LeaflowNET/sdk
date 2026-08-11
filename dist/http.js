@@ -6,9 +6,14 @@
 import axios from 'axios';
 let instance;
 let provider;
+let baseURLProvider;
 /** configure initialises the SDK. Call it once before use. */
 export function configure(options) {
+    if (!options.baseURL && !options.getBaseURL) {
+        throw new Error('configure requires baseURL or getBaseURL');
+    }
     provider = options.getToken;
+    baseURLProvider = options.getBaseURL;
     instance = axios.create({
         baseURL: options.baseURL,
         timeout: options.timeout ?? 30_000,
@@ -20,8 +25,10 @@ export async function request(config) {
         throw new Error('SDK not initialised: call configure({ baseURL }) first');
     }
     const token = provider ? await provider() : '';
+    const baseURL = baseURLProvider ? await baseURLProvider() : undefined;
     const response = await instance.request({
         ...config,
+        ...(baseURL ? { baseURL } : {}),
         headers: {
             ...config.headers,
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
