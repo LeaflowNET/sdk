@@ -86,7 +86,13 @@ components:
           format: date-time
           type: string
         webhookPath:
+          description: 回调路径，网关配置和排查时用
           type: string
+        webhookUrl:
+          description: 填到平台后台的回调地址。部署未声明公网入口时为 null
+          type:
+            - string
+            - "null"
       required:
         - id
         - platform
@@ -94,6 +100,7 @@ components:
         - status
         - senderPolicy
         - allowFrom
+        - webhookUrl
         - webhookPath
         - createdAt
         - updatedAt
@@ -334,7 +341,7 @@ components:
         id:
           type: string
         model:
-          description: 这一行是哪个模型产出的。人打的字上是 null
+          description: 产出这一条的模型。用户自己发的消息为 null
           type:
             - string
             - "null"
@@ -367,7 +374,7 @@ components:
             - string
             - "null"
         type:
-          description: 客户端按它 switch 出这一行的形状
+          description: 决定这一条包含哪些字段
           enum:
             - user_message
             - agent_message
@@ -524,11 +531,18 @@ components:
         resident:
           type: boolean
         webhookPath:
+          description: 回调路径模板，{channel} 处替换为通道 id
           type: string
+        webhookUrlTemplate:
+          description: 完整回调地址模板。部署未声明公网入口时为 null
+          type:
+            - string
+            - "null"
       required:
         - name
         - resident
         - webhookPath
+        - webhookUrlTemplate
       type: object
     Question:
       additionalProperties: false
@@ -604,12 +618,12 @@ components:
     StreamView:
       additionalProperties: false
       properties:
+        path:
+          type: string
         ticket:
           type: string
-        url:
-          type: string
       required:
-        - url
+        - path
         - ticket
       type: object
     ThreadSummaryView:
@@ -749,22 +763,30 @@ components:
       type: object
 info:
   description: |-
-    助手对话及其接入面：线程、逐字稿、一次 turn 的执行与流式输出、工具调用与审批、追问、技能，以及通道、绑定和微信扫码登录。
-
-    ## 认证
-
-    所有接口都要求 `Authorization: Bearer <项目令牌>`。项目令牌向 `POST /api/v1/projects/{projectId}/token` 换取，登录服务是 auth.leaflow.net。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 `project_id`。
-
-    令牌无效或过期返回 401，不是当前项目的成员返回 403。这两种都应重新换取令牌后重试；仍然失败说明这个账号在该项目里已没有权限。
+    控制台里的 AI 助手：对话、消息、工具调用与审批、附件，以及把助手接到微信、飞书、Telegram 等即时通讯平台上。
 
     ## 一次对话
 
-    1. `POST /v1/threads` 创建线程；
-    2. `POST /v1/threads/{thread}/messages` 发送消息。它立即返回 `turnId`，不等待执行完成——一次 turn 可能持续数十分钟；
-    3. `GET /v1/threads/{thread}` 取回线程文档。文档中的 `stream` 给出实时输出的地址和入场票据；流推送的是对该文档的增量编辑，客户端渲染逻辑只有一套；
-    4. turn 需要人工介入时，文档中的 `wait` 说明介入类型：批准一批工具调用（`POST /v1/threads/{thread}/approvals/{batch}`），或回答提出的问题（`POST /v1/threads/{thread}/questions/{item}`）。
+    1. `POST /v1/threads` 创建对话；
+    2. `POST /v1/threads/{thread}/messages` 发送消息，立即返回 `turnId`，助手的执行在后台进行；
+    3. `GET /v1/threads/{thread}` 取回对话文档用于渲染，并按其中的 `stream` 连上实时输出；
+    4. 助手需要用户参与时，文档中的 `wait` 会说明是哪一种：审批一批工具调用（`POST /v1/threads/{thread}/approvals/{batch}`），或回答几个问题（`POST /v1/threads/{thread}/questions/{item}`）。处理完成后助手自动继续。
 
-    图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
+    发送图片分两步：先 `POST /v1/attachments` 上传拿到 id，发送消息时放进 `attachmentIds`。
+
+    ## 实时输出
+
+    ```
+    GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
+    ```
+
+    这是一条 Server-Sent Events 流，因此不在下方的接口列表中。
+
+    - `path` 与 `ticket` 都取自对话文档的 `stream`。`path` 是相对路径，按取回文档的地址解析；
+    - `cursor` 是起始位置，取自对话文档的 `cursor`。不传则从可用范围的开头开始；
+    - 推送的每一条都是对那份对话文档的一次增量编辑，套用同一套渲染逻辑即可；
+    - 连接有生存期，到时会正常关闭。使用 `EventSource` 时浏览器会自动携带 `Last-Event-ID` 重连并从断点续传，无需额外处理；
+    - 三种结束事件：`done` 本次 turn 完成（附带最终状态）、`paused` 助手在等待用户处理（重新取回对话文档读 `wait`）、`stalled` 执行已中断且不会恢复，不要重连。
   title: Leaflow Assistant 用户 API
   version: 1.0.0
 openapi: 3.1.0
@@ -1245,7 +1267,7 @@ paths:
         - Onboarding
   /v1/models:
     get:
-      description: 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。清单与项目无关，但仍需要有效的项目令牌。
+      description: 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。
       operationId: list-models
       parameters:
         - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
