@@ -1,5 +1,17 @@
 components:
   schemas:
+    AcceptConsentsInputBody:
+      additionalProperties: false
+      properties:
+        consents:
+          items:
+            $ref: "#/components/schemas/ConsentBody"
+          type:
+            - array
+            - "null"
+      required:
+        - consents
+      type: object
     AcceptInvitationByTokenInputBody:
       additionalProperties: false
       properties:
@@ -40,6 +52,12 @@ components:
         last_name:
           description: 来自登录信息，可能为空
           type: string
+        pending_agreements:
+          items:
+            $ref: "#/components/schemas/AgreementView"
+          type:
+            - array
+            - "null"
         status:
           enum:
             - ACTIVE
@@ -47,11 +65,6 @@ components:
             - BANNED
             - DELETING
           type: string
-        terms_accepted_at:
-          format: date-time
-          type:
-            - string
-            - "null"
       required:
         - id
         - email
@@ -59,8 +72,75 @@ components:
         - last_name
         - status
         - email_verified_at
-        - terms_accepted_at
         - created_at
+        - pending_agreements
+      type: object
+    AgreementView:
+      additionalProperties: false
+      properties:
+        effective_at:
+          description: 从这一刻起注册必须同意这一版
+          format: date-time
+          type: string
+        type:
+          enum:
+            - TERMS
+            - PRIVACY
+            - DPA
+          type: string
+        url:
+          description: 正文发布在哪
+          type: string
+        version:
+          description: 同意时原样回传这个值
+          type: string
+      required:
+        - type
+        - version
+        - url
+        - effective_at
+      type: object
+    ConsentBody:
+      additionalProperties: false
+      properties:
+        type:
+          enum:
+            - TERMS
+            - PRIVACY
+            - DPA
+          type: string
+        version:
+          maxLength: 32
+          type: string
+      required:
+        - type
+        - version
+      type: object
+    ConsentView:
+      additionalProperties: false
+      properties:
+        consented_at:
+          format: date-time
+          type: string
+        method:
+          description: OFFLINE 是线下签的，由运营录入
+          enum:
+            - CLICKWRAP
+            - OFFLINE
+          type: string
+        type:
+          enum:
+            - TERMS
+            - PRIVACY
+            - DPA
+          type: string
+        version:
+          type: string
+      required:
+        - type
+        - version
+        - consented_at
+        - method
       type: object
     CreateProjectInputBody:
       additionalProperties: false
@@ -297,6 +377,30 @@ components:
         - invitation
         - token
       type: object
+    ListAgreementsOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/AgreementView"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
+    ListConsentsOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/ConsentView"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     ListInvitationsOutputBody:
       additionalProperties: false
       properties:
@@ -511,6 +615,19 @@ components:
         - created_at
         - updated_at
       type: object
+    RegisterInputBody:
+      additionalProperties: false
+      properties:
+        consents:
+          description: 当前生效的必签文件全部要在里面，版本号要和 GET /api/v1/agreements 给的一致
+          items:
+            $ref: "#/components/schemas/ConsentBody"
+          type:
+            - array
+            - "null"
+      required:
+        - consents
+      type: object
     RenameProjectSSHKeyInputBody:
       additionalProperties: false
       properties:
@@ -693,8 +810,32 @@ info:
   version: 1.0.0
 openapi: 3.1.0
 paths:
+  /api/v1/agreements:
+    get:
+      description: |-
+        注册页显示它，用户同意之后把每一项的 `type` 和 `version` 原样回传给 `POST /api/v1/register`。
+
+        不需要令牌。还没有任何文件生效时返回空数组，那时注册不需要提交 `consents`。
+      operationId: list-agreements
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListAgreementsOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出注册必须同意的文件
+      tags:
+        - Agreement
   /api/v1/me:
     get:
+      description: "`pending_agreements` 是还没同意的文件，非空就要先引导用户同意，再调 `POST /api/v1/me/consents`。"
       operationId: get-account
       parameters:
         - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
@@ -720,6 +861,70 @@ paths:
       summary: 查看当前账号
       tags:
         - Account
+  /api/v1/me/consents:
+    get:
+      description: 全部记录，最新的在前，包括已经不是当前版本的那些。
+      operationId: list-consents
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListConsentsOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出我同意过的文件
+      tags:
+        - Agreement
+    post:
+      description: |-
+        条款改版之后用它重新同意，`GET /api/v1/me` 的 `pending_agreements` 非空时就该调。
+
+        只收当前生效的版本，签旧版答 409。重复提交同一版不报错，第一次那条记录会留着。
+      operationId: accept-agreements
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AcceptConsentsInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 同意条款
+      tags:
+        - Agreement
   /api/v1/me/identity-verification:
     get:
       description: 没交过材料时答 UNVERIFIED，不是 404。姓名和证件号不会出现在任何响应里。
@@ -1091,34 +1296,6 @@ paths:
       summary: 给我的公钥改名
       tags:
         - SSHKey
-  /api/v1/me/terms:
-    post:
-      description: 幂等：已经同意过的不会被推到今天——那一列是法务要的证据，说的是他哪一次同意的。
-      operationId: accept-terms
-      parameters:
-        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-            type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AccountView"
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Error
-      summary: 同意服务条款
-      tags:
-        - Account
   /api/v1/permissions:
     get:
       description: "**只有 IAM 这一份。** 别的服务的操作不在这里——权限目录是各服务各自声明、由 各个服务自己声明的，IAM 认识它们就等于要跟着每个下游一起发版。"
@@ -2144,4 +2321,41 @@ paths:
       summary: 转移项目所有权
       tags:
         - Member
+  /api/v1/register:
+    post:
+      description: |-
+        在 auth.leaflow.net 登录之后调它，带上账号令牌。姓名和邮箱取自登录信息，不从请求体收。
+
+        `consents` 要覆盖 `GET /api/v1/agreements` 返回的每一份，版本号也要一致；漏一份答 400，版本对不上答 409（多半是页面开着的时候条款改版了，重新拉一次清单即可）。已经注册过的答 409。
+      operationId: register
+      parameters:
+        - description: auth.leaflow.net 签发的账号令牌，形如 Bearer <token>
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: auth.leaflow.net 签发的账号令牌，形如 Bearer <token>
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInputBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountView"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 注册账号
+      tags:
+        - Account
 
