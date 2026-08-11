@@ -1,6 +1,6 @@
 components:
   schemas:
-    AnswerInputBody:
+    AnswerRequestBody:
       additionalProperties: false
       properties:
         answers:
@@ -11,7 +11,7 @@ components:
       required:
         - answers
       type: object
-    AttachmentView:
+    AttachmentResource:
       additionalProperties: false
       properties:
         height:
@@ -27,7 +27,7 @@ components:
         - width
         - height
       type: object
-    BindingView:
+    BindingResource:
       additionalProperties: false
       properties:
         channelId:
@@ -59,7 +59,7 @@ components:
         - verifiedAt
         - createdAt
       type: object
-    ChannelView:
+    ChannelResource:
       additionalProperties: false
       properties:
         allowFrom:
@@ -116,7 +116,7 @@ components:
         - label
         - description
       type: object
-    ClaimCodeOutputBody:
+    ClaimCodeResponseBody:
       additionalProperties: false
       properties:
         code:
@@ -128,7 +128,7 @@ components:
         - code
         - expiresAt
       type: object
-    ContextView:
+    ContextResource:
       additionalProperties: false
       properties:
         compactAt:
@@ -158,7 +158,7 @@ components:
         - compactAt
         - warnAt
       type: object
-    CreateChannelInputBody:
+    CreateChannelRequestBody:
       additionalProperties: false
       properties:
         allowFrom:
@@ -186,7 +186,7 @@ components:
         - platform
         - name
       type: object
-    CreateThreadInputBody:
+    CreateThreadRequestBody:
       additionalProperties: false
       properties:
         approvalMode:
@@ -197,7 +197,7 @@ components:
             - yolo
           type: string
       type: object
-    DecideInputBody:
+    DecideRequestBody:
       additionalProperties: false
       properties:
         approved:
@@ -207,35 +207,35 @@ components:
       required:
         - approved
       type: object
-    DocumentView:
+    DocumentResource:
       additionalProperties: false
       properties:
         context:
-          $ref: "#/components/schemas/ContextView"
+          $ref: "#/components/schemas/ContextResource"
         cursor:
           type:
             - string
             - "null"
         earlier:
-          $ref: "#/components/schemas/EarlierView"
+          $ref: "#/components/schemas/EarlierResource"
         items:
           items:
-            $ref: "#/components/schemas/ItemView"
+            $ref: "#/components/schemas/ItemResource"
           type:
             - array
             - "null"
         status:
           type: string
         stream:
-          $ref: "#/components/schemas/StreamView"
+          $ref: "#/components/schemas/StreamResource"
         turn:
-          $ref: "#/components/schemas/TurnView"
+          $ref: "#/components/schemas/TurnResource"
         turnId:
           type:
             - string
             - "null"
         wait:
-          $ref: "#/components/schemas/WaitView"
+          $ref: "#/components/schemas/WaitResource"
       required:
         - turnId
         - stream
@@ -247,7 +247,7 @@ components:
         - wait
         - turn
       type: object
-    EarlierView:
+    EarlierResource:
       additionalProperties: false
       properties:
         before:
@@ -302,7 +302,7 @@ components:
         - status
         - message
       type: object
-    ItemView:
+    ItemResource:
       additionalProperties: false
       properties:
         approval:
@@ -322,7 +322,7 @@ components:
           type: string
         attachments:
           items:
-            $ref: "#/components/schemas/AttachmentView"
+            $ref: "#/components/schemas/AttachmentResource"
           type:
             - array
             - "null"
@@ -392,12 +392,12 @@ components:
         - reverted
         - model
       type: object
-    ListBindingsOutputBody:
+    ListBindingsResponseBody:
       additionalProperties: false
       properties:
         bindings:
           items:
-            $ref: "#/components/schemas/BindingView"
+            $ref: "#/components/schemas/BindingResource"
           type:
             - array
             - "null"
@@ -408,12 +408,12 @@ components:
         - bindings
         - total
       type: object
-    ListChannelsOutputBody:
+    ListChannelsResponseBody:
       additionalProperties: false
       properties:
         channels:
           items:
-            $ref: "#/components/schemas/ChannelView"
+            $ref: "#/components/schemas/ChannelResource"
           type:
             - array
             - "null"
@@ -424,31 +424,31 @@ components:
         - channels
         - total
       type: object
-    ListModelsOutputBody:
+    ListModelsResponseBody:
       additionalProperties: false
       properties:
         models:
           items:
-            $ref: "#/components/schemas/ModelView"
+            $ref: "#/components/schemas/ModelResource"
           type:
             - array
             - "null"
       required:
         - models
       type: object
-    ListPlatformsOutputBody:
+    ListPlatformsResponseBody:
       additionalProperties: false
       properties:
         platforms:
           items:
-            $ref: "#/components/schemas/PlatformView"
+            $ref: "#/components/schemas/PlatformResource"
           type:
             - array
             - "null"
       required:
         - platforms
       type: object
-    ListRejectionsOutputBody:
+    ListRejectionsResponseBody:
       additionalProperties: false
       properties:
         rejections:
@@ -460,19 +460,19 @@ components:
       required:
         - rejections
       type: object
-    ListThreadsOutputBody:
+    ListThreadsResponseBody:
       additionalProperties: false
       properties:
         threads:
           items:
-            $ref: "#/components/schemas/ThreadSummaryView"
+            $ref: "#/components/schemas/ThreadSummaryResource"
           type:
             - array
             - "null"
       required:
         - threads
       type: object
-    LoginView:
+    LoginResource:
       additionalProperties: false
       properties:
         expiresAt:
@@ -497,7 +497,7 @@ components:
         - reason
         - expiresAt
       type: object
-    ModelView:
+    ModelResource:
       additionalProperties: false
       properties:
         contextWindow:
@@ -523,7 +523,7 @@ components:
         - reasoningTiers
         - inputModalities
       type: object
-    PlatformView:
+    PlatformResource:
       additionalProperties: false
       properties:
         name:
@@ -565,7 +565,7 @@ components:
         - question
         - choices
       type: object
-    RevertInputBody:
+    RevertRequestBody:
       additionalProperties: false
       properties:
         ordinal:
@@ -575,7 +575,7 @@ components:
       required:
         - ordinal
       type: object
-    RevertOutputBody:
+    RevertResponseBody:
       additionalProperties: false
       properties:
         reverted:
@@ -584,7 +584,7 @@ components:
       required:
         - reverted
       type: object
-    RotateSecretOutputBody:
+    RotateSecretResponseBody:
       additionalProperties: false
       properties:
         webhookSecret:
@@ -592,7 +592,7 @@ components:
       required:
         - webhookSecret
       type: object
-    SendMessageInputBody:
+    SendMessageRequestBody:
       additionalProperties: false
       properties:
         attachmentIds:
@@ -607,7 +607,7 @@ components:
       required:
         - text
       type: object
-    SendMessageOutputBody:
+    SendMessageResponseBody:
       additionalProperties: false
       properties:
         turnId:
@@ -615,7 +615,7 @@ components:
       required:
         - turnId
       type: object
-    StreamView:
+    StreamResource:
       additionalProperties: false
       properties:
         path:
@@ -626,7 +626,7 @@ components:
         - path
         - ticket
       type: object
-    ThreadSummaryView:
+    ThreadSummaryResource:
       additionalProperties: false
       properties:
         approvalMode:
@@ -663,7 +663,7 @@ components:
         - unread
         - approvalMode
       type: object
-    TurnView:
+    TurnResource:
       additionalProperties: false
       properties:
         approvalMode:
@@ -675,7 +675,7 @@ components:
       required:
         - approvalMode
       type: object
-    UpdateChannelInputBody:
+    UpdateChannelRequestBody:
       additionalProperties: false
       properties:
         credentials:
@@ -688,7 +688,7 @@ components:
           maxLength: 128
           type: string
       type: object
-    UpdateThreadInputBody:
+    UpdateThreadRequestBody:
       additionalProperties: false
       properties:
         approvalMode:
@@ -704,7 +704,7 @@ components:
         reasoningEffort:
           type: string
       type: object
-    UploadedView:
+    UploadedResource:
       additionalProperties: false
       properties:
         height:
@@ -720,7 +720,7 @@ components:
         - width
         - height
       type: object
-    VerifyCodeInputBody:
+    VerifyCodeRequestBody:
       additionalProperties: false
       properties:
         code:
@@ -728,7 +728,7 @@ components:
       required:
         - code
       type: object
-    WaitView:
+    WaitResource:
       additionalProperties: false
       properties:
         autoResolutionMs:
@@ -816,7 +816,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UploadedView"
+                $ref: "#/components/schemas/UploadedResource"
           description: Created
         default:
           content:
@@ -893,7 +893,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListBindingsOutputBody"
+                $ref: "#/components/schemas/ListBindingsResponseBody"
           description: OK
         default:
           content:
@@ -977,7 +977,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListChannelsOutputBody"
+                $ref: "#/components/schemas/ListChannelsResponseBody"
           description: OK
         default:
           content:
@@ -1002,14 +1002,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateChannelInputBody"
+              $ref: "#/components/schemas/CreateChannelRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelView"
+                $ref: "#/components/schemas/ChannelResource"
           description: Created
         default:
           content:
@@ -1071,7 +1071,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelView"
+                $ref: "#/components/schemas/ChannelResource"
           description: OK
         default:
           content:
@@ -1102,14 +1102,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateChannelInputBody"
+              $ref: "#/components/schemas/UpdateChannelRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelView"
+                $ref: "#/components/schemas/ChannelResource"
           description: OK
         default:
           content:
@@ -1143,7 +1143,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ClaimCodeOutputBody"
+                $ref: "#/components/schemas/ClaimCodeResponseBody"
           description: Created
         default:
           content:
@@ -1186,7 +1186,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListRejectionsOutputBody"
+                $ref: "#/components/schemas/ListRejectionsResponseBody"
           description: OK
         default:
           content:
@@ -1220,7 +1220,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RotateSecretOutputBody"
+                $ref: "#/components/schemas/RotateSecretResponseBody"
           description: OK
         default:
           content:
@@ -1254,7 +1254,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginView"
+                $ref: "#/components/schemas/LoginResource"
           description: Created
         default:
           content:
@@ -1282,7 +1282,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListModelsOutputBody"
+                $ref: "#/components/schemas/ListModelsResponseBody"
           description: OK
         default:
           content:
@@ -1310,7 +1310,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListPlatformsOutputBody"
+                $ref: "#/components/schemas/ListPlatformsResponseBody"
           description: OK
         default:
           content:
@@ -1352,7 +1352,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListThreadsOutputBody"
+                $ref: "#/components/schemas/ListThreadsResponseBody"
           description: OK
         default:
           content:
@@ -1377,14 +1377,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateThreadInputBody"
+              $ref: "#/components/schemas/CreateThreadRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ThreadSummaryView"
+                $ref: "#/components/schemas/ThreadSummaryResource"
           description: Created
         default:
           content:
@@ -1417,7 +1417,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DocumentView"
+                $ref: "#/components/schemas/DocumentResource"
           description: OK
         default:
           content:
@@ -1448,14 +1448,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateThreadInputBody"
+              $ref: "#/components/schemas/UpdateThreadRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ThreadSummaryView"
+                $ref: "#/components/schemas/ThreadSummaryResource"
           description: OK
         default:
           content:
@@ -1492,7 +1492,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DecideInputBody"
+              $ref: "#/components/schemas/DecideRequestBody"
         required: true
       responses:
         "204":
@@ -1556,14 +1556,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SendMessageInputBody"
+              $ref: "#/components/schemas/SendMessageRequestBody"
         required: true
       responses:
         "202":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SendMessageOutputBody"
+                $ref: "#/components/schemas/SendMessageResponseBody"
           description: Accepted
         default:
           content:
@@ -1600,7 +1600,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AnswerInputBody"
+              $ref: "#/components/schemas/AnswerRequestBody"
         required: true
       responses:
         "204":
@@ -1663,14 +1663,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RevertInputBody"
+              $ref: "#/components/schemas/RevertRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RevertOutputBody"
+                $ref: "#/components/schemas/RevertResponseBody"
           description: OK
         default:
           content:
@@ -1704,7 +1704,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginView"
+                $ref: "#/components/schemas/LoginResource"
           description: OK
         default:
           content:
@@ -1737,14 +1737,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyCodeInputBody"
+              $ref: "#/components/schemas/VerifyCodeRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginView"
+                $ref: "#/components/schemas/LoginResource"
           description: OK
         default:
           content:
