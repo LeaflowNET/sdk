@@ -116,6 +116,11 @@ components:
     EnrollmentView:
       additionalProperties: false
       properties:
+        install_command:
+          description: 含 PSK，与 tls_psk 一样只出现这一次
+          type: string
+        install_script_url:
+          type: string
         tls_psk:
           description: "**只出现这一次**"
           type: string
@@ -131,6 +136,8 @@ components:
         - zabbix_server_address
         - tls_psk_identity
         - tls_psk
+        - install_script_url
+        - install_command
       type: object
     Error:
       additionalProperties: false
