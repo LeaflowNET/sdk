@@ -1,6 +1,6 @@
 components:
   schemas:
-    ActOnInstanceInputBody:
+    ActOnInstanceRequestBody:
       additionalProperties: false
       properties:
         action:
@@ -12,7 +12,7 @@ components:
       required:
         - action
       type: object
-    AllocateFloatingIPInputBody:
+    AllocateFloatingIPRequestBody:
       additionalProperties: false
       properties:
         address:
@@ -25,7 +25,7 @@ components:
       required:
         - private_network_id
       type: object
-    AttachDiskInputBody:
+    AttachDiskRequestBody:
       additionalProperties: false
       properties:
         disk_id:
@@ -34,7 +34,7 @@ components:
       required:
         - disk_id
       type: object
-    AttachFloatingIPInputBody:
+    AttachFloatingIPRequestBody:
       additionalProperties: false
       properties:
         floating_ip_id:
@@ -43,7 +43,7 @@ components:
       required:
         - floating_ip_id
       type: object
-    AttachPortInputBody:
+    AttachPortRequestBody:
       additionalProperties: false
       properties:
         port_id:
@@ -52,7 +52,7 @@ components:
       required:
         - port_id
       type: object
-    BindFloatingIPInputBody:
+    BindFloatingIPRequestBody:
       additionalProperties: false
       properties:
         port_id:
@@ -61,7 +61,7 @@ components:
       required:
         - port_id
       type: object
-    ConsoleOutputBody:
+    ConsoleResponseBody:
       additionalProperties: false
       properties:
         websocket_url:
@@ -70,7 +70,7 @@ components:
       required:
         - websocket_url
       type: object
-    CreateDiskInputBody:
+    CreateDiskRequestBody:
       additionalProperties: false
       properties:
         disk_type_sku:
@@ -91,7 +91,7 @@ components:
         - name
         - size_gb
       type: object
-    CreateInstanceImageInputBody:
+    CreateInstanceImageRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -100,7 +100,7 @@ components:
       required:
         - name
       type: object
-    CreateInstanceImageOutputBody:
+    CreateInstanceImageResponseBody:
       additionalProperties: false
       properties:
         image_id:
@@ -109,7 +109,7 @@ components:
       required:
         - image_id
       type: object
-    CreatePortInputBody:
+    CreatePortRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -134,7 +134,7 @@ components:
         - subnet_id
         - security_group_ids
       type: object
-    CreatePrivateNetworkInputBody:
+    CreatePrivateNetworkRequestBody:
       additionalProperties: false
       properties:
         cidr:
@@ -152,7 +152,7 @@ components:
         - region_code
         - cidr
       type: object
-    CreateRouteInputBody:
+    CreateRouteRequestBody:
       additionalProperties: false
       properties:
         description:
@@ -170,7 +170,7 @@ components:
         - destination
         - nexthop
       type: object
-    CreateSecurityGroupInputBody:
+    CreateSecurityGroupRequestBody:
       additionalProperties: false
       properties:
         description:
@@ -186,7 +186,7 @@ components:
         - private_network_id
         - name
       type: object
-    CreateSecurityRuleInputBody:
+    CreateSecurityRuleRequestBody:
       additionalProperties: false
       properties:
         description:
@@ -226,7 +226,7 @@ components:
         - direction
         - ethertype
       type: object
-    CreateSnapshotInputBody:
+    CreateSnapshotRequestBody:
       additionalProperties: false
       properties:
         disk_id:
@@ -239,7 +239,7 @@ components:
         - disk_id
         - name
       type: object
-    CreateSubnetInputBody:
+    CreateSubnetRequestBody:
       additionalProperties: false
       properties:
         cidr:
@@ -253,61 +253,7 @@ components:
         - name
         - cidr
       type: object
-    DiskTypeView:
-      additionalProperties: false
-      properties:
-        availability_zone_code:
-          type: string
-        iops_display:
-          type: string
-        max_size_gb:
-          format: int64
-          type: integer
-        media:
-          enum:
-            - ssd
-            - hdd
-            - nvme
-          type: string
-        min_size_gb:
-          format: int64
-          type: integer
-        name:
-          type: string
-        region_code:
-          type: string
-        sku:
-          type: string
-        step_gb:
-          format: int64
-          type: integer
-        throughput_display:
-          type: string
-      required:
-        - sku
-        - name
-        - media
-        - region_code
-        - availability_zone_code
-        - min_size_gb
-        - max_size_gb
-        - step_gb
-        - iops_display
-        - throughput_display
-      type: object
-    DiskTypesOutputBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/DiskTypeView"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    DiskView:
+    DiskResource:
       additionalProperties: false
       properties:
         attached_instance_id:
@@ -360,12 +306,66 @@ components:
         - device
         - created_at
       type: object
-    DisksOutputBody:
+    DiskTypeResource:
+      additionalProperties: false
+      properties:
+        availability_zone_code:
+          type: string
+        iops_display:
+          type: string
+        max_size_gb:
+          format: int64
+          type: integer
+        media:
+          enum:
+            - ssd
+            - hdd
+            - nvme
+          type: string
+        min_size_gb:
+          format: int64
+          type: integer
+        name:
+          type: string
+        region_code:
+          type: string
+        sku:
+          type: string
+        step_gb:
+          format: int64
+          type: integer
+        throughput_display:
+          type: string
+      required:
+        - sku
+        - name
+        - media
+        - region_code
+        - availability_zone_code
+        - min_size_gb
+        - max_size_gb
+        - step_gb
+        - iops_display
+        - throughput_display
+      type: object
+    DiskTypesResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/DiskView"
+            $ref: "#/components/schemas/DiskTypeResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
+    DisksResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/DiskResource"
           type:
             - array
             - "null"
@@ -389,7 +389,7 @@ components:
         - status
         - message
       type: object
-    FloatingIPView:
+    FloatingIPResource:
       additionalProperties: false
       properties:
         address:
@@ -438,19 +438,19 @@ components:
         - detached_at
         - created_at
       type: object
-    FloatingIPsOutputBody:
+    FloatingIPsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/FloatingIPView"
+            $ref: "#/components/schemas/FloatingIPResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    ImageView:
+    ImageResource:
       additionalProperties: false
       properties:
         architecture:
@@ -481,69 +481,19 @@ components:
         - min_disk_gb
         - min_ram_mb
       type: object
-    ImagesOutputBody:
+    ImagesResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/ImageView"
+            $ref: "#/components/schemas/ImageResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    InstanceTypeView:
-      additionalProperties: false
-      properties:
-        availability_zone_code:
-          description: 该机型所属的可用区。云硬盘必须位于同一可用区才能挂载
-          type: string
-        max_bandwidth_mbps:
-          format: int64
-          type: integer
-        max_floating_ips:
-          format: int64
-          type: integer
-        max_ports:
-          format: int64
-          type: integer
-        name:
-          type: string
-        ram_mb:
-          format: int64
-          type: integer
-        region_code:
-          type: string
-        sku:
-          type: string
-        vcpus:
-          format: int64
-          type: integer
-      required:
-        - sku
-        - name
-        - vcpus
-        - ram_mb
-        - region_code
-        - availability_zone_code
-        - max_ports
-        - max_floating_ips
-        - max_bandwidth_mbps
-      type: object
-    InstanceTypesOutputBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/InstanceTypeView"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    InstanceView:
+    InstanceResource:
       additionalProperties: false
       properties:
         availability_zone:
@@ -598,19 +548,69 @@ components:
         - created_at
         - updated_at
       type: object
-    InstancesOutputBody:
+    InstanceTypeResource:
+      additionalProperties: false
+      properties:
+        availability_zone_code:
+          description: 该机型所属的可用区。云硬盘必须位于同一可用区才能挂载
+          type: string
+        max_bandwidth_mbps:
+          format: int64
+          type: integer
+        max_floating_ips:
+          format: int64
+          type: integer
+        max_ports:
+          format: int64
+          type: integer
+        name:
+          type: string
+        ram_mb:
+          format: int64
+          type: integer
+        region_code:
+          type: string
+        sku:
+          type: string
+        vcpus:
+          format: int64
+          type: integer
+      required:
+        - sku
+        - name
+        - vcpus
+        - ram_mb
+        - region_code
+        - availability_zone_code
+        - max_ports
+        - max_floating_ips
+        - max_bandwidth_mbps
+      type: object
+    InstanceTypesResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/InstanceView"
+            $ref: "#/components/schemas/InstanceTypeResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    Ipv6OutputBody:
+    InstancesResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/InstanceResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
+    Ipv6ResponseBody:
       additionalProperties: false
       properties:
         cidr:
@@ -630,7 +630,7 @@ components:
         - cidr
         - status
       type: object
-    LaunchInstanceInputBody:
+    LaunchInstanceRequestBody:
       additionalProperties: false
       properties:
         generate_password:
@@ -667,11 +667,11 @@ components:
         - subnet_id
         - security_group_ids
       type: object
-    LaunchInstanceOutputBody:
+    LaunchInstanceResponseBody:
       additionalProperties: false
       properties:
         instance:
-          $ref: "#/components/schemas/InstanceView"
+          $ref: "#/components/schemas/InstanceResource"
         password:
           description: 只在创建时返回这一次，请立刻保存
           type: string
@@ -679,7 +679,7 @@ components:
         - instance
         - password
       type: object
-    NextFreeCidrOutputBody:
+    NextFreeCidrResponseBody:
       additionalProperties: false
       properties:
         cidr:
@@ -688,7 +688,7 @@ components:
       required:
         - cidr
       type: object
-    PortView:
+    PortResource:
       additionalProperties: false
       properties:
         attached_instance_id:
@@ -732,19 +732,19 @@ components:
         - private_ip
         - ipv6_address
       type: object
-    PortsOutputBody:
+    PortsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/PortView"
+            $ref: "#/components/schemas/PortResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    PrivateNetworkView:
+    PrivateNetworkResource:
       additionalProperties: false
       properties:
         cidr:
@@ -791,19 +791,19 @@ components:
         - created_at
         - updated_at
       type: object
-    PrivateNetworksOutputBody:
+    PrivateNetworksResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/PrivateNetworkView"
+            $ref: "#/components/schemas/PrivateNetworkResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    RebuildInstanceInputBody:
+    RebuildInstanceRequestBody:
       additionalProperties: false
       properties:
         generate_password:
@@ -817,11 +817,11 @@ components:
       required:
         - image_sku
       type: object
-    RebuildInstanceOutputBody:
+    RebuildInstanceResponseBody:
       additionalProperties: false
       properties:
         instance:
-          $ref: "#/components/schemas/InstanceView"
+          $ref: "#/components/schemas/InstanceResource"
         password:
           description: 只在这一次返回
           type: string
@@ -829,7 +829,7 @@ components:
         - instance
         - password
       type: object
-    RegionView:
+    RegionResource:
       additionalProperties: false
       properties:
         code:
@@ -843,19 +843,19 @@ components:
         - name
         - country_code
       type: object
-    RegionsOutputBody:
+    RegionsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/RegionView"
+            $ref: "#/components/schemas/RegionResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    RenameDiskInputBody:
+    RenameDiskRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -864,7 +864,7 @@ components:
       required:
         - name
       type: object
-    RenameInstanceInputBody:
+    RenameInstanceRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -873,7 +873,7 @@ components:
       required:
         - name
       type: object
-    ResizeDiskInputBody:
+    ResizeDiskRequestBody:
       additionalProperties: false
       properties:
         size_gb:
@@ -884,7 +884,7 @@ components:
       required:
         - size_gb
       type: object
-    ResizeInstanceInputBody:
+    ResizeInstanceRequestBody:
       additionalProperties: false
       properties:
         instance_type_sku:
@@ -894,7 +894,7 @@ components:
       required:
         - instance_type_sku
       type: object
-    RouteView:
+    RouteResource:
       additionalProperties: false
       properties:
         created_at:
@@ -916,19 +916,19 @@ components:
         - description
         - created_at
       type: object
-    RoutesOutputBody:
+    RoutesResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/RouteView"
+            $ref: "#/components/schemas/RouteResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    SecurityGroupView:
+    SecurityGroupResource:
       additionalProperties: false
       properties:
         created_at:
@@ -955,19 +955,19 @@ components:
         - is_default
         - created_at
       type: object
-    SecurityGroupsOutputBody:
+    SecurityGroupsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SecurityGroupView"
+            $ref: "#/components/schemas/SecurityGroupResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    SecurityRuleView:
+    SecurityRuleResource:
       additionalProperties: false
       properties:
         created_at:
@@ -1019,19 +1019,19 @@ components:
         - description
         - created_at
       type: object
-    SecurityRulesOutputBody:
+    SecurityRulesResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SecurityRuleView"
+            $ref: "#/components/schemas/SecurityRuleResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    SetBandwidthInputBody:
+    SetBandwidthRequestBody:
       additionalProperties: false
       properties:
         mbps:
@@ -1042,7 +1042,7 @@ components:
       required:
         - mbps
       type: object
-    SnapshotView:
+    SnapshotResource:
       additionalProperties: false
       properties:
         created_at:
@@ -1078,19 +1078,19 @@ components:
         - region_code
         - created_at
       type: object
-    SnapshotsOutputBody:
+    SnapshotsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SnapshotView"
+            $ref: "#/components/schemas/SnapshotResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    SubnetView:
+    SubnetResource:
       additionalProperties: false
       properties:
         cidr:
@@ -1121,19 +1121,19 @@ components:
         - cidr
         - gateway_ip
       type: object
-    SubnetsOutputBody:
+    SubnetsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SubnetView"
+            $ref: "#/components/schemas/SubnetResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    ZoneView:
+    ZoneResource:
       additionalProperties: false
       properties:
         code:
@@ -1144,12 +1144,12 @@ components:
         - code
         - name
       type: object
-    ZonesOutputBody:
+    ZonesResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/ZoneView"
+            $ref: "#/components/schemas/ZoneResource"
           type:
             - array
             - "null"
@@ -1204,7 +1204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskTypesOutputBody"
+                $ref: "#/components/schemas/DiskTypesResponseBody"
           description: OK
         default:
           content:
@@ -1246,7 +1246,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DisksOutputBody"
+                $ref: "#/components/schemas/DisksResponseBody"
           description: OK
         default:
           content:
@@ -1272,14 +1272,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateDiskInputBody"
+              $ref: "#/components/schemas/CreateDiskRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskView"
+                $ref: "#/components/schemas/DiskResource"
           description: Created
         default:
           content:
@@ -1342,7 +1342,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskView"
+                $ref: "#/components/schemas/DiskResource"
           description: OK
         default:
           content:
@@ -1374,14 +1374,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RenameDiskInputBody"
+              $ref: "#/components/schemas/RenameDiskRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskView"
+                $ref: "#/components/schemas/DiskResource"
           description: OK
         default:
           content:
@@ -1414,14 +1414,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResizeDiskInputBody"
+              $ref: "#/components/schemas/ResizeDiskRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskView"
+                $ref: "#/components/schemas/DiskResource"
           description: OK
         default:
           content:
@@ -1448,7 +1448,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPsOutputBody"
+                $ref: "#/components/schemas/FloatingIPsResponseBody"
           description: OK
         default:
           content:
@@ -1477,14 +1477,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AllocateFloatingIPInputBody"
+              $ref: "#/components/schemas/AllocateFloatingIPRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPView"
+                $ref: "#/components/schemas/FloatingIPResource"
           description: Created
         default:
           content:
@@ -1546,7 +1546,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPView"
+                $ref: "#/components/schemas/FloatingIPResource"
           description: OK
         default:
           content:
@@ -1579,14 +1579,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SetBandwidthInputBody"
+              $ref: "#/components/schemas/SetBandwidthRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPView"
+                $ref: "#/components/schemas/FloatingIPResource"
           description: OK
         default:
           content:
@@ -1620,7 +1620,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPView"
+                $ref: "#/components/schemas/FloatingIPResource"
           description: OK
         default:
           content:
@@ -1651,14 +1651,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/BindFloatingIPInputBody"
+              $ref: "#/components/schemas/BindFloatingIPRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPView"
+                $ref: "#/components/schemas/FloatingIPResource"
           description: OK
         default:
           content:
@@ -1693,7 +1693,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ImagesOutputBody"
+                $ref: "#/components/schemas/ImagesResponseBody"
           description: OK
         default:
           content:
@@ -1727,7 +1727,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceTypesOutputBody"
+                $ref: "#/components/schemas/InstanceTypesResponseBody"
           description: OK
         default:
           content:
@@ -1754,7 +1754,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstancesOutputBody"
+                $ref: "#/components/schemas/InstancesResponseBody"
           description: OK
         default:
           content:
@@ -1785,14 +1785,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LaunchInstanceInputBody"
+              $ref: "#/components/schemas/LaunchInstanceRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LaunchInstanceOutputBody"
+                $ref: "#/components/schemas/LaunchInstanceResponseBody"
           description: Created
         default:
           content:
@@ -1855,7 +1855,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceView"
+                $ref: "#/components/schemas/InstanceResource"
           description: OK
         default:
           content:
@@ -1887,14 +1887,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RenameInstanceInputBody"
+              $ref: "#/components/schemas/RenameInstanceRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceView"
+                $ref: "#/components/schemas/InstanceResource"
           description: OK
         default:
           content:
@@ -1927,14 +1927,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ActOnInstanceInputBody"
+              $ref: "#/components/schemas/ActOnInstanceRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceView"
+                $ref: "#/components/schemas/InstanceResource"
           description: OK
         default:
           content:
@@ -1968,7 +1968,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ConsoleOutputBody"
+                $ref: "#/components/schemas/ConsoleResponseBody"
           description: OK
         default:
           content:
@@ -2001,7 +2001,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DisksOutputBody"
+                $ref: "#/components/schemas/DisksResponseBody"
           description: OK
         default:
           content:
@@ -2033,14 +2033,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AttachDiskInputBody"
+              $ref: "#/components/schemas/AttachDiskRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskView"
+                $ref: "#/components/schemas/DiskResource"
           description: OK
         default:
           content:
@@ -2080,7 +2080,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskView"
+                $ref: "#/components/schemas/DiskResource"
           description: OK
         default:
           content:
@@ -2113,14 +2113,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AttachFloatingIPInputBody"
+              $ref: "#/components/schemas/AttachFloatingIPRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPView"
+                $ref: "#/components/schemas/FloatingIPResource"
           description: OK
         default:
           content:
@@ -2159,7 +2159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPView"
+                $ref: "#/components/schemas/FloatingIPResource"
           description: OK
         default:
           content:
@@ -2192,14 +2192,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateInstanceImageInputBody"
+              $ref: "#/components/schemas/CreateInstanceImageRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CreateInstanceImageOutputBody"
+                $ref: "#/components/schemas/CreateInstanceImageResponseBody"
           description: OK
         default:
           content:
@@ -2232,7 +2232,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PortsOutputBody"
+                $ref: "#/components/schemas/PortsResponseBody"
           description: OK
         default:
           content:
@@ -2263,14 +2263,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AttachPortInputBody"
+              $ref: "#/components/schemas/AttachPortRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PortView"
+                $ref: "#/components/schemas/PortResource"
           description: OK
         default:
           content:
@@ -2310,7 +2310,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PortView"
+                $ref: "#/components/schemas/PortResource"
           description: OK
         default:
           content:
@@ -2343,14 +2343,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RebuildInstanceInputBody"
+              $ref: "#/components/schemas/RebuildInstanceRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RebuildInstanceOutputBody"
+                $ref: "#/components/schemas/RebuildInstanceResponseBody"
           description: OK
         default:
           content:
@@ -2386,14 +2386,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResizeInstanceInputBody"
+              $ref: "#/components/schemas/ResizeInstanceRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceView"
+                $ref: "#/components/schemas/InstanceResource"
           description: OK
         default:
           content:
@@ -2426,7 +2426,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceView"
+                $ref: "#/components/schemas/InstanceResource"
           description: OK
         default:
           content:
@@ -2459,7 +2459,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceView"
+                $ref: "#/components/schemas/InstanceResource"
           description: OK
         default:
           content:
@@ -2486,7 +2486,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PortsOutputBody"
+                $ref: "#/components/schemas/PortsResponseBody"
           description: OK
         default:
           content:
@@ -2512,14 +2512,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreatePortInputBody"
+              $ref: "#/components/schemas/CreatePortRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PortView"
+                $ref: "#/components/schemas/PortResource"
           description: Created
         default:
           content:
@@ -2584,7 +2584,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PrivateNetworksOutputBody"
+                $ref: "#/components/schemas/PrivateNetworksResponseBody"
           description: OK
         default:
           content:
@@ -2610,14 +2610,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreatePrivateNetworkInputBody"
+              $ref: "#/components/schemas/CreatePrivateNetworkRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PrivateNetworkView"
+                $ref: "#/components/schemas/PrivateNetworkResource"
           description: Created
         default:
           content:
@@ -2679,7 +2679,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PrivateNetworkView"
+                $ref: "#/components/schemas/PrivateNetworkResource"
           description: OK
         default:
           content:
@@ -2713,7 +2713,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PrivateNetworkView"
+                $ref: "#/components/schemas/PrivateNetworkResource"
           description: OK
         default:
           content:
@@ -2746,7 +2746,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PrivateNetworkView"
+                $ref: "#/components/schemas/PrivateNetworkResource"
           description: OK
         default:
           content:
@@ -2808,7 +2808,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Ipv6OutputBody"
+                $ref: "#/components/schemas/Ipv6ResponseBody"
           description: OK
         default:
           content:
@@ -2844,7 +2844,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Ipv6OutputBody"
+                $ref: "#/components/schemas/Ipv6ResponseBody"
           description: OK
         default:
           content:
@@ -2877,7 +2877,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoutesOutputBody"
+                $ref: "#/components/schemas/RoutesResponseBody"
           description: OK
         default:
           content:
@@ -2909,14 +2909,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateRouteInputBody"
+              $ref: "#/components/schemas/CreateRouteRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RouteView"
+                $ref: "#/components/schemas/RouteResource"
           description: Created
         default:
           content:
@@ -2985,7 +2985,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SubnetsOutputBody"
+                $ref: "#/components/schemas/SubnetsResponseBody"
           description: OK
         default:
           content:
@@ -3016,14 +3016,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateSubnetInputBody"
+              $ref: "#/components/schemas/CreateSubnetRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SubnetView"
+                $ref: "#/components/schemas/SubnetResource"
           description: Created
         default:
           content:
@@ -3066,7 +3066,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NextFreeCidrOutputBody"
+                $ref: "#/components/schemas/NextFreeCidrResponseBody"
           description: OK
         default:
           content:
@@ -3129,7 +3129,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RegionsOutputBody"
+                $ref: "#/components/schemas/RegionsResponseBody"
           description: OK
         default:
           content:
@@ -3163,7 +3163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ZonesOutputBody"
+                $ref: "#/components/schemas/ZonesResponseBody"
           description: OK
         default:
           content:
@@ -3203,7 +3203,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SecurityGroupsOutputBody"
+                $ref: "#/components/schemas/SecurityGroupsResponseBody"
           description: OK
         default:
           content:
@@ -3229,14 +3229,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateSecurityGroupInputBody"
+              $ref: "#/components/schemas/CreateSecurityGroupRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SecurityGroupView"
+                $ref: "#/components/schemas/SecurityGroupResource"
           description: Created
         default:
           content:
@@ -3298,7 +3298,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SecurityGroupView"
+                $ref: "#/components/schemas/SecurityGroupResource"
           description: OK
         default:
           content:
@@ -3331,7 +3331,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SecurityRulesOutputBody"
+                $ref: "#/components/schemas/SecurityRulesResponseBody"
           description: OK
         default:
           content:
@@ -3363,14 +3363,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateSecurityRuleInputBody"
+              $ref: "#/components/schemas/CreateSecurityRuleRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SecurityRuleView"
+                $ref: "#/components/schemas/SecurityRuleResource"
           description: Created
         default:
           content:
@@ -3432,7 +3432,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SnapshotsOutputBody"
+                $ref: "#/components/schemas/SnapshotsResponseBody"
           description: OK
         default:
           content:
@@ -3458,14 +3458,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateSnapshotInputBody"
+              $ref: "#/components/schemas/CreateSnapshotRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SnapshotView"
+                $ref: "#/components/schemas/SnapshotResource"
           description: Created
         default:
           content:
@@ -3526,7 +3526,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SnapshotView"
+                $ref: "#/components/schemas/SnapshotResource"
           description: OK
         default:
           content:
