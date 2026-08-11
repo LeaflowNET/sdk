@@ -1,7 +1,1 @@
 node_modules/
-dist/
-
-# 生成出来的代码不签入：签进去就多了一份会和 openapi/ 里那份 spec 不一致的副本，而不一致
-# 是静默的——代码里有个方法，打过去 404。spec 才是这个仓库要被 review 的东西，它已经签入了。
-src/generated/
-src/index.ts

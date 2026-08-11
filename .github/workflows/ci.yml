@@ -23,6 +23,18 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # generate 会输出各服务版本，日志中可确认本次生成基于哪些服务版本。
       - run: pnpm typecheck
+      # dist/ 与 src/generated/ 是签入的：从 git 直接安装本包时不会执行构建，没有它们就
+      # 拿不到可用的产物。
+      #
+      # 代价是仓库里多了一份可能与 openapi/ 不一致的副本，而不一致本身是无声的——调用方
+      # 拿到一个存在于类型里、服务端却没有的方法。这一步重新构建并比对，把无声变成失败。
+      - name: 检查签入的产物是否与 openapi 一致
+        run: |
+          pnpm build
+          if ! git diff --exit-code -- dist src; then
+            echo "::error::签入的产物与 openapi/ 不一致：本地执行 pnpm build 并提交结果" >&2
+            exit 1
+          fi
 
   publish:
     # 仅在 tag 上执行，且必须等待 verify 通过，否则类型检查失败的内容也会被发布。

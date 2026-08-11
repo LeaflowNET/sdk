@@ -1,0 +1,301 @@
+import { request } from '../../http';
+/**
+* `incident_status` 表示监控系统是否判定已恢复，`closed` 表示是否有人完成了处理。两者相互独立，可分别筛选。
+* @summary 列出告警
+*/
+export const listIncidents = (params) => {
+    return request({ url: `/api/v1/incidents`, method: 'GET',
+        params
+    });
+};
+/**
+ * @summary 查一条告警
+ */
+export const getIncident = (incidentId) => {
+    return request({ url: `/api/v1/incidents/${incidentId}`, method: 'GET'
+    });
+};
+/**
+ * 同时会在监控系统中标记为已确认，便于其他渠道也能看到该告警已有人处理。
+ * @summary 确认这条告警
+ */
+export const acknowledgeIncident = (incidentId, acknowledgeIncidentInputBody) => {
+    return request({ url: `/api/v1/incidents/${incidentId}/acknowledge`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: acknowledgeIncidentInputBody
+    });
+};
+/**
+ * `assignee_user_id` 留空即取消指派。
+
+**这里不校验被指派的人在不在这个项目里**——那要问 IAM，而这个服务的准入还没接。
+ * @summary 把这条告警交给谁，或者收回来
+ */
+export const assignIncident = (incidentId, assignIncidentInputBody) => {
+    return request({ url: `/api/v1/incidents/${incidentId}/assignee`, method: 'PUT',
+        headers: { 'Content-Type': 'application/json', },
+        data: assignIncidentInputBody
+    });
+};
+/**
+ * 了结的是**平台上的处理流程**，不是告警本身的状态：尚未恢复的告警也可以按「已接受的风险」了结，它在监控系统中仍为未恢复。
+ * @summary 了结这条告警
+ */
+export const closeIncident = (incidentId, closeIncidentInputBody) => {
+    return request({ url: `/api/v1/incidents/${incidentId}/close`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: closeIncidentInputBody
+    });
+};
+/**
+ * @summary 在时间线上写一条备注
+ */
+export const addIncidentComment = (incidentId, addCommentInputBody) => {
+    return request({ url: `/api/v1/incidents/${incidentId}/comments`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: addCommentInputBody
+    });
+};
+/**
+ * 关注的是**自己**：操作者就是被加进关注列表的那个人。
+ * @summary 关注这条告警，或者取消关注
+ */
+export const setIncidentFollowing = (incidentId, setFollowingInputBody) => {
+    return request({ url: `/api/v1/incidents/${incidentId}/following`, method: 'PUT',
+        headers: { 'Content-Type': 'application/json', },
+        data: setFollowingInputBody
+    });
+};
+/**
+ * @summary 重新打开一条已经了结的告警
+ */
+export const reopenIncident = (incidentId) => {
+    return request({ url: `/api/v1/incidents/${incidentId}/reopen`, method: 'POST'
+    });
+};
+/**
+ * 游标翻页而不是偏移量：时间线是只增的，用偏移量翻页会在新记录写入时漏行和重行。
+ * @summary 列出这条告警的时间线
+ */
+export const listIncidentTimeline = (incidentId, params) => {
+    return request({ url: `/api/v1/incidents/${incidentId}/timeline`, method: 'GET',
+        params
+    });
+};
+/**
+ * @summary 列出维护窗口
+ */
+export const listMaintenanceWindows = () => {
+    return request({ url: `/api/v1/maintenance-windows`, method: 'GET'
+    });
+};
+/**
+ * 立刻恢复告警，哪怕窗口还没到期。
+ * @summary 撤掉一个维护窗口
+ */
+export const deleteMaintenanceWindow = (windowId) => {
+    return request({ url: `/api/v1/maintenance-windows/${windowId}`, method: 'DELETE'
+    });
+};
+/**
+ * @summary 查一个维护窗口
+ */
+export const getMaintenanceWindow = (windowId) => {
+    return request({ url: `/api/v1/maintenance-windows/${windowId}`, method: 'GET'
+    });
+};
+/**
+ * **创建即覆盖**：延长一个正在进行的窗口就是用同一个 id 再调一次。
+
+窗口期内这些机器的问题不告警，也不扣 SLA 的可用率。`server_ids` 留空表示整个项目，包括窗口开着的时候新接进来的机器。
+ * @summary 开一个维护窗口，或者按同一个 id 覆盖它
+ */
+export const putMaintenanceWindow = (windowId, putMaintenanceWindowInputBody) => {
+    return request({ url: `/api/v1/maintenance-windows/${windowId}`, method: 'PUT',
+        headers: { 'Content-Type': 'application/json', },
+        data: putMaintenanceWindowInputBody
+    });
+};
+/**
+ * 项目下还没有任何机器时返回各项均为零的总览，而不是 404——空项目是一个正常状态。
+ * @summary 项目总览
+ */
+export const getProjectOverview = () => {
+    return request({ url: `/api/v1/overview`, method: 'GET'
+    });
+};
+/**
+ * @summary 列出项目里的机器
+ */
+export const listServers = (params) => {
+    return request({ url: `/api/v1/servers`, method: 'GET',
+        params
+    });
+};
+/**
+ * **不可逆**：监控主机、历史数据和这台机器名下的告警会一并删除。若只是想暂时停止采集，改用 /disable。
+ * @summary 删掉这台机器
+ */
+export const deleteServer = (serverId) => {
+    return request({ url: `/api/v1/servers/${serverId}`, method: 'DELETE'
+    });
+};
+/**
+ * @summary 查一台机器的接入情况
+ */
+export const getServer = (serverId) => {
+    return request({ url: `/api/v1/servers/${serverId}`, method: 'GET'
+    });
+};
+/**
+ * 只更新请求体中出现的字段。`address` 与 `address_kind` 必须一并提供：只改其中一个会得到互相矛盾的接入配置，该错误不会被报出，表现为 agent 连不上。
+ * @summary 改一台机器的接入参数
+ */
+export const updateServer = (serverId, updateServerInputBody) => {
+    return request({ url: `/api/v1/servers/${serverId}`, method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', },
+        data: updateServerInputBody
+    });
+};
+/**
+ * **同一个 server id 重复调用是幂等的**：参数一致时返回已接入的那台，不会重复创建监控主机，因此接入失败可以安全重试。
+
+修改接入参数请改用 PATCH。本接口在参数不一致时会返回错误，不会更新已有配置。
+
+响应中的 `tls_psk` **只返回这一次**，请及时保存；遗失后需要轮换。
+ * @summary 把一台机器接入监控
+ */
+export const enableServerMonitoring = (serverId, enableMonitoringInputBody) => {
+    return request({ url: `/api/v1/servers/${serverId}`, method: 'PUT',
+        headers: { 'Content-Type': 'application/json', },
+        data: enableMonitoringInputBody
+    });
+};
+/**
+ * 可逆操作：监控主机保留，仅停止采集，历史数据不受影响。重新接入即可恢复采集。如需连同历史数据一并删除，改用 DELETE。
+ * @summary 停止监控这台机器
+ */
+export const disableServerMonitoring = (serverId) => {
+    return request({ url: `/api/v1/servers/${serverId}/disable`, method: 'POST'
+    });
+};
+/**
+ * 原样返回采集到的监控项，不做筛选或重命名。哪些属于重要指标，由调用方依据监控项自带的标签自行判断。
+ * @summary 列出一台机器的监控项
+ */
+export const listServerItems = (serverId, params) => {
+    return request({ url: `/api/v1/servers/${serverId}/items`, method: 'GET',
+        params
+    });
+};
+/**
+ * `item_key` 是**前缀匹配**：按分区、按网卡发现出来的监控项 key 带参数（`vfs.fs.size[/var,pused]`），所以 `vfs.fs.size` 这一个请求就能画出每个挂载点一条线。
+ * @summary 取一个监控项的时间序列
+ */
+export const getServerMetric = (serverId, params) => {
+    return request({ url: `/api/v1/servers/${serverId}/metrics`, method: 'GET',
+        params
+    });
+};
+/**
+ * 换完要同步改 agent 侧的配置，否则那台机器立刻失联。新密钥同样**只在这个响应里明文出现一次**。
+ * @summary 换一把 agent 的 PSK
+ */
+export const rotateAgentPsk = (serverId) => {
+    return request({ url: `/api/v1/servers/${serverId}/psk`, method: 'POST'
+    });
+};
+/**
+ * @summary 一台机器的硬件与接口
+ */
+export const getServerResources = (serverId) => {
+    return request({ url: `/api/v1/servers/${serverId}/resources`, method: 'GET'
+    });
+};
+/**
+ * @summary 一台机器此刻的状态
+ */
+export const getServerSnapshot = (serverId) => {
+    return request({ url: `/api/v1/servers/${serverId}/snapshot`, method: 'GET'
+    });
+};
+/**
+ * 同时删除监控系统中对应的检查任务和触发器，不会遗留永远无法恢复的告警。
+ * @summary 删掉一个网页检查
+ */
+export const deleteWebCheck = (serverId, checkId) => {
+    return request({ url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'DELETE'
+    });
+};
+/**
+ * @summary 查一个网页检查
+ */
+export const getWebCheck = (serverId, checkId) => {
+    return request({ url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'GET'
+    });
+};
+/**
+ * **创建即覆盖**：修改一个检查即用同一个 id 再次调用本接口，无需先判断它是否已存在。
+ * @summary 建一个网页检查，或者按同一个 id 覆盖它
+ */
+export const putWebCheck = (serverId, checkId, putWebCheckInputBody) => {
+    return request({ url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'PUT',
+        headers: { 'Content-Type': 'application/json', },
+        data: putWebCheckInputBody
+    });
+};
+/**
+ * SLI 是测出来的数，SLO 是定下来的目标——这里返回的是前者。
+
+`server_id` 为空的那一行是项目整体。
+ * @summary 查实测的达成情况
+ */
+export const getSliReport = (params) => {
+    return request({ url: `/api/v1/sli-report`, method: 'GET',
+        params
+    });
+};
+/**
+ * 同时移除监控系统中对应的服务树，此后不再统计可用率。
+ * @summary 撤掉这个项目的可用率目标
+ */
+export const deleteSlo = () => {
+    return request({ url: `/api/v1/slo`, method: 'DELETE'
+    });
+};
+/**
+ * 没定过就是 404，而不是一份默认目标：没承诺过和承诺了 99.9% 是两回事。
+ * @summary 查这个项目的可用率目标
+ */
+export const getSlo = () => {
+    return request({ url: `/api/v1/slo`, method: 'GET'
+    });
+};
+/**
+ * 一个项目一条 SLO，**创建即覆盖**。
+
+`min_severity` 必须显式选：它决定什么算「不可用」，是这条承诺的一半内容。
+ * @summary 定下这个项目的可用率目标，或者改它
+ */
+export const putSlo = (putSLOInputBody) => {
+    return request({ url: `/api/v1/slo`, method: 'PUT',
+        headers: { 'Content-Type': 'application/json', },
+        data: putSLOInputBody
+    });
+};
+/**
+ * @summary 某个指标最高的前几台
+ */
+export const listProjectTopItems = (params) => {
+    return request({ url: `/api/v1/top-items`, method: 'GET',
+        params
+    });
+};
+/**
+ * @summary 列出网页检查
+ */
+export const listWebChecks = (params) => {
+    return request({ url: `/api/v1/web-checks`, method: 'GET',
+        params
+    });
+};
