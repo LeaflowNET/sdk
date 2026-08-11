@@ -1,6 +1,6 @@
 components:
   schemas:
-    AcceptConsentsInputBody:
+    AcceptConsentsRequestBody:
       additionalProperties: false
       properties:
         consents:
@@ -12,7 +12,7 @@ components:
       required:
         - consents
       type: object
-    AcceptInvitationByTokenInputBody:
+    AcceptInvitationByTokenRequestBody:
       additionalProperties: false
       properties:
         token:
@@ -22,15 +22,15 @@ components:
       required:
         - token
       type: object
-    AcceptInvitationOutputBody:
+    AcceptInvitationResponseBody:
       additionalProperties: false
       properties:
         project:
-          $ref: "#/components/schemas/ProjectView"
+          $ref: "#/components/schemas/ProjectResource"
       required:
         - project
       type: object
-    AccountView:
+    AccountResource:
       additionalProperties: false
       properties:
         created_at:
@@ -54,7 +54,7 @@ components:
           type: string
         pending_agreements:
           items:
-            $ref: "#/components/schemas/AgreementView"
+            $ref: "#/components/schemas/AgreementResource"
           type:
             - array
             - "null"
@@ -75,7 +75,7 @@ components:
         - created_at
         - pending_agreements
       type: object
-    AgreementView:
+    AgreementResource:
       additionalProperties: false
       properties:
         effective_at:
@@ -116,7 +116,7 @@ components:
         - type
         - version
       type: object
-    ConsentView:
+    ConsentResource:
       additionalProperties: false
       properties:
         consented_at:
@@ -142,7 +142,7 @@ components:
         - consented_at
         - method
       type: object
-    CreateProjectInputBody:
+    CreateProjectRequestBody:
       additionalProperties: false
       properties:
         description:
@@ -155,7 +155,7 @@ components:
       required:
         - name
       type: object
-    CreateProjectSSHKeyInputBody:
+    CreateProjectSSHKeyRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -168,7 +168,7 @@ components:
         - name
         - public_key
       type: object
-    CreateRoleInputBody:
+    CreateRoleRequestBody:
       additionalProperties: false
       properties:
         code:
@@ -192,7 +192,7 @@ components:
         - code
         - name
       type: object
-    CreateUserSSHKeyInputBody:
+    CreateUserSSHKeyRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -223,7 +223,7 @@ components:
         - status
         - message
       type: object
-    ExchangeTokenOutputBody:
+    ExchangeTokenResponseBody:
       additionalProperties: false
       properties:
         expires_at:
@@ -235,10 +235,10 @@ components:
           format: int64
           type: integer
         grant:
-          $ref: "#/components/schemas/GrantView"
+          $ref: "#/components/schemas/GrantResource"
           description: "**这一份是此刻的快照，不在令牌里，也不要缓存它。** 它只用来决定界面上画什么；真正的判定每次都要重新问"
         project:
-          $ref: "#/components/schemas/ProjectView"
+          $ref: "#/components/schemas/ProjectResource"
           description: 顺带带上项目本身，省掉换完之后立刻再查一次
         token:
           description: "项目令牌，放进 Authorization: Bearer 里用"
@@ -254,7 +254,7 @@ components:
         - project
         - grant
       type: object
-    GrantView:
+    GrantResource:
       additionalProperties: false
       properties:
         admin:
@@ -281,7 +281,7 @@ components:
         - permissions
         - roles
       type: object
-    IdentityVerificationView:
+    IdentityVerificationResource:
       additionalProperties: false
       properties:
         reject_reason:
@@ -311,7 +311,7 @@ components:
         - verified_at
         - reject_reason
       type: object
-    InvitationView:
+    InvitationResource:
       additionalProperties: false
       properties:
         created_at:
@@ -346,7 +346,7 @@ components:
         - expires_at
         - created_at
       type: object
-    IssueInvitationInputBody:
+    IssueInvitationRequestBody:
       additionalProperties: false
       properties:
         email:
@@ -365,11 +365,11 @@ components:
         - email
         - roles
       type: object
-    IssueInvitationOutputBody:
+    IssueInvitationResponseBody:
       additionalProperties: false
       properties:
         invitation:
-          $ref: "#/components/schemas/InvitationView"
+          $ref: "#/components/schemas/InvitationResource"
         token:
           description: 兑现用的明文，**只在这一次响应里出现**。库里只有它的哈希，丢了只能撤销重发
           type: string
@@ -377,52 +377,36 @@ components:
         - invitation
         - token
       type: object
-    ListAgreementsOutputBody:
+    ListAgreementsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/AgreementView"
+            $ref: "#/components/schemas/AgreementResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    ListConsentsOutputBody:
+    ListConsentsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/ConsentView"
+            $ref: "#/components/schemas/ConsentResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    ListInvitationsOutputBody:
+    ListInvitationsResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/InvitationView"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
-      type: object
-    ListMembersOutputBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/MemberView"
+            $ref: "#/components/schemas/InvitationResource"
           type:
             - array
             - "null"
@@ -433,19 +417,35 @@ components:
         - items
         - total
       type: object
-    ListPermissionsOutputBody:
+    ListMembersResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/PermissionView"
+            $ref: "#/components/schemas/MemberResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
+    ListPermissionsResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/PermissionResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    ListProjectsOutputBody:
+    ListProjectsResponseBody:
       additionalProperties: false
       properties:
         items:
@@ -461,24 +461,24 @@ components:
         - items
         - total
       type: object
-    ListRolesOutputBody:
+    ListRolesResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/RoleView"
+            $ref: "#/components/schemas/RoleResource"
           type:
             - array
             - "null"
       required:
         - items
       type: object
-    ListSSHKeysOutputBody:
+    ListSSHKeysResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SSHKeyView"
+            $ref: "#/components/schemas/SSHKeyResource"
           type:
             - array
             - "null"
@@ -489,7 +489,7 @@ components:
         - items
         - total
       type: object
-    MemberView:
+    MemberResource:
       additionalProperties: false
       properties:
         created_at:
@@ -502,7 +502,7 @@ components:
         first_name:
           type: string
         grant:
-          $ref: "#/components/schemas/GrantView"
+          $ref: "#/components/schemas/GrantResource"
         last_name:
           type: string
         user_id:
@@ -516,11 +516,11 @@ components:
         - created_by
         - created_at
       type: object
-    MembershipView:
+    MembershipResource:
       additionalProperties: false
       properties:
         grant:
-          $ref: "#/components/schemas/GrantView"
+          $ref: "#/components/schemas/GrantResource"
         member:
           type: boolean
         project_status:
@@ -533,7 +533,7 @@ components:
         - user_status
         - project_status
       type: object
-    PermissionView:
+    PermissionResource:
       additionalProperties: false
       properties:
         description:
@@ -552,14 +552,14 @@ components:
       additionalProperties: false
       properties:
         grant:
-          $ref: "#/components/schemas/GrantView"
+          $ref: "#/components/schemas/GrantResource"
         project:
-          $ref: "#/components/schemas/ProjectView"
+          $ref: "#/components/schemas/ProjectResource"
       required:
         - project
         - grant
       type: object
-    ProjectView:
+    ProjectResource:
       additionalProperties: false
       properties:
         ban_reason:
@@ -615,7 +615,7 @@ components:
         - created_at
         - updated_at
       type: object
-    RegisterInputBody:
+    RegisterRequestBody:
       additionalProperties: false
       properties:
         consents:
@@ -628,7 +628,7 @@ components:
       required:
         - consents
       type: object
-    RenameProjectSSHKeyInputBody:
+    RenameProjectSSHKeyRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -637,7 +637,7 @@ components:
       required:
         - name
       type: object
-    RenameUserSSHKeyInputBody:
+    RenameUserSSHKeyRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -646,7 +646,7 @@ components:
       required:
         - name
       type: object
-    RoleView:
+    RoleResource:
       additionalProperties: false
       properties:
         builtin:
@@ -679,7 +679,7 @@ components:
         - created_at
         - updated_at
       type: object
-    SSHKeyView:
+    SSHKeyResource:
       additionalProperties: false
       properties:
         created_at:
@@ -710,7 +710,7 @@ components:
         - status
         - created_at
       type: object
-    SetMemberRolesInputBody:
+    SetMemberRolesRequestBody:
       additionalProperties: false
       properties:
         roles:
@@ -723,7 +723,7 @@ components:
       required:
         - roles
       type: object
-    SubmitIdentityVerificationInputBody:
+    SubmitIdentityVerificationRequestBody:
       additionalProperties: false
       properties:
         id_number:
@@ -739,7 +739,7 @@ components:
         - real_name
         - id_number
       type: object
-    TransferOwnershipInputBody:
+    TransferOwnershipRequestBody:
       additionalProperties: false
       properties:
         to_user_id:
@@ -749,19 +749,19 @@ components:
       required:
         - to_user_id
       type: object
-    TransferOwnershipOutputBody:
+    TransferOwnershipResponseBody:
       additionalProperties: false
       properties:
         from:
-          $ref: "#/components/schemas/MemberView"
+          $ref: "#/components/schemas/MemberResource"
           description: 原所有者。他保留其余的角色——转让的是所有权，不是把人踢出去
         to:
-          $ref: "#/components/schemas/MemberView"
+          $ref: "#/components/schemas/MemberResource"
       required:
         - from
         - to
       type: object
-    UpdateProjectInputBody:
+    UpdateProjectRequestBody:
       additionalProperties: false
       properties:
         description:
@@ -771,7 +771,7 @@ components:
           maxLength: 128
           type: string
       type: object
-    UpdateRoleInputBody:
+    UpdateRoleRequestBody:
       additionalProperties: false
       properties:
         description:
@@ -822,7 +822,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListAgreementsOutputBody"
+                $ref: "#/components/schemas/ListAgreementsResponseBody"
           description: OK
         default:
           content:
@@ -850,7 +850,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountView"
+                $ref: "#/components/schemas/AccountResource"
           description: OK
         default:
           content:
@@ -878,7 +878,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListConsentsOutputBody"
+                $ref: "#/components/schemas/ListConsentsResponseBody"
           description: OK
         default:
           content:
@@ -907,14 +907,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AcceptConsentsInputBody"
+              $ref: "#/components/schemas/AcceptConsentsRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountView"
+                $ref: "#/components/schemas/AccountResource"
           description: OK
         default:
           content:
@@ -942,7 +942,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IdentityVerificationView"
+                $ref: "#/components/schemas/IdentityVerificationResource"
           description: OK
         default:
           content:
@@ -968,14 +968,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubmitIdentityVerificationInputBody"
+              $ref: "#/components/schemas/SubmitIdentityVerificationRequestBody"
         required: true
       responses:
         "202":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IdentityVerificationView"
+                $ref: "#/components/schemas/IdentityVerificationResource"
           description: Accepted
         default:
           content:
@@ -1023,7 +1023,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListInvitationsOutputBody"
+                $ref: "#/components/schemas/ListInvitationsResponseBody"
           description: OK
         default:
           content:
@@ -1050,14 +1050,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AcceptInvitationByTokenInputBody"
+              $ref: "#/components/schemas/AcceptInvitationByTokenRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcceptInvitationOutputBody"
+                $ref: "#/components/schemas/AcceptInvitationResponseBody"
           description: OK
         default:
           content:
@@ -1091,7 +1091,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcceptInvitationOutputBody"
+                $ref: "#/components/schemas/AcceptInvitationResponseBody"
           description: OK
         default:
           content:
@@ -1148,7 +1148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListSSHKeysOutputBody"
+                $ref: "#/components/schemas/ListSSHKeysResponseBody"
           description: OK
         default:
           content:
@@ -1173,14 +1173,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateUserSSHKeyInputBody"
+              $ref: "#/components/schemas/CreateUserSSHKeyRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: Created
         default:
           content:
@@ -1214,7 +1214,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: OK
         default:
           content:
@@ -1246,7 +1246,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: OK
         default:
           content:
@@ -1278,14 +1278,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RenameUserSSHKeyInputBody"
+              $ref: "#/components/schemas/RenameUserSSHKeyRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: OK
         default:
           content:
@@ -1305,7 +1305,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListPermissionsOutputBody"
+                $ref: "#/components/schemas/ListPermissionsResponseBody"
           description: OK
         default:
           content:
@@ -1374,7 +1374,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListProjectsOutputBody"
+                $ref: "#/components/schemas/ListProjectsResponseBody"
           description: OK
         default:
           content:
@@ -1400,7 +1400,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateProjectInputBody"
+              $ref: "#/components/schemas/CreateProjectRequestBody"
         required: true
       responses:
         "201":
@@ -1505,7 +1505,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateProjectInputBody"
+              $ref: "#/components/schemas/UpdateProjectRequestBody"
         required: true
       responses:
         "200":
@@ -1566,7 +1566,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListInvitationsOutputBody"
+                $ref: "#/components/schemas/ListInvitationsResponseBody"
           description: OK
         default:
           content:
@@ -1598,14 +1598,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IssueInvitationInputBody"
+              $ref: "#/components/schemas/IssueInvitationRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IssueInvitationOutputBody"
+                $ref: "#/components/schemas/IssueInvitationResponseBody"
           description: Created
         default:
           content:
@@ -1701,7 +1701,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListMembersOutputBody"
+                $ref: "#/components/schemas/ListMembersResponseBody"
           description: OK
         default:
           content:
@@ -1776,14 +1776,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SetMemberRolesInputBody"
+              $ref: "#/components/schemas/SetMemberRolesRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MemberView"
+                $ref: "#/components/schemas/MemberResource"
           description: OK
         default:
           content:
@@ -1817,7 +1817,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MembershipView"
+                $ref: "#/components/schemas/MembershipResource"
           description: OK
         default:
           content:
@@ -1850,7 +1850,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListRolesOutputBody"
+                $ref: "#/components/schemas/ListRolesResponseBody"
           description: OK
         default:
           content:
@@ -1881,14 +1881,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateRoleInputBody"
+              $ref: "#/components/schemas/CreateRoleRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoleView"
+                $ref: "#/components/schemas/RoleResource"
           description: Created
         default:
           content:
@@ -1962,7 +1962,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoleView"
+                $ref: "#/components/schemas/RoleResource"
           description: OK
         default:
           content:
@@ -2000,14 +2000,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateRoleInputBody"
+              $ref: "#/components/schemas/UpdateRoleRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoleView"
+                $ref: "#/components/schemas/RoleResource"
           description: OK
         default:
           content:
@@ -2068,7 +2068,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListSSHKeysOutputBody"
+                $ref: "#/components/schemas/ListSSHKeysResponseBody"
           description: OK
         default:
           content:
@@ -2099,14 +2099,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateProjectSSHKeyInputBody"
+              $ref: "#/components/schemas/CreateProjectSSHKeyRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: Created
         default:
           content:
@@ -2145,7 +2145,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: OK
         default:
           content:
@@ -2183,7 +2183,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: OK
         default:
           content:
@@ -2220,14 +2220,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RenameProjectSSHKeyInputBody"
+              $ref: "#/components/schemas/RenameProjectSSHKeyRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SSHKeyView"
+                $ref: "#/components/schemas/SSHKeyResource"
           description: OK
         default:
           content:
@@ -2270,7 +2270,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ExchangeTokenOutputBody"
+                $ref: "#/components/schemas/ExchangeTokenResponseBody"
           description: Created
         default:
           content:
@@ -2303,14 +2303,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TransferOwnershipInputBody"
+              $ref: "#/components/schemas/TransferOwnershipRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransferOwnershipOutputBody"
+                $ref: "#/components/schemas/TransferOwnershipResponseBody"
           description: OK
         default:
           content:
@@ -2340,14 +2340,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegisterInputBody"
+              $ref: "#/components/schemas/RegisterRequestBody"
         required: true
       responses:
         "201":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountView"
+                $ref: "#/components/schemas/AccountResource"
           description: Created
         default:
           content:
