@@ -1,13 +1,7 @@
 # The openapi/ directory is populated by each service's release pipeline.
 #
-# dist/ is committed, because consumers install this package straight from git and
-# get whatever the tree holds. That makes the build a thing the repository has to
-# keep true: a spec sync that touches openapi/ alone leaves dist/ describing the
-# previous contract, and nothing fails — the client simply lacks the endpoints the
-# document promises. So main rebuilds and commits it.
-#
-# Publishing runs only on a tag, so the version number stays a deliberate choice;
-# this package aggregates several services.
+# Verification runs on every push; publishing runs only on a tag, so the version
+# number stays a deliberate choice; this package aggregates several services.
 name: ci
 
 on:
@@ -17,10 +11,8 @@ on:
   pull_request:
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -29,26 +21,14 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      # On a pull request there is nothing to push to, and a build that fails is
-      # the answer being looked for anyway.
-      - if: github.ref == 'refs/heads/main'
-        run: |
-          if [ -n "$(git status --porcelain dist src/generated)" ]; then
-            git config user.name  'leaflow-sdk-bot'
-            git config user.email 'sdk-bot@leaflow.net'
-            git add dist src/generated
-            git commit -m "build: rebuild dist from openapi/"
-            git push
-          fi
+      - run: pnpm typecheck
 
   publish:
-    needs: build
+    needs: verify
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # npm's trusted publishing wants it.
       id-token: write
     steps:
       - uses: actions/checkout@v5
