@@ -20,8 +20,8 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { ThreadSummaryViewApprovalMode } from './threadSummaryViewApprovalMode';
-import type { ThreadSummaryViewTitle } from './threadSummaryViewTitle';
+import type { ThreadSummaryViewApprovalMode } from './threadSummaryViewApprovalMode.js';
+import type { ThreadSummaryViewTitle } from './threadSummaryViewTitle.js';
 
 export interface ThreadSummaryView {
   approvalMode: ThreadSummaryViewApprovalMode;

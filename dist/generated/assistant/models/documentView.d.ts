@@ -20,14 +20,14 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { ContextView } from './contextView';
-import type { DocumentViewCursor } from './documentViewCursor';
-import type { EarlierView } from './earlierView';
-import type { DocumentViewItems } from './documentViewItems';
-import type { StreamView } from './streamView';
-import type { TurnView } from './turnView';
-import type { DocumentViewTurnId } from './documentViewTurnId';
-import type { WaitView } from './waitView';
+import type { ContextView } from './contextView.js';
+import type { DocumentViewCursor } from './documentViewCursor.js';
+import type { EarlierView } from './earlierView.js';
+import type { DocumentViewItems } from './documentViewItems.js';
+import type { StreamView } from './streamView.js';
+import type { TurnView } from './turnView.js';
+import type { DocumentViewTurnId } from './documentViewTurnId.js';
+import type { WaitView } from './waitView.js';
 export interface DocumentView {
     context: ContextView;
     cursor: DocumentViewCursor;

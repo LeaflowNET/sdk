@@ -19,7 +19,7 @@
 `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
  * OpenAPI spec version: 1.0.0
  */
-import type { InvitationView } from './invitationView';
+import type { InvitationView } from './invitationView.js';
 export interface IssueInvitationOutputBody {
     invitation: InvitationView;
     /** 兑现用的明文，**只在这一次响应里出现**。库里只有它的哈希，丢了只能撤销重发 */

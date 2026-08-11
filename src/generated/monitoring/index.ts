@@ -61,9 +61,9 @@ import type {
   TopItemsOutputBody,
   UpdateServerInputBody,
   WebCheckView
-} from './models';
+} from './models/index.js';
 
-import { request } from '../../http';
+import { request } from '../../http.js';
 
 
 

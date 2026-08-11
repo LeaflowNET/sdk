@@ -19,7 +19,7 @@
 `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
  * OpenAPI spec version: 1.0.0
  */
-import type { CreateRoleInputBodyPermissions } from './createRoleInputBodyPermissions';
+import type { CreateRoleInputBodyPermissions } from './createRoleInputBodyPermissions.js';
 export interface CreateRoleInputBody {
     /**
      * 小写字母开头，可含数字和下划线。建好之后不能改——成员绑定和邀请都指着它

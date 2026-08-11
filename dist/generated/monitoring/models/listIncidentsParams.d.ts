@@ -22,11 +22,11 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { ListIncidentsIncidentStatus } from './listIncidentsIncidentStatus';
-import type { ListIncidentsMinSeverity } from './listIncidentsMinSeverity';
-import type { ListIncidentsClosed } from './listIncidentsClosed';
-import type { ListIncidentsAcknowledged } from './listIncidentsAcknowledged';
-import type { ListIncidentsUnassigned } from './listIncidentsUnassigned';
+import type { ListIncidentsIncidentStatus } from './listIncidentsIncidentStatus.js';
+import type { ListIncidentsMinSeverity } from './listIncidentsMinSeverity.js';
+import type { ListIncidentsClosed } from './listIncidentsClosed.js';
+import type { ListIncidentsAcknowledged } from './listIncidentsAcknowledged.js';
+import type { ListIncidentsUnassigned } from './listIncidentsUnassigned.js';
 export type ListIncidentsParams = {
     /**
      * 这一页最多返回多少条，0 表示用默认值

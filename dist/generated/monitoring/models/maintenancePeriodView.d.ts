@@ -22,8 +22,8 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { MaintenancePeriodViewKind } from './maintenancePeriodViewKind';
-import type { MaintenancePeriodViewStartsAt } from './maintenancePeriodViewStartsAt';
+import type { MaintenancePeriodViewKind } from './maintenancePeriodViewKind.js';
+import type { MaintenancePeriodViewStartsAt } from './maintenancePeriodViewStartsAt.js';
 export interface MaintenancePeriodView {
     duration_seconds: number;
     /** DAILY / WEEKLY：每 N 天 / 每 N 周 */

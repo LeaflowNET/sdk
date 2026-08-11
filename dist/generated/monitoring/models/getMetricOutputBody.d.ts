@@ -22,8 +22,8 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { GetMetricOutputBodySeries } from './getMetricOutputBodySeries';
-import type { GetMetricOutputBodyThresholds } from './getMetricOutputBodyThresholds';
+import type { GetMetricOutputBodySeries } from './getMetricOutputBodySeries.js';
+import type { GetMetricOutputBodyThresholds } from './getMetricOutputBodyThresholds.js';
 export interface GetMetricOutputBody {
     downsampled: boolean;
     effective_from: string;

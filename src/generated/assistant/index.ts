@@ -49,9 +49,9 @@ import type {
   UpdateThreadInputBody,
   UploadedView,
   VerifyCodeInputBody
-} from './models';
+} from './models/index.js';
 
-import { request } from '../../http';
+import { request } from '../../http.js';
 
 
 

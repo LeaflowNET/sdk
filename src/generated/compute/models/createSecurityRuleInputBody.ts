@@ -23,10 +23,10 @@
 - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
  * OpenAPI spec version: 1.0.0
  */
-import type { CreateSecurityRuleInputBodyDirection } from './createSecurityRuleInputBodyDirection';
-import type { CreateSecurityRuleInputBodyEthertype } from './createSecurityRuleInputBodyEthertype';
-import type { CreateSecurityRuleInputBodyPortRangeMax } from './createSecurityRuleInputBodyPortRangeMax';
-import type { CreateSecurityRuleInputBodyPortRangeMin } from './createSecurityRuleInputBodyPortRangeMin';
+import type { CreateSecurityRuleInputBodyDirection } from './createSecurityRuleInputBodyDirection.js';
+import type { CreateSecurityRuleInputBodyEthertype } from './createSecurityRuleInputBodyEthertype.js';
+import type { CreateSecurityRuleInputBodyPortRangeMax } from './createSecurityRuleInputBodyPortRangeMax.js';
+import type { CreateSecurityRuleInputBodyPortRangeMin } from './createSecurityRuleInputBodyPortRangeMin.js';
 
 export interface CreateSecurityRuleInputBody {
   /** @maxLength 255 */

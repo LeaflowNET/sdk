@@ -22,9 +22,9 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { SnapshotViewAgentReachability } from './snapshotViewAgentReachability';
-import type { SnapshotViewLastCollectedAt } from './snapshotViewLastCollectedAt';
-import type { SnapshotViewProblemCounts } from './snapshotViewProblemCounts';
+import type { SnapshotViewAgentReachability } from './snapshotViewAgentReachability.js';
+import type { SnapshotViewLastCollectedAt } from './snapshotViewLastCollectedAt.js';
+import type { SnapshotViewProblemCounts } from './snapshotViewProblemCounts.js';
 export interface SnapshotView {
     agent_error: string;
     /** AGENT_DOWN 是 agent 不通但机器还活着；UNREACHABLE 是连这一点都说不上 */

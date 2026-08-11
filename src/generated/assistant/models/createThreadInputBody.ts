@@ -20,7 +20,7 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { CreateThreadInputBodyApprovalMode } from './createThreadInputBodyApprovalMode';
+import type { CreateThreadInputBodyApprovalMode } from './createThreadInputBodyApprovalMode.js';
 
 export interface CreateThreadInputBody {
   /** 不传则使用平台默认审批模式 */

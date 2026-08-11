@@ -1,4 +1,4 @@
-import { request } from '../../http';
+import { request } from '../../http.js';
 /**
 * `incident_status` 表示监控系统是否判定已恢复，`closed` 表示是否有人完成了处理。两者相互独立，可分别筛选。
 * @summary 列出告警

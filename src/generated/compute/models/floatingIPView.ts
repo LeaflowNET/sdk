@@ -23,11 +23,11 @@
 - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
  * OpenAPI spec version: 1.0.0
  */
-import type { FloatingIPViewAttachedFixedIp } from './floatingIPViewAttachedFixedIp';
-import type { FloatingIPViewAttachedPortId } from './floatingIPViewAttachedPortId';
-import type { FloatingIPViewBandwidthMbps } from './floatingIPViewBandwidthMbps';
-import type { FloatingIPViewDetachedAt } from './floatingIPViewDetachedAt';
-import type { FloatingIPViewStatus } from './floatingIPViewStatus';
+import type { FloatingIPViewAttachedFixedIp } from './floatingIPViewAttachedFixedIp.js';
+import type { FloatingIPViewAttachedPortId } from './floatingIPViewAttachedPortId.js';
+import type { FloatingIPViewBandwidthMbps } from './floatingIPViewBandwidthMbps.js';
+import type { FloatingIPViewDetachedAt } from './floatingIPViewDetachedAt.js';
+import type { FloatingIPViewStatus } from './floatingIPViewStatus.js';
 
 export interface FloatingIPView {
   address: string;

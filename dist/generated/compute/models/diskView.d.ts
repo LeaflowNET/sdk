@@ -23,9 +23,9 @@
 - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
  * OpenAPI spec version: 1.0.0
  */
-import type { DiskViewAttachedInstanceId } from './diskViewAttachedInstanceId';
-import type { DiskViewDevice } from './diskViewDevice';
-import type { DiskViewStatus } from './diskViewStatus';
+import type { DiskViewAttachedInstanceId } from './diskViewAttachedInstanceId.js';
+import type { DiskViewDevice } from './diskViewDevice.js';
+import type { DiskViewStatus } from './diskViewStatus.js';
 export interface DiskView {
     attached_instance_id: DiskViewAttachedInstanceId;
     /** 以存储服务返回的为准。挂载时云服务器必须位于同一可用区 */

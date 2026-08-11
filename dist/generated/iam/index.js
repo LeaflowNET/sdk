@@ -1,4 +1,4 @@
-import { request } from '../../http';
+import { request } from '../../http.js';
 /**
 * @summary 查看当前账号
 */

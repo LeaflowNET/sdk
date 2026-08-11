@@ -19,7 +19,7 @@
 `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
  * OpenAPI spec version: 1.0.0
  */
-import type { SetMemberRolesInputBodyRoles } from './setMemberRolesInputBodyRoles';
+import type { SetMemberRolesInputBodyRoles } from './setMemberRolesInputBodyRoles.js';
 
 export interface SetMemberRolesInputBody {
   /** 这个人应当持有的**全部**角色编码。OWNER 不能出现在这里 */

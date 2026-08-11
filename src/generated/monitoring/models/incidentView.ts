@@ -22,15 +22,15 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { IncidentViewAcknowledgedAt } from './incidentViewAcknowledgedAt';
-import type { IncidentViewAssignedAt } from './incidentViewAssignedAt';
-import type { IncidentViewClosedAt } from './incidentViewClosedAt';
-import type { IncidentViewFollowers } from './incidentViewFollowers';
-import type { IncidentViewIncidentStatus } from './incidentViewIncidentStatus';
-import type { IncidentViewItems } from './incidentViewItems';
-import type { IncidentViewResolvedAt } from './incidentViewResolvedAt';
-import type { IncidentViewSeverity } from './incidentViewSeverity';
-import type { IncidentViewTags } from './incidentViewTags';
+import type { IncidentViewAcknowledgedAt } from './incidentViewAcknowledgedAt.js';
+import type { IncidentViewAssignedAt } from './incidentViewAssignedAt.js';
+import type { IncidentViewClosedAt } from './incidentViewClosedAt.js';
+import type { IncidentViewFollowers } from './incidentViewFollowers.js';
+import type { IncidentViewIncidentStatus } from './incidentViewIncidentStatus.js';
+import type { IncidentViewItems } from './incidentViewItems.js';
+import type { IncidentViewResolvedAt } from './incidentViewResolvedAt.js';
+import type { IncidentViewSeverity } from './incidentViewSeverity.js';
+import type { IncidentViewTags } from './incidentViewTags.js';
 
 export interface IncidentView {
   acknowledge_message: string;

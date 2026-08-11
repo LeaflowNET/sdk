@@ -20,7 +20,7 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { ListThreadsOutputBodyThreads } from './listThreadsOutputBodyThreads';
+import type { ListThreadsOutputBodyThreads } from './listThreadsOutputBodyThreads.js';
 
 export interface ListThreadsOutputBody {
   threads: ListThreadsOutputBodyThreads;

@@ -20,7 +20,7 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { SendMessageInputBodyAttachmentIds } from './sendMessageInputBodyAttachmentIds';
+import type { SendMessageInputBodyAttachmentIds } from './sendMessageInputBodyAttachmentIds.js';
 
 export interface SendMessageInputBody {
   /** 此前上传、尚未绑定到任何消息的附件 id */

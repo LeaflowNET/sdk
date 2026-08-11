@@ -20,5 +20,5 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { Choice } from './choice';
+import type { Choice } from './choice.js';
 export type QuestionChoices = Choice[] | null;

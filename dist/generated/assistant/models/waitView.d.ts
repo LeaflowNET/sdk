@@ -20,9 +20,9 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { WaitViewItemIds } from './waitViewItemIds';
-import type { WaitViewKind } from './waitViewKind';
-import type { WaitViewQuestions } from './waitViewQuestions';
+import type { WaitViewItemIds } from './waitViewItemIds.js';
+import type { WaitViewKind } from './waitViewKind.js';
+import type { WaitViewQuestions } from './waitViewQuestions.js';
 export interface WaitView {
     autoResolutionMs?: number;
     batchId?: string;

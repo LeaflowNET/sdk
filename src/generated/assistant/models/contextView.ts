@@ -20,9 +20,9 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { ContextViewCompactAt } from './contextViewCompactAt';
-import type { ContextViewUsed } from './contextViewUsed';
-import type { ContextViewWindow } from './contextViewWindow';
+import type { ContextViewCompactAt } from './contextViewCompactAt.js';
+import type { ContextViewUsed } from './contextViewUsed.js';
+import type { ContextViewWindow } from './contextViewWindow.js';
 
 export interface ContextView {
   compactAt: ContextViewCompactAt;

@@ -1,4 +1,4 @@
-import { request } from '../../http';
+import { request } from '../../http.js';
 /**
 * 请求体直接是文件字节，不使用 multipart 封装，一次上传一个文件。类型由内容判定，与 Content-Type 无关。返回的 id 在发送消息时放进 attachmentIds；从未被任何消息引用的附件会被定期清除。
 * @summary 上传图片

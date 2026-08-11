@@ -20,17 +20,17 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { ItemViewApproval } from './itemViewApproval';
-import type { ItemViewApprovalReason } from './itemViewApprovalReason';
-import type { ItemViewAttachments } from './itemViewAttachments';
-import type { ItemViewDetail } from './itemViewDetail';
-import type { ItemViewDurationMs } from './itemViewDurationMs';
-import type { ItemViewModel } from './itemViewModel';
-import type { ItemViewNamespace } from './itemViewNamespace';
-import type { ItemViewStatus } from './itemViewStatus';
-import type { ItemViewTarget } from './itemViewTarget';
-import type { ItemViewTool } from './itemViewTool';
-import type { ItemViewType } from './itemViewType';
+import type { ItemViewApproval } from './itemViewApproval.js';
+import type { ItemViewApprovalReason } from './itemViewApprovalReason.js';
+import type { ItemViewAttachments } from './itemViewAttachments.js';
+import type { ItemViewDetail } from './itemViewDetail.js';
+import type { ItemViewDurationMs } from './itemViewDurationMs.js';
+import type { ItemViewModel } from './itemViewModel.js';
+import type { ItemViewNamespace } from './itemViewNamespace.js';
+import type { ItemViewStatus } from './itemViewStatus.js';
+import type { ItemViewTarget } from './itemViewTarget.js';
+import type { ItemViewTool } from './itemViewTool.js';
+import type { ItemViewType } from './itemViewType.js';
 export interface ItemView {
     approval?: ItemViewApproval;
     approvalReason?: ItemViewApprovalReason;

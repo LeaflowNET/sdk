@@ -20,7 +20,7 @@
 图片分两步发送：先 `POST /v1/attachments` 取得附件 id，再在发送消息时放进 `attachmentIds`。
  * OpenAPI spec version: 1.0.0
  */
-import type { AnswerInputBody, ChannelView, ClaimCodeOutputBody, CreateChannelInputBody, CreateThreadInputBody, DecideInputBody, DocumentView, ListBindingsOutputBody, ListBindingsParams, ListChannelRejectionsParams, ListChannelsOutputBody, ListChannelsParams, ListModelsOutputBody, ListPlatformsOutputBody, ListRejectionsOutputBody, ListThreadsOutputBody, ListThreadsParams, LoginView, RevertInputBody, RevertOutputBody, RotateSecretOutputBody, SendMessageInputBody, SendMessageOutputBody, ThreadSummaryView, UpdateChannelInputBody, UpdateThreadInputBody, UploadedView, VerifyCodeInputBody } from './models';
+import type { AnswerInputBody, ChannelView, ClaimCodeOutputBody, CreateChannelInputBody, CreateThreadInputBody, DecideInputBody, DocumentView, ListBindingsOutputBody, ListBindingsParams, ListChannelRejectionsParams, ListChannelsOutputBody, ListChannelsParams, ListModelsOutputBody, ListPlatformsOutputBody, ListRejectionsOutputBody, ListThreadsOutputBody, ListThreadsParams, LoginView, RevertInputBody, RevertOutputBody, RotateSecretOutputBody, SendMessageInputBody, SendMessageOutputBody, ThreadSummaryView, UpdateChannelInputBody, UpdateThreadInputBody, UploadedView, VerifyCodeInputBody } from './models/index.js';
 /**
 * 请求体直接是文件字节，不使用 multipart 封装，一次上传一个文件。类型由内容判定，与 Content-Type 无关。返回的 id 在发送消息时放进 attachmentIds；从未被任何消息引用的附件会被定期清除。
 * @summary 上传图片

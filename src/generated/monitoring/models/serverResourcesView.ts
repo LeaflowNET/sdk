@@ -22,9 +22,9 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { ServerResourcesViewInterfaces } from './serverResourcesViewInterfaces';
-import type { ServerResourcesViewInventory } from './serverResourcesViewInventory';
-import type { ServerResourcesViewTags } from './serverResourcesViewTags';
+import type { ServerResourcesViewInterfaces } from './serverResourcesViewInterfaces.js';
+import type { ServerResourcesViewInventory } from './serverResourcesViewInventory.js';
+import type { ServerResourcesViewTags } from './serverResourcesViewTags.js';
 
 export interface ServerResourcesView {
   interfaces: ServerResourcesViewInterfaces;

@@ -23,12 +23,12 @@
 - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
  * OpenAPI spec version: 1.0.0
  */
-import type { SecurityRuleViewDirection } from './securityRuleViewDirection';
-import type { SecurityRuleViewEthertype } from './securityRuleViewEthertype';
-import type { SecurityRuleViewPortRangeMax } from './securityRuleViewPortRangeMax';
-import type { SecurityRuleViewPortRangeMin } from './securityRuleViewPortRangeMin';
-import type { SecurityRuleViewProtocol } from './securityRuleViewProtocol';
-import type { SecurityRuleViewRemoteIpPrefix } from './securityRuleViewRemoteIpPrefix';
+import type { SecurityRuleViewDirection } from './securityRuleViewDirection.js';
+import type { SecurityRuleViewEthertype } from './securityRuleViewEthertype.js';
+import type { SecurityRuleViewPortRangeMax } from './securityRuleViewPortRangeMax.js';
+import type { SecurityRuleViewPortRangeMin } from './securityRuleViewPortRangeMin.js';
+import type { SecurityRuleViewProtocol } from './securityRuleViewProtocol.js';
+import type { SecurityRuleViewRemoteIpPrefix } from './securityRuleViewRemoteIpPrefix.js';
 
 export interface SecurityRuleView {
   created_at: string;

@@ -84,9 +84,9 @@ import type {
   SubnetsOutputBody,
   SuggestSubnetCidrParams,
   ZonesOutputBody
-} from './models';
+} from './models/index.js';
 
-import { request } from '../../http';
+import { request } from '../../http.js';
 
 
 
