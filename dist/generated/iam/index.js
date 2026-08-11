@@ -1,9 +1,40 @@
 import { request } from '../../http.js';
 /**
-* @summary 查看当前账号
+* 注册页显示它，用户同意之后把每一项的 `type` 和 `version` 原样回传给 `POST /api/v1/register`。
+
+不需要令牌。还没有任何文件生效时返回空数组，那时注册不需要提交 `consents`。
+* @summary 列出注册必须同意的文件
 */
+export const listAgreements = () => {
+    return request({ url: `/api/v1/agreements`, method: 'GET'
+    });
+};
+/**
+ * `pending_agreements` 是还没同意的文件，非空就要先引导用户同意，再调 `POST /api/v1/me/consents`。
+ * @summary 查看当前账号
+ */
 export const getAccount = () => {
     return request({ url: `/api/v1/me`, method: 'GET'
+    });
+};
+/**
+ * 全部记录，最新的在前，包括已经不是当前版本的那些。
+ * @summary 列出我同意过的文件
+ */
+export const listConsents = () => {
+    return request({ url: `/api/v1/me/consents`, method: 'GET'
+    });
+};
+/**
+ * 条款改版之后用它重新同意，`GET /api/v1/me` 的 `pending_agreements` 非空时就该调。
+
+只收当前生效的版本，签旧版答 409。重复提交同一版不报错，第一次那条记录会留着。
+ * @summary 同意条款
+ */
+export const acceptAgreements = (acceptConsentsInputBody) => {
+    return request({ url: `/api/v1/me/consents`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: acceptConsentsInputBody
     });
 };
 /**
@@ -91,14 +122,6 @@ export const renameMySshKey = (keyId, renameUserSSHKeyInputBody) => {
     return request({ url: `/api/v1/me/ssh-keys/${keyId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
         data: renameUserSSHKeyInputBody
-    });
-};
-/**
- * 幂等：已经同意过的不会被推到今天——那一列是法务要的证据，说的是他哪一次同意的。
- * @summary 同意服务条款
- */
-export const acceptTerms = () => {
-    return request({ url: `/api/v1/me/terms`, method: 'POST'
     });
 };
 /**
@@ -318,5 +341,17 @@ export const transferProjectOwnership = (projectId, transferOwnershipInputBody) 
     return request({ url: `/api/v1/projects/${projectId}/transfer-ownership`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
         data: transferOwnershipInputBody
+    });
+};
+/**
+ * 在 auth.leaflow.net 登录之后调它，带上账号令牌。姓名和邮箱取自登录信息，不从请求体收。
+
+`consents` 要覆盖 `GET /api/v1/agreements` 返回的每一份，版本号也要一致；漏一份答 400，版本对不上答 409（多半是页面开着的时候条款改版了，重新拉一次清单即可）。已经注册过的答 409。
+ * @summary 注册账号
+ */
+export const register = (registerInputBody) => {
+    return request({ url: `/api/v1/register`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: registerInputBody
     });
 };

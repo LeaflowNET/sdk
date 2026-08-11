@@ -20,6 +20,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  AcceptConsentsInputBody,
   AcceptInvitationByTokenInputBody,
   AcceptInvitationOutputBody,
   AccountView,
@@ -31,6 +32,8 @@ import type {
   IdentityVerificationView,
   IssueInvitationInputBody,
   IssueInvitationOutputBody,
+  ListAgreementsOutputBody,
+  ListConsentsOutputBody,
   ListInvitationsOutputBody,
   ListMembersOutputBody,
   ListMembersParams,
@@ -46,6 +49,7 @@ import type {
   MemberView,
   MembershipView,
   ProjectListItem,
+  RegisterInputBody,
   RenameProjectSSHKeyInputBody,
   RenameUserSSHKeyInputBody,
   RoleView,
@@ -63,6 +67,22 @@ import { request } from '../../http.js';
 
 
   /**
+ * 注册页显示它，用户同意之后把每一项的 `type` 和 `version` 原样回传给 `POST /api/v1/register`。
+
+不需要令牌。还没有任何文件生效时返回空数组，那时注册不需要提交 `consents`。
+ * @summary 列出注册必须同意的文件
+ */
+export const listAgreements = (
+    
+ ) => {
+      return request<ListAgreementsOutputBody>(
+      {url: `/api/v1/agreements`, method: 'GET'
+    },
+      );
+    }
+  
+/**
+ * `pending_agreements` 是还没同意的文件，非空就要先引导用户同意，再调 `POST /api/v1/me/consents`。
  * @summary 查看当前账号
  */
 export const getAccount = (
@@ -70,6 +90,36 @@ export const getAccount = (
  ) => {
       return request<AccountView>(
       {url: `/api/v1/me`, method: 'GET'
+    },
+      );
+    }
+  
+/**
+ * 全部记录，最新的在前，包括已经不是当前版本的那些。
+ * @summary 列出我同意过的文件
+ */
+export const listConsents = (
+    
+ ) => {
+      return request<ListConsentsOutputBody>(
+      {url: `/api/v1/me/consents`, method: 'GET'
+    },
+      );
+    }
+  
+/**
+ * 条款改版之后用它重新同意，`GET /api/v1/me` 的 `pending_agreements` 非空时就该调。
+
+只收当前生效的版本，签旧版答 409。重复提交同一版不报错，第一次那条记录会留着。
+ * @summary 同意条款
+ */
+export const acceptAgreements = (
+    acceptConsentsInputBody: AcceptConsentsInputBody,
+ ) => {
+      return request<AccountView>(
+      {url: `/api/v1/me/consents`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: acceptConsentsInputBody
     },
       );
     }
@@ -208,19 +258,6 @@ export const renameMySshKey = (
       {url: `/api/v1/me/ssh-keys/${keyId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renameUserSSHKeyInputBody
-    },
-      );
-    }
-  
-/**
- * 幂等：已经同意过的不会被推到今天——那一列是法务要的证据，说的是他哪一次同意的。
- * @summary 同意服务条款
- */
-export const acceptTerms = (
-    
- ) => {
-      return request<AccountView>(
-      {url: `/api/v1/me/terms`, method: 'POST'
     },
       );
     }
@@ -589,7 +626,27 @@ export const transferProjectOwnership = (
       );
     }
   
+/**
+ * 在 auth.leaflow.net 登录之后调它，带上账号令牌。姓名和邮箱取自登录信息，不从请求体收。
+
+`consents` 要覆盖 `GET /api/v1/agreements` 返回的每一份，版本号也要一致；漏一份答 400，版本对不上答 409（多半是页面开着的时候条款改版了，重新拉一次清单即可）。已经注册过的答 409。
+ * @summary 注册账号
+ */
+export const register = (
+    registerInputBody: RegisterInputBody,
+ ) => {
+      return request<AccountView>(
+      {url: `/api/v1/register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerInputBody
+    },
+      );
+    }
+  
+export type ListAgreementsResult = NonNullable<Awaited<ReturnType<typeof listAgreements>>>
 export type GetAccountResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
+export type ListConsentsResult = NonNullable<Awaited<ReturnType<typeof listConsents>>>
+export type AcceptAgreementsResult = NonNullable<Awaited<ReturnType<typeof acceptAgreements>>>
 export type GetIdentityVerificationResult = NonNullable<Awaited<ReturnType<typeof getIdentityVerification>>>
 export type SubmitIdentityVerificationResult = NonNullable<Awaited<ReturnType<typeof submitIdentityVerification>>>
 export type ListMyInvitationsResult = NonNullable<Awaited<ReturnType<typeof listMyInvitations>>>
@@ -600,7 +657,6 @@ export type CreateMySshKeyResult = NonNullable<Awaited<ReturnType<typeof createM
 export type RevokeMySshKeyResult = NonNullable<Awaited<ReturnType<typeof revokeMySshKey>>>
 export type GetMySshKeyResult = NonNullable<Awaited<ReturnType<typeof getMySshKey>>>
 export type RenameMySshKeyResult = NonNullable<Awaited<ReturnType<typeof renameMySshKey>>>
-export type AcceptTermsResult = NonNullable<Awaited<ReturnType<typeof acceptTerms>>>
 export type ListPermissionsResult = NonNullable<Awaited<ReturnType<typeof listPermissions>>>
 export type ListProjectsResult = NonNullable<Awaited<ReturnType<typeof listProjects>>>
 export type CreateProjectResult = NonNullable<Awaited<ReturnType<typeof createProject>>>
@@ -626,3 +682,4 @@ export type GetProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof getPr
 export type RenameProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof renameProjectSshKey>>>
 export type ExchangeProjectTokenResult = NonNullable<Awaited<ReturnType<typeof exchangeProjectToken>>>
 export type TransferProjectOwnershipResult = NonNullable<Awaited<ReturnType<typeof transferProjectOwnership>>>
+export type RegisterResult = NonNullable<Awaited<ReturnType<typeof register>>>

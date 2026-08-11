@@ -6,8 +6,8 @@ export * as iam from './generated/iam/index.js';
 export * as monitoring from './generated/monitoring/index.js';
 /** Service versions the bundled specs were generated from. */
 export const SERVICE_VERSIONS = {
-    assistant: "v0.2.1",
-    compute: "v0.2.1",
-    iam: "v0.19.5",
-    monitoring: "v3.1.1",
+    assistant: "v0.2.2",
+    compute: "v0.2.2",
+    iam: "v0.20.0",
+    monitoring: "v3.1.2",
 };

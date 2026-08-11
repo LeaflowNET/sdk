@@ -20,8 +20,8 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AccountViewEmailVerifiedAt } from './accountViewEmailVerifiedAt.js';
+import type { AccountViewPendingAgreements } from './accountViewPendingAgreements.js';
 import type { AccountViewStatus } from './accountViewStatus.js';
-import type { AccountViewTermsAcceptedAt } from './accountViewTermsAcceptedAt.js';
 export interface AccountView {
     created_at: string;
     email: string;
@@ -32,6 +32,6 @@ export interface AccountView {
     id: string;
     /** 来自登录信息，可能为空 */
     last_name: string;
+    pending_agreements: AccountViewPendingAgreements;
     status: AccountViewStatus;
-    terms_accepted_at: AccountViewTermsAcceptedAt;
 }

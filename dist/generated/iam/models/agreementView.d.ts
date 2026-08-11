@@ -19,20 +19,13 @@
 `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
  * OpenAPI spec version: 1.0.0
  */
-import type { AccountViewEmailVerifiedAt } from './accountViewEmailVerifiedAt.js';
-import type { AccountViewPendingAgreements } from './accountViewPendingAgreements.js';
-import type { AccountViewStatus } from './accountViewStatus.js';
-
-export interface AccountView {
-  created_at: string;
-  email: string;
-  email_verified_at: AccountViewEmailVerifiedAt;
-  /** 来自登录信息，可能为空 */
-  first_name: string;
-  /** 身份提供方签发的 subject */
-  id: string;
-  /** 来自登录信息，可能为空 */
-  last_name: string;
-  pending_agreements: AccountViewPendingAgreements;
-  status: AccountViewStatus;
+import type { AgreementViewType } from './agreementViewType.js';
+export interface AgreementView {
+    /** 从这一刻起注册必须同意这一版 */
+    effective_at: string;
+    type: AgreementViewType;
+    /** 正文发布在哪 */
+    url: string;
+    /** 同意时原样回传这个值 */
+    version: string;
 }
