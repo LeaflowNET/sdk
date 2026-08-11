@@ -1,0 +1,2147 @@
+components:
+  schemas:
+    AcceptInvitationByTokenInputBody:
+      additionalProperties: false
+      properties:
+        token:
+          maxLength: 128
+          minLength: 1
+          type: string
+      required:
+        - token
+      type: object
+    AcceptInvitationOutputBody:
+      additionalProperties: false
+      properties:
+        project:
+          $ref: "#/components/schemas/ProjectView"
+      required:
+        - project
+      type: object
+    AccountView:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        email:
+          type: string
+        email_verified_at:
+          format: date-time
+          type:
+            - string
+            - "null"
+        first_name:
+          description: 来自登录信息，可能为空
+          type: string
+        id:
+          description: 身份提供方签发的 subject
+          type: string
+        last_name:
+          description: 来自登录信息，可能为空
+          type: string
+        status:
+          enum:
+            - ACTIVE
+            - SUSPENDED
+            - BANNED
+            - DELETING
+          type: string
+        terms_accepted_at:
+          format: date-time
+          type:
+            - string
+            - "null"
+      required:
+        - id
+        - email
+        - first_name
+        - last_name
+        - status
+        - email_verified_at
+        - terms_accepted_at
+        - created_at
+      type: object
+    CreateProjectInputBody:
+      additionalProperties: false
+      properties:
+        description:
+          maxLength: 2000
+          type: string
+        name:
+          maxLength: 128
+          minLength: 1
+          type: string
+      required:
+        - name
+      type: object
+    CreateProjectSSHKeyInputBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+        public_key:
+          maxLength: 16384
+          type: string
+      required:
+        - name
+        - public_key
+      type: object
+    CreateRoleInputBody:
+      additionalProperties: false
+      properties:
+        code:
+          description: 小写字母开头，可含数字和下划线。建好之后不能改——成员绑定和邀请都指着它
+          maxLength: 64
+          type: string
+        description:
+          maxLength: 255
+          type: string
+        name:
+          maxLength: 64
+          type: string
+        permissions:
+          description: 权限名。OwnerOnly 的那几条会被拒绝：绑上去也不会生效
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+      required:
+        - code
+        - name
+      type: object
+    CreateUserSSHKeyInputBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+        public_key:
+          description: OpenSSH 格式的公钥。类型和指纹从它算出来，都不可改
+          maxLength: 16384
+          type: string
+      required:
+        - name
+        - public_key
+      type: object
+    Error:
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        meta:
+          additionalProperties: {}
+          type: object
+        status:
+          format: int64
+          type: integer
+      required:
+        - status
+        - message
+      type: object
+    ExchangeTokenOutputBody:
+      additionalProperties: false
+      properties:
+        expires_at:
+          description: 过期时刻。到点之前拿用户身份再换一张，别等第一个 401
+          format: date-time
+          type: string
+        expires_in:
+          description: 还能活多少秒
+          format: int64
+          type: integer
+        grant:
+          $ref: "#/components/schemas/GrantView"
+          description: "**这一份是此刻的快照，不在令牌里，也不要缓存它。** 它只用来决定界面上画什么；真正的判定每次都要重新问"
+        project:
+          $ref: "#/components/schemas/ProjectView"
+          description: 顺带带上项目本身，省掉换完之后立刻再查一次
+        token:
+          description: "项目令牌，放进 Authorization: Bearer 里用"
+          type: string
+        token_type:
+          description: 固定是 Bearer
+          type: string
+      required:
+        - token
+        - token_type
+        - expires_at
+        - expires_in
+        - project
+        - grant
+      type: object
+    GrantView:
+      additionalProperties: false
+      properties:
+        admin:
+          type: boolean
+        owner:
+          type: boolean
+        permissions:
+          description: 持有的全部自定义角色的权限并集，已去重排序
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+        roles:
+          description: 持有的角色编码，只用于展示
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+      required:
+        - owner
+        - admin
+        - permissions
+        - roles
+      type: object
+    IdentityVerificationView:
+      additionalProperties: false
+      properties:
+        reject_reason:
+          type: string
+        status:
+          description: PERSONAL 和 ENTERPRISE 是两类主体而不是两个等级，别拿它们比大小
+          enum:
+            - UNVERIFIED
+            - PENDING
+            - PERSONAL
+            - ENTERPRISE
+            - REJECTED
+          type: string
+        submitted_at:
+          format: date-time
+          type:
+            - string
+            - "null"
+        verified_at:
+          format: date-time
+          type:
+            - string
+            - "null"
+      required:
+        - status
+        - submitted_at
+        - verified_at
+        - reject_reason
+      type: object
+    InvitationView:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        email:
+          type: string
+        expires_at:
+          format: date-time
+          type: string
+        id:
+          format: uuid
+          type: string
+        invited_by:
+          type: string
+        project_id:
+          format: uuid
+          type: string
+        roles:
+          description: 兑现时会授予的角色编码
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+      required:
+        - id
+        - project_id
+        - email
+        - roles
+        - invited_by
+        - expires_at
+        - created_at
+      type: object
+    IssueInvitationInputBody:
+      additionalProperties: false
+      properties:
+        email:
+          format: email
+          maxLength: 320
+          type: string
+        roles:
+          description: 兑现时授予的角色编码。必须是这个项目已经定义的，OWNER 不行
+          items:
+            type: string
+          minItems: 1
+          type:
+            - array
+            - "null"
+      required:
+        - email
+        - roles
+      type: object
+    IssueInvitationOutputBody:
+      additionalProperties: false
+      properties:
+        invitation:
+          $ref: "#/components/schemas/InvitationView"
+        token:
+          description: 兑现用的明文，**只在这一次响应里出现**。库里只有它的哈希，丢了只能撤销重发
+          type: string
+      required:
+        - invitation
+        - token
+      type: object
+    ListInvitationsOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/InvitationView"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
+    ListMembersOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/MemberView"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
+    ListPermissionsOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/PermissionView"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
+    ListProjectsOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/ProjectListItem"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
+    ListRolesOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/RoleView"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
+    ListSSHKeysOutputBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/SSHKeyView"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
+    MemberView:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        created_by:
+          type: string
+        email:
+          type: string
+        first_name:
+          type: string
+        grant:
+          $ref: "#/components/schemas/GrantView"
+        last_name:
+          type: string
+        user_id:
+          type: string
+      required:
+        - user_id
+        - email
+        - first_name
+        - last_name
+        - grant
+        - created_by
+        - created_at
+      type: object
+    MembershipView:
+      additionalProperties: false
+      properties:
+        grant:
+          $ref: "#/components/schemas/GrantView"
+        member:
+          type: boolean
+        project_status:
+          type: string
+        user_status:
+          type: string
+      required:
+        - member
+        - grant
+        - user_status
+        - project_status
+      type: object
+    PermissionView:
+      additionalProperties: false
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+        owner_only:
+          description: 只有项目所有者能做，绑到自定义角色上也不会生效
+          type: boolean
+      required:
+        - name
+        - description
+        - owner_only
+      type: object
+    ProjectListItem:
+      additionalProperties: false
+      properties:
+        grant:
+          $ref: "#/components/schemas/GrantView"
+        project:
+          $ref: "#/components/schemas/ProjectView"
+      required:
+        - project
+        - grant
+      type: object
+    ProjectView:
+      additionalProperties: false
+      properties:
+        ban_reason:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        created_by:
+          type: string
+        deleted_at:
+          description: 盖上墓碑的那一刻
+          format: date-time
+          type:
+            - string
+            - "null"
+        description:
+          type: string
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        overdue_at:
+          description: 欠费的起始时间
+          format: date-time
+          type:
+            - string
+            - "null"
+        status:
+          enum:
+            - ACTIVE
+            - SUSPENDED
+            - BANNED
+            - DELETING
+            - DELETED
+          type: string
+        status_reason:
+          description: 给人看的，不参与任何查询
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - status
+        - status_reason
+        - ban_reason
+        - overdue_at
+        - deleted_at
+        - created_by
+        - created_at
+        - updated_at
+      type: object
+    RenameProjectSSHKeyInputBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - name
+      type: object
+    RenameUserSSHKeyInputBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - name
+      type: object
+    RoleView:
+      additionalProperties: false
+      properties:
+        builtin:
+          description: 内置角色不可删、不可改权限：OWNER 和 ADMIN 的语义写在代码里
+          type: boolean
+        code:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        permissions:
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+        updated_at:
+          format: date-time
+          type: string
+      required:
+        - code
+        - name
+        - description
+        - builtin
+        - permissions
+        - created_at
+        - updated_at
+      type: object
+    SSHKeyView:
+      additionalProperties: false
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        fingerprint:
+          type: string
+        id:
+          format: uuid
+          type: string
+        key_type:
+          type: string
+        name:
+          type: string
+        public_key:
+          type: string
+        status:
+          enum:
+            - ACTIVE
+            - REVOKED
+          type: string
+      required:
+        - id
+        - name
+        - public_key
+        - fingerprint
+        - key_type
+        - status
+        - created_at
+      type: object
+    SetMemberRolesInputBody:
+      additionalProperties: false
+      properties:
+        roles:
+          description: 这个人应当持有的**全部**角色编码。OWNER 不能出现在这里
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+      required:
+        - roles
+      type: object
+    SubmitIdentityVerificationInputBody:
+      additionalProperties: false
+      properties:
+        id_number:
+          description: 证件号码。同上，而且同一个号码不能挂在两个账号上
+          maxLength: 64
+          minLength: 6
+          type: string
+        real_name:
+          description: 真实姓名。敏感个人信息，加密入库，任何接口都不会再把它读出来
+          maxLength: 128
+          type: string
+      required:
+        - real_name
+        - id_number
+      type: object
+    TransferOwnershipInputBody:
+      additionalProperties: false
+      properties:
+        to_user_id:
+          description: 接手的人必须已经是这个项目的成员
+          maxLength: 255
+          type: string
+      required:
+        - to_user_id
+      type: object
+    TransferOwnershipOutputBody:
+      additionalProperties: false
+      properties:
+        from:
+          $ref: "#/components/schemas/MemberView"
+          description: 原所有者。他保留其余的角色——转让的是所有权，不是把人踢出去
+        to:
+          $ref: "#/components/schemas/MemberView"
+      required:
+        - from
+        - to
+      type: object
+    UpdateProjectInputBody:
+      additionalProperties: false
+      properties:
+        description:
+          maxLength: 2000
+          type: string
+        name:
+          maxLength: 128
+          type: string
+      type: object
+    UpdateRoleInputBody:
+      additionalProperties: false
+      properties:
+        description:
+          maxLength: 255
+          type: string
+        name:
+          maxLength: 64
+          type: string
+        permissions:
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+      required:
+        - name
+      type: object
+info:
+  description: |-
+    用户和项目自己用的接口：账号、项目、成员、角色、邀请、SSH 公钥。
+
+    ## 两种令牌
+
+    1. 在 auth.leaflow.net 登录，拿到**账号令牌**；
+    2. 带着它调 `GET /api/v1/projects` 列出参与的项目。首次调用会自动登记账号，姓名与邮箱取自登录信息；
+    3. 选定项目后调 `POST /api/v1/projects/{projectId}/token` 换取**项目令牌**，后续请求一律使用它。
+
+    两种令牌都放在 `Authorization: Bearer` 里。
+
+    项目令牌过期后重新执行第 3 步；账号令牌过期则先在 auth.leaflow.net 续期。没有单独的项目令牌续期接口。
+
+    ## 成员关系只给事实
+
+    `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
+  title: Leaflow IAM 用户 API
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /api/v1/me:
+    get:
+      operationId: get-account
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看当前账号
+      tags:
+        - Account
+  /api/v1/me/identity-verification:
+    get:
+      description: 没交过材料时答 UNVERIFIED，不是 404。姓名和证件号不会出现在任何响应里。
+      operationId: get-identity-verification
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdentityVerificationView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看实名核验状态
+      tags:
+        - Account
+    post:
+      description: 已经在等人审的和已经核过的都会被拒。被驳回之后可以改了再交。
+      operationId: submit-identity-verification
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitIdentityVerificationInputBody"
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdentityVerificationView"
+          description: Accepted
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 提交实名核验材料
+      tags:
+        - Account
+  /api/v1/me/invitations:
+    get:
+      description: 按当前账号的邮箱查，因为要约是寄给一个地址的——被邀请的人当时可能还没注册。
+      operationId: list-my-invitations
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - description: 这一页最多返回多少条，0 表示用默认值
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 50
+            description: 这一页最多返回多少条，0 表示用默认值
+            format: int64
+            maximum: 100
+            minimum: 0
+            type: integer
+        - description: 跳过多少条
+          explode: false
+          in: query
+          name: offset
+          schema:
+            description: 跳过多少条
+            format: int64
+            minimum: 0
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListInvitationsOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出寄给我的要约
+      tags:
+        - Invitation
+  /api/v1/me/invitations/accept:
+    post:
+      description: token 对不上和这份要约已经不作数了是同一个回答：持有者对这两种情况能做的事完全一样，分开报会把这个接口变成一个可以拿来试 token 的探针。
+      operationId: accept-invitation-by-token
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AcceptInvitationByTokenInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AcceptInvitationOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 顺着邀请链接接受
+      tags:
+        - Invitation
+  /api/v1/me/invitations/{invitationId}/accept:
+    post:
+      description: 不需要 token：token 证明的是「你就是这份要约寄给的那个人」，而当前账号的邮箱对得上这份要约，证明的是同一件事。
+      operationId: accept-invitation
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: invitationId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AcceptInvitationOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 接受一份列在我名下的要约
+      tags:
+        - Invitation
+  /api/v1/me/ssh-keys:
+    get:
+      operationId: list-my-ssh-keys
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - description: 这一页最多返回多少条，0 表示用默认值
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 50
+            description: 这一页最多返回多少条，0 表示用默认值
+            format: int64
+            maximum: 100
+            minimum: 0
+            type: integer
+        - description: 跳过多少条
+          explode: false
+          in: query
+          name: offset
+          schema:
+            description: 跳过多少条
+            format: int64
+            minimum: 0
+            type: integer
+        - description: 不传时两种都返回
+          explode: false
+          in: query
+          name: status
+          schema:
+            description: 不传时两种都返回
+            enum:
+              - ACTIVE
+              - REVOKED
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSSHKeysOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出我的公钥
+      tags:
+        - SSHKey
+    post:
+      operationId: create-my-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserSSHKeyInputBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 添加一把我的公钥
+      tags:
+        - SSHKey
+  /api/v1/me/ssh-keys/{keyId}:
+    delete:
+      description: 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
+      operationId: revoke-my-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 吊销我的一把公钥
+      tags:
+        - SSHKey
+    get:
+      operationId: get-my-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看我的一把公钥
+      tags:
+        - SSHKey
+    patch:
+      description: 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
+      operationId: rename-my-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenameUserSSHKeyInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 给我的公钥改名
+      tags:
+        - SSHKey
+  /api/v1/me/terms:
+    post:
+      description: 幂等：已经同意过的不会被推到今天——那一列是法务要的证据，说的是他哪一次同意的。
+      operationId: accept-terms
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 同意服务条款
+      tags:
+        - Account
+  /api/v1/permissions:
+    get:
+      description: "**只有 IAM 这一份。** 别的服务的操作不在这里——权限目录是各服务各自声明、由 各个服务自己声明的，IAM 认识它们就等于要跟着每个下游一起发版。"
+      operationId: list-permissions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPermissionsOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出 IAM 自己声明的权限
+      tags:
+        - Project
+  /api/v1/projects:
+    get:
+      description: 默认不含已删除的项目——那些是已经不存在了的东西，要看必须明确用 status=DELETED 点名。
+      operationId: list-projects
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - description: 这一页最多返回多少条，0 表示用默认值
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 50
+            description: 这一页最多返回多少条，0 表示用默认值
+            format: int64
+            maximum: 100
+            minimum: 0
+            type: integer
+        - description: 跳过多少条
+          explode: false
+          in: query
+          name: offset
+          schema:
+            description: 跳过多少条
+            format: int64
+            minimum: 0
+            type: integer
+        - description: 按名称或描述模糊匹配
+          explode: false
+          in: query
+          name: keyword
+          schema:
+            description: 按名称或描述模糊匹配
+            maxLength: 128
+            type: string
+        - description: 按对外状态过滤。不传时不返回已删除的项目
+          explode: false
+          in: query
+          name: status
+          schema:
+            description: 按对外状态过滤。不传时不返回已删除的项目
+            enum:
+              - ACTIVE
+              - SUSPENDED
+              - BANNED
+              - DELETING
+              - DELETED
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListProjectsOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出我参与的项目
+      tags:
+        - Project
+    post:
+      description: 建的人就是所有者。项目会连带预置 OWNER、ADMIN 两个内置角色和一个空权限的 member 角色。
+      operationId: create-project
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectInputBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListItem"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 建一个项目
+      tags:
+        - Project
+  /api/v1/projects/{projectId}:
+    delete:
+      description: 只有所有者能做，而且没有回头路：项目进入 DELETING，各服务开始清掉它下面的资源。项目行本身永远留着——查一个删掉的项目查得到，答案是它没了，而不是一个 404。
+      operationId: delete-project
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListItem"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 删除项目
+      tags:
+        - Project
+    get:
+      description: 在项目里就看得到，不需要额外的读权限。
+      operationId: get-project
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListItem"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看一个项目
+      tags:
+        - Project
+    patch:
+      operationId: update-project
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListItem"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 改项目的名称与描述
+      tags:
+        - Project
+  /api/v1/projects/{projectId}/invitations:
+    get:
+      description: 在项目里就看得到，和成员列表同一条规则：谁被请了也是「这个项目有谁」的一部分。
+      operationId: list-project-invitations
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - description: 这一页最多返回多少条，0 表示用默认值
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 50
+            description: 这一页最多返回多少条，0 表示用默认值
+            format: int64
+            maximum: 100
+            minimum: 0
+            type: integer
+        - description: 跳过多少条
+          explode: false
+          in: query
+          name: offset
+          schema:
+            description: 跳过多少条
+            format: int64
+            minimum: 0
+            type: integer
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListInvitationsOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出这个项目还在等的要约
+      tags:
+        - Invitation
+    post:
+      description: 要约站 14 天。有上限是因为里面那些角色是按发出那一刻的项目校验的，一份活得比它所依据的安排还久的要约会授出现在没人打算授的权限。
+      operationId: issue-invitation
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssueInvitationInputBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueInvitationOutputBody"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 发出一份邀请
+      tags:
+        - Invitation
+  /api/v1/projects/{projectId}/invitations/{invitationId}:
+    delete:
+      operationId: revoke-invitation
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: invitationId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 撤回一份还没被兑现的要约
+      tags:
+        - Invitation
+  /api/v1/projects/{projectId}/members:
+    get:
+      operationId: list-members
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - description: 这一页最多返回多少条，0 表示用默认值
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 50
+            description: 这一页最多返回多少条，0 表示用默认值
+            format: int64
+            maximum: 100
+            minimum: 0
+            type: integer
+        - description: 跳过多少条
+          explode: false
+          in: query
+          name: offset
+          schema:
+            description: 跳过多少条
+            format: int64
+            minimum: 0
+            type: integer
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: 按用户 ID、邮箱或姓名模糊匹配
+          explode: false
+          in: query
+          name: keyword
+          schema:
+            description: 按用户 ID、邮箱或姓名模糊匹配
+            maxLength: 255
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListMembersOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出项目成员
+      tags:
+        - Member
+  /api/v1/projects/{projectId}/members/{userId}:
+    delete:
+      description: 移除别人要 iam:members.manage；退出只要求自己在这个项目里——任何人都可能被拉进一个项目，那么任何人就得能出去。所有者两条路都不行，先转移所有权。
+      operationId: remove-member
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            maxLength: 255
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 移除成员，或者自己退出
+      tags:
+        - Member
+  /api/v1/projects/{projectId}/members/{userId}/roles:
+    put:
+      description: 整体替换而不是增删：调用方拿到的就是一份完整清单，让它自己算差集只会让「我以为我取消了那个角色」这种事变得可能。所有者身上的 OWNER 不受影响。
+      operationId: set-member-roles
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            maxLength: 255
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetMemberRolesInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 设置一个成员持有的角色
+      tags:
+        - Member
+  /api/v1/projects/{projectId}/membership:
+    get:
+      description: 只给事实，不给结论：这里没有 allowed，因为 IAM 不知道你要做的是哪个操作——哪个操作需要哪条权限那份目录属于各个服务，判断在它们那边。
+      operationId: get-project-membership
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看我在这个项目里的身份
+      tags:
+        - Project
+  /api/v1/projects/{projectId}/roles:
+    get:
+      operationId: list-roles
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListRolesOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出项目里的角色
+      tags:
+        - Role
+    post:
+      operationId: create-role
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoleInputBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleView"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 建一个角色
+      tags:
+        - Role
+  /api/v1/projects/{projectId}/roles/{code}:
+    delete:
+      description: 还有人持有时会被拒。级联摘掉那些绑定等于把每个持有者悄悄降级——请求里没有一个字说了这件事，事后也查不到。
+      operationId: delete-role
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: code
+          required: true
+          schema:
+            maxLength: 64
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 删一个角色
+      tags:
+        - Role
+    get:
+      operationId: get-role
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: code
+          required: true
+          schema:
+            maxLength: 64
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看一个角色
+      tags:
+        - Role
+    put:
+      description: 名称、描述和权限整体替换。改完会在同一个事务里重新编译持有它的每一个成员——角色的权限变了，就是那些人的权限变了，而下一次请求是拿编译结果判定的。
+      operationId: update-role
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: code
+          required: true
+          schema:
+            maxLength: 64
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoleInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 改一个角色
+      tags:
+        - Role
+  /api/v1/projects/{projectId}/ssh-keys:
+    get:
+      operationId: list-project-ssh-keys
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - description: 这一页最多返回多少条，0 表示用默认值
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 50
+            description: 这一页最多返回多少条，0 表示用默认值
+            format: int64
+            maximum: 100
+            minimum: 0
+            type: integer
+        - description: 跳过多少条
+          explode: false
+          in: query
+          name: offset
+          schema:
+            description: 跳过多少条
+            format: int64
+            minimum: 0
+            type: integer
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - explode: false
+          in: query
+          name: status
+          schema:
+            enum:
+              - ACTIVE
+              - REVOKED
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSSHKeysOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出项目的公钥
+      tags:
+        - SSHKey
+    post:
+      operationId: create-project-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectSSHKeyInputBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 给项目添加一把公钥
+      tags:
+        - SSHKey
+  /api/v1/projects/{projectId}/ssh-keys/{keyId}:
+    delete:
+      operationId: revoke-project-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 吊销项目的一把公钥
+      tags:
+        - SSHKey
+    get:
+      operationId: get-project-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看项目的一把公钥
+      tags:
+        - SSHKey
+    patch:
+      operationId: rename-project-ssh-key
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - in: path
+          name: keyId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenameProjectSSHKeyInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SSHKeyView"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 给项目的公钥改名
+      tags:
+        - SSHKey
+  /api/v1/projects/{projectId}/token:
+    post:
+      description: |-
+        选定一个项目后，用账号令牌换取该项目的令牌。
+
+        **只接受 auth.leaflow.net 签发的账号令牌，不接受项目令牌。** 项目令牌过期后，先在 auth.leaflow.net 续期账号令牌，再重新调用这个接口。
+
+        换取时会确认账号可用、项目存在，且**调用者是该项目的成员**。非成员无法换取。
+
+        令牌只表明身份（用户与项目），**不包含权限**：权限在每次请求时实时判定，所以角色调整立即生效，不必等待令牌过期。
+
+        项目处于停用、封禁或删除中时**仍可换取令牌**：这些状态限制的是写入，不影响查看项目当前状况。
+      operationId: exchange-project-token
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExchangeTokenOutputBody"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 换一张项目令牌
+      tags:
+        - ProjectToken
+  /api/v1/projects/{projectId}/transfer-ownership:
+    post:
+      description: OWNER 唯一的移动方式，只有所有者本人能发起——能像普通角色那样授予的话，任何管理员都可以顺手把自己变成所有者。
+      operationId: transfer-project-ownership
+      parameters:
+        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
+            type: string
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferOwnershipInputBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferOwnershipOutputBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 转移项目所有权
+      tags:
+        - Member
+
