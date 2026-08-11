@@ -1,11 +1,8 @@
-// 给生成代码里的相对 import 补上 .js 后缀。
+// Adds .js extensions to relative imports in the generated sources.
 //
-// 这个包是 ESM（package.json 的 "type": "module"），而 ESM 的解析里 './http' 就是
-// './http'，不会去试 './http.js'——Node 直接 ERR_MODULE_NOT_FOUND。orval 生成的
-// import 一律不带后缀，tsc 也不会替你加，所以构建产物在打包器里能用、在 Node 里一跑就
-// 炸，而两者的差别通常要到部署之后才被发现。
-//
-// 手写的 src/index.ts 里后缀是写死的（见 build-index.mjs），这里补的是生成出来的那部分。
+// This package is ESM. Node's ESM resolver does not try './http.js' for './http',
+// so extensionless imports work under a bundler but fail at runtime under Node.
+// orval emits them without extensions and tsc does not add them.
 import {
     existsSync,
     readdirSync,
@@ -17,7 +14,7 @@ import { dirname, join } from 'node:path';
 
 const ROOT = './src/generated';
 
-/** walk 列出目录下所有 .ts 文件。 */
+/** walk lists every .ts file under a directory. */
 function walk(dir) {
     return readdirSync(dir).flatMap((name) => {
         const path = join(dir, name);
@@ -30,8 +27,8 @@ function walk(dir) {
     });
 }
 
-// 只动相对路径：包名（axios 之类）由 node_modules 解析，加后缀反而会找不到。已经带后缀的
-// 也跳过，避免重复执行时变成 .js.js。
+// Relative paths only: bare specifiers resolve through node_modules. Already
+// suffixed paths are skipped so repeated runs stay idempotent.
 const RELATIVE = /(from\s+|import\s+)(['"])(\.[^'"]*?)(['"])/g;
 
 let touched = 0;
@@ -45,8 +42,7 @@ for (const file of walk(ROOT)) {
                 return match;
             }
 
-            // 目录要补成 /index.js。`export * from './models'` 在打包器里指的是
-            // models/index.ts，加成 './models.js' 就指向了一个不存在的文件。
+            // Directories become /index.js: './models' means models/index.ts.
             const isDirectory = existsSync(join(dirname(file), target))
                 && statSync(join(dirname(file), target)).isDirectory();
 
@@ -62,4 +58,4 @@ for (const file of walk(ROOT)) {
     }
 }
 
-console.log(`补后缀：${touched} 个文件`);
+console.log(`extensions added: ${touched} files`);

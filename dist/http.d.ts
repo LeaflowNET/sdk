@@ -1,20 +1,20 @@
 import { type AxiosRequestConfig } from 'axios';
-/** TokenProvider 返回当前使用的项目令牌；返回空字符串表示本次请求不携带令牌。 */
+/** TokenProvider returns the current project token; an empty string sends no token. */
 export type TokenProvider = () => string | Promise<string>;
 export interface ClientOptions {
-    /** baseURL 是 API 地址，例如 https://api.leaflow.net。 */
+    /** baseURL is the API address, for example https://api.leaflow.net. */
     baseURL: string;
     /**
-     * getToken 在每次请求前调用。
+     * getToken is called before every request.
      *
-     * 每次都调用而非初始化时取一次：项目令牌有有效期，切换项目时也会更换。缓存旧值会导致
-     * 切换项目后请求仍携带上一个项目的令牌。
+     * Called each time rather than read once at setup: the project token expires and
+     * is replaced when the active project changes.
      */
     getToken?: TokenProvider;
-    /** timeout 单位毫秒。 */
+    /** timeout in milliseconds. */
     timeout?: number;
 }
-/** configure 初始化 SDK，使用前必须调用一次。 */
+/** configure initialises the SDK. Call it once before use. */
 export declare function configure(options: ClientOptions): void;
-/** request 是生成代码统一使用的请求入口。 */
+/** request is the entry point used by the generated code. */
 export declare function request<T>(config: AxiosRequestConfig): Promise<T>;

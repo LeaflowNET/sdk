@@ -1,11 +1,12 @@
-// 生成的客户端统一经由此处发起请求。
+// Every generated client issues its requests through this module.
 //
-// 集中处理凭据：项目令牌有有效期，且切换项目时会更换。若由各调用点自行设置 Authorization
-// 头，令牌更新逻辑将分散在各处，遗漏之处会表现为间歇性的 401。
+// Credentials are handled in one place: the project token expires and changes when
+// the active project changes, so setting the Authorization header at each call site
+// would scatter the refresh logic and surface as intermittent 401s.
 import axios from 'axios';
 let instance;
 let provider;
-/** configure 初始化 SDK，使用前必须调用一次。 */
+/** configure initialises the SDK. Call it once before use. */
 export function configure(options) {
     provider = options.getToken;
     instance = axios.create({
@@ -13,10 +14,10 @@ export function configure(options) {
         timeout: options.timeout ?? 30_000,
     });
 }
-/** request 是生成代码统一使用的请求入口。 */
+/** request is the entry point used by the generated code. */
 export async function request(config) {
     if (!instance) {
-        throw new Error('SDK 未初始化：请先调用 configure({ baseURL })');
+        throw new Error('SDK not initialised: call configure({ baseURL }) first');
     }
     const token = provider ? await provider() : '';
     const response = await instance.request({

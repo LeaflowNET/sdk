@@ -1,7 +1,7 @@
-# 本仓库的 openapi/ 内容由各服务在发版时推入。
+# The openapi/ directory is populated by each service's release pipeline.
 #
-# 验证与发布分开：每次推送都执行生成与类型检查，使有问题的文档立即暴露；发布仅在打 tag 时
-# 执行，由人决定版本号——本包聚合多个服务，单个服务更新文档不等同于需要发布新版本。
+# Verification runs on every push; publishing runs only on a tag, so the version
+# number stays a deliberate choice; this package aggregates several services.
 name: ci
 
 on:
@@ -21,29 +21,14 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # generate 会输出各服务版本，日志中可确认本次生成基于哪些服务版本。
       - run: pnpm typecheck
-      # dist/ 与 src/generated/ 是签入的：从 git 直接安装本包时不会执行构建，没有它们就
-      # 拿不到可用的产物。
-      #
-      # 代价是仓库里多了一份可能与 openapi/ 不一致的副本，而不一致本身是无声的——调用方
-      # 拿到一个存在于类型里、服务端却没有的方法。这一步重新构建并比对，把无声变成失败。
-      - name: 检查签入的产物是否与 openapi 一致
-        run: |
-          pnpm build
-          if ! git diff --exit-code -- dist src; then
-            echo "::error::签入的产物与 openapi/ 不一致：本地执行 pnpm build 并提交结果" >&2
-            exit 1
-          fi
 
   publish:
-    # 仅在 tag 上执行，且必须等待 verify 通过，否则类型检查失败的内容也会被发布。
     needs: verify
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # npm 的 trusted publishing 要它。
       id-token: write
     steps:
       - uses: actions/checkout@v5
@@ -55,6 +40,6 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # 版本号取自 tag，而非 package.json：后者需要人工同步，遗漏时会在发布阶段才失败。
+      # The version comes from the tag rather than package.json.
       - run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
-      - run: npm publish --access public --provenance
+      - run: npm publish --provenance

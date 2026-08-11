@@ -1,7 +1,7 @@
 {
   "name": "@leaflow/sdk",
   "version": "0.1.0",
-  "description": "Leaflow 全平台用户侧 API 的 TypeScript SDK",
+  "description": "TypeScript SDK for the Leaflow platform APIs",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
