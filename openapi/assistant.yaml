@@ -27,6 +27,22 @@ components:
         - width
         - height
       type: object
+    BindingListResponseBody:
+      additionalProperties: false
+      properties:
+        bindings:
+          items:
+            $ref: "#/components/schemas/BindingResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - bindings
+        - total
+      type: object
     BindingResource:
       additionalProperties: false
       properties:
@@ -58,6 +74,22 @@ components:
         - status
         - verifiedAt
         - createdAt
+      type: object
+    ChannelListResponseBody:
+      additionalProperties: false
+      properties:
+        channels:
+          items:
+            $ref: "#/components/schemas/ChannelResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - channels
+        - total
       type: object
     ChannelResource:
       additionalProperties: false
@@ -392,86 +424,6 @@ components:
         - reverted
         - model
       type: object
-    ListBindingsResponseBody:
-      additionalProperties: false
-      properties:
-        bindings:
-          items:
-            $ref: "#/components/schemas/BindingResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - bindings
-        - total
-      type: object
-    ListChannelsResponseBody:
-      additionalProperties: false
-      properties:
-        channels:
-          items:
-            $ref: "#/components/schemas/ChannelResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - channels
-        - total
-      type: object
-    ListModelsResponseBody:
-      additionalProperties: false
-      properties:
-        models:
-          items:
-            $ref: "#/components/schemas/ModelResource"
-          type:
-            - array
-            - "null"
-      required:
-        - models
-      type: object
-    ListPlatformsResponseBody:
-      additionalProperties: false
-      properties:
-        platforms:
-          items:
-            $ref: "#/components/schemas/PlatformResource"
-          type:
-            - array
-            - "null"
-      required:
-        - platforms
-      type: object
-    ListRejectionsResponseBody:
-      additionalProperties: false
-      properties:
-        rejections:
-          items:
-            $ref: "#/components/schemas/Entry"
-          type:
-            - array
-            - "null"
-      required:
-        - rejections
-      type: object
-    ListThreadsResponseBody:
-      additionalProperties: false
-      properties:
-        threads:
-          items:
-            $ref: "#/components/schemas/ThreadSummaryResource"
-          type:
-            - array
-            - "null"
-      required:
-        - threads
-      type: object
     LoginResource:
       additionalProperties: false
       properties:
@@ -496,6 +448,18 @@ components:
         - qrcodeData
         - reason
         - expiresAt
+      type: object
+    ModelListResponseBody:
+      additionalProperties: false
+      properties:
+        models:
+          items:
+            $ref: "#/components/schemas/ModelResource"
+          type:
+            - array
+            - "null"
+      required:
+        - models
       type: object
     ModelResource:
       additionalProperties: false
@@ -522,6 +486,18 @@ components:
         - contextWindow
         - reasoningTiers
         - inputModalities
+      type: object
+    PlatformListResponseBody:
+      additionalProperties: false
+      properties:
+        platforms:
+          items:
+            $ref: "#/components/schemas/PlatformResource"
+          type:
+            - array
+            - "null"
+      required:
+        - platforms
       type: object
     PlatformResource:
       additionalProperties: false
@@ -565,6 +541,18 @@ components:
         - question
         - choices
       type: object
+    RejectionListResponseBody:
+      additionalProperties: false
+      properties:
+        rejections:
+          items:
+            $ref: "#/components/schemas/Entry"
+          type:
+            - array
+            - "null"
+      required:
+        - rejections
+      type: object
     RevertRequestBody:
       additionalProperties: false
       properties:
@@ -575,7 +563,7 @@ components:
       required:
         - ordinal
       type: object
-    RevertResponseBody:
+    RevertedCountResponseBody:
       additionalProperties: false
       properties:
         reverted:
@@ -583,14 +571,6 @@ components:
           type: integer
       required:
         - reverted
-      type: object
-    RotateSecretResponseBody:
-      additionalProperties: false
-      properties:
-        webhookSecret:
-          type: string
-      required:
-        - webhookSecret
       type: object
     SendMessageRequestBody:
       additionalProperties: false
@@ -607,14 +587,6 @@ components:
       required:
         - text
       type: object
-    SendMessageResponseBody:
-      additionalProperties: false
-      properties:
-        turnId:
-          type: string
-      required:
-        - turnId
-      type: object
     StreamResource:
       additionalProperties: false
       properties:
@@ -625,6 +597,18 @@ components:
       required:
         - path
         - ticket
+      type: object
+    ThreadListResponseBody:
+      additionalProperties: false
+      properties:
+        threads:
+          items:
+            $ref: "#/components/schemas/ThreadSummaryResource"
+          type:
+            - array
+            - "null"
+      required:
+        - threads
       type: object
     ThreadSummaryResource:
       additionalProperties: false
@@ -662,6 +646,14 @@ components:
         - archived
         - unread
         - approvalMode
+      type: object
+    TurnIDResponseBody:
+      additionalProperties: false
+      properties:
+        turnId:
+          type: string
+      required:
+        - turnId
       type: object
     TurnResource:
       additionalProperties: false
@@ -760,6 +752,14 @@ components:
       required:
         - kind
         - turnId
+      type: object
+    WebhookSecretResponseBody:
+      additionalProperties: false
+      properties:
+        webhookSecret:
+          type: string
+      required:
+        - webhookSecret
       type: object
 info:
   description: |-
@@ -893,7 +893,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListBindingsResponseBody"
+                $ref: "#/components/schemas/BindingListResponseBody"
           description: OK
         default:
           content:
@@ -977,7 +977,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListChannelsResponseBody"
+                $ref: "#/components/schemas/ChannelListResponseBody"
           description: OK
         default:
           content:
@@ -1186,7 +1186,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListRejectionsResponseBody"
+                $ref: "#/components/schemas/RejectionListResponseBody"
           description: OK
         default:
           content:
@@ -1220,7 +1220,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RotateSecretResponseBody"
+                $ref: "#/components/schemas/WebhookSecretResponseBody"
           description: OK
         default:
           content:
@@ -1282,7 +1282,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListModelsResponseBody"
+                $ref: "#/components/schemas/ModelListResponseBody"
           description: OK
         default:
           content:
@@ -1310,7 +1310,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListPlatformsResponseBody"
+                $ref: "#/components/schemas/PlatformListResponseBody"
           description: OK
         default:
           content:
@@ -1352,7 +1352,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListThreadsResponseBody"
+                $ref: "#/components/schemas/ThreadListResponseBody"
           description: OK
         default:
           content:
@@ -1563,7 +1563,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SendMessageResponseBody"
+                $ref: "#/components/schemas/TurnIDResponseBody"
           description: Accepted
         default:
           content:
@@ -1670,7 +1670,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RevertResponseBody"
+                $ref: "#/components/schemas/RevertedCountResponseBody"
           description: OK
         default:
           content:
