@@ -253,6 +253,18 @@ components:
         - name
         - cidr
       type: object
+    DiskListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/DiskResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     DiskResource:
       additionalProperties: false
       properties:
@@ -306,6 +318,18 @@ components:
         - device
         - created_at
       type: object
+    DiskTypeListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/DiskTypeResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     DiskTypeResource:
       additionalProperties: false
       properties:
@@ -348,30 +372,6 @@ components:
         - iops_display
         - throughput_display
       type: object
-    DiskTypesResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/DiskTypeResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    DisksResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/DiskResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
     Error:
       additionalProperties: false
       properties:
@@ -388,6 +388,18 @@ components:
       required:
         - status
         - message
+      type: object
+    FloatingIPListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/FloatingIPResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
       type: object
     FloatingIPResource:
       additionalProperties: false
@@ -438,12 +450,32 @@ components:
         - detached_at
         - created_at
       type: object
-    FloatingIPsResponseBody:
+    IPv6ResponseBody:
+      additionalProperties: false
+      properties:
+        cidr:
+          description: 已分配的 /64 前缀，未启用时为空
+          type: string
+        enabled:
+          type: boolean
+        status:
+          description: 为 active 时表示 IPv6 已完全可用
+          enum:
+            - pending
+            - active
+            - draining
+          type: string
+      required:
+        - enabled
+        - cidr
+        - status
+      type: object
+    ImageListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/FloatingIPResource"
+            $ref: "#/components/schemas/ImageResource"
           type:
             - array
             - "null"
@@ -481,12 +513,12 @@ components:
         - min_disk_gb
         - min_ram_mb
       type: object
-    ImagesResponseBody:
+    InstanceListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/ImageResource"
+            $ref: "#/components/schemas/InstanceResource"
           type:
             - array
             - "null"
@@ -548,6 +580,18 @@ components:
         - created_at
         - updated_at
       type: object
+    InstanceTypeListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/InstanceTypeResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     InstanceTypeResource:
       additionalProperties: false
       properties:
@@ -585,50 +629,6 @@ components:
         - max_ports
         - max_floating_ips
         - max_bandwidth_mbps
-      type: object
-    InstanceTypesResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/InstanceTypeResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    InstancesResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/InstanceResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    Ipv6ResponseBody:
-      additionalProperties: false
-      properties:
-        cidr:
-          description: 已分配的 /64 前缀，未启用时为空
-          type: string
-        enabled:
-          type: boolean
-        status:
-          description: 为 active 时表示 IPv6 已完全可用
-          enum:
-            - pending
-            - active
-            - draining
-          type: string
-      required:
-        - enabled
-        - cidr
-        - status
       type: object
     LaunchInstanceRequestBody:
       additionalProperties: false
@@ -688,6 +688,18 @@ components:
       required:
         - cidr
       type: object
+    PortListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/PortResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     PortResource:
       additionalProperties: false
       properties:
@@ -732,12 +744,12 @@ components:
         - private_ip
         - ipv6_address
       type: object
-    PortsResponseBody:
+    PrivateNetworkListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/PortResource"
+            $ref: "#/components/schemas/PrivateNetworkResource"
           type:
             - array
             - "null"
@@ -791,18 +803,6 @@ components:
         - created_at
         - updated_at
       type: object
-    PrivateNetworksResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/PrivateNetworkResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
     RebuildInstanceRequestBody:
       additionalProperties: false
       properties:
@@ -829,6 +829,18 @@ components:
         - instance
         - password
       type: object
+    RegionListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/RegionResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     RegionResource:
       additionalProperties: false
       properties:
@@ -842,18 +854,6 @@ components:
         - code
         - name
         - country_code
-      type: object
-    RegionsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/RegionResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
       type: object
     RenameDiskRequestBody:
       additionalProperties: false
@@ -894,6 +894,18 @@ components:
       required:
         - instance_type_sku
       type: object
+    RouteListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/RouteResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     RouteResource:
       additionalProperties: false
       properties:
@@ -916,12 +928,12 @@ components:
         - description
         - created_at
       type: object
-    RoutesResponseBody:
+    SecurityGroupListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/RouteResource"
+            $ref: "#/components/schemas/SecurityGroupResource"
           type:
             - array
             - "null"
@@ -955,12 +967,12 @@ components:
         - is_default
         - created_at
       type: object
-    SecurityGroupsResponseBody:
+    SecurityRuleListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SecurityGroupResource"
+            $ref: "#/components/schemas/SecurityRuleResource"
           type:
             - array
             - "null"
@@ -1019,18 +1031,6 @@ components:
         - description
         - created_at
       type: object
-    SecurityRulesResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/SecurityRuleResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
     SetBandwidthRequestBody:
       additionalProperties: false
       properties:
@@ -1041,6 +1041,18 @@ components:
           type: integer
       required:
         - mbps
+      type: object
+    SnapshotListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/SnapshotResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
       type: object
     SnapshotResource:
       additionalProperties: false
@@ -1078,12 +1090,12 @@ components:
         - region_code
         - created_at
       type: object
-    SnapshotsResponseBody:
+    SubnetListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SnapshotResource"
+            $ref: "#/components/schemas/SubnetResource"
           type:
             - array
             - "null"
@@ -1121,12 +1133,12 @@ components:
         - cidr
         - gateway_ip
       type: object
-    SubnetsResponseBody:
+    ZoneListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
-            $ref: "#/components/schemas/SubnetResource"
+            $ref: "#/components/schemas/ZoneResource"
           type:
             - array
             - "null"
@@ -1143,18 +1155,6 @@ components:
       required:
         - code
         - name
-      type: object
-    ZonesResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/ZoneResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
       type: object
 info:
   description: |-
@@ -1204,7 +1204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DiskTypesResponseBody"
+                $ref: "#/components/schemas/DiskTypeListResponseBody"
           description: OK
         default:
           content:
@@ -1246,7 +1246,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DisksResponseBody"
+                $ref: "#/components/schemas/DiskListResponseBody"
           description: OK
         default:
           content:
@@ -1448,7 +1448,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FloatingIPsResponseBody"
+                $ref: "#/components/schemas/FloatingIPListResponseBody"
           description: OK
         default:
           content:
@@ -1693,7 +1693,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ImagesResponseBody"
+                $ref: "#/components/schemas/ImageListResponseBody"
           description: OK
         default:
           content:
@@ -1727,7 +1727,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstanceTypesResponseBody"
+                $ref: "#/components/schemas/InstanceTypeListResponseBody"
           description: OK
         default:
           content:
@@ -1754,7 +1754,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InstancesResponseBody"
+                $ref: "#/components/schemas/InstanceListResponseBody"
           description: OK
         default:
           content:
@@ -2001,7 +2001,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DisksResponseBody"
+                $ref: "#/components/schemas/DiskListResponseBody"
           description: OK
         default:
           content:
@@ -2232,7 +2232,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PortsResponseBody"
+                $ref: "#/components/schemas/PortListResponseBody"
           description: OK
         default:
           content:
@@ -2486,7 +2486,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PortsResponseBody"
+                $ref: "#/components/schemas/PortListResponseBody"
           description: OK
         default:
           content:
@@ -2584,7 +2584,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PrivateNetworksResponseBody"
+                $ref: "#/components/schemas/PrivateNetworkListResponseBody"
           description: OK
         default:
           content:
@@ -2808,7 +2808,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Ipv6ResponseBody"
+                $ref: "#/components/schemas/IPv6ResponseBody"
           description: OK
         default:
           content:
@@ -2844,7 +2844,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Ipv6ResponseBody"
+                $ref: "#/components/schemas/IPv6ResponseBody"
           description: OK
         default:
           content:
@@ -2877,7 +2877,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoutesResponseBody"
+                $ref: "#/components/schemas/RouteListResponseBody"
           description: OK
         default:
           content:
@@ -2985,7 +2985,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SubnetsResponseBody"
+                $ref: "#/components/schemas/SubnetListResponseBody"
           description: OK
         default:
           content:
@@ -3129,7 +3129,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RegionsResponseBody"
+                $ref: "#/components/schemas/RegionListResponseBody"
           description: OK
         default:
           content:
@@ -3163,7 +3163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ZonesResponseBody"
+                $ref: "#/components/schemas/ZoneListResponseBody"
           description: OK
         default:
           content:
@@ -3203,7 +3203,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SecurityGroupsResponseBody"
+                $ref: "#/components/schemas/SecurityGroupListResponseBody"
           description: OK
         default:
           content:
@@ -3331,7 +3331,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SecurityRulesResponseBody"
+                $ref: "#/components/schemas/SecurityRuleListResponseBody"
           description: OK
         default:
           content:
@@ -3432,7 +3432,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SnapshotsResponseBody"
+                $ref: "#/components/schemas/SnapshotListResponseBody"
           description: OK
         default:
           content:
