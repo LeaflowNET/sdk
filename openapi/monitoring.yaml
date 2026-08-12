@@ -102,17 +102,6 @@ components:
         - address_kind
         - address
       type: object
-    EnableMonitoringResponseBody:
-      additionalProperties: false
-      properties:
-        enrollment:
-          $ref: "#/components/schemas/EnrollmentResource"
-        server:
-          $ref: "#/components/schemas/ServerResource"
-      required:
-        - server
-        - enrollment
-      type: object
     EnrollmentResource:
       additionalProperties: false
       properties:
@@ -156,43 +145,6 @@ components:
         - status
         - message
       type: object
-    GetMetricResponseBody:
-      additionalProperties: false
-      properties:
-        downsampled:
-          type: boolean
-        effective_from:
-          format: date-time
-          type: string
-        effective_to:
-          format: date-time
-          type: string
-        from_trends:
-          description: 数据来自趋势表，每个点是一小时的聚合
-          type: boolean
-        series:
-          items:
-            $ref: "#/components/schemas/MetricSeriesResource"
-          type:
-            - array
-            - "null"
-        thresholds:
-          items:
-            $ref: "#/components/schemas/ItemThresholdResource"
-          type:
-            - array
-            - "null"
-        truncated:
-          type: boolean
-      required:
-        - series
-        - from_trends
-        - truncated
-        - downsampled
-        - effective_from
-        - effective_to
-        - thresholds
-      type: object
     HostInterfaceResource:
       additionalProperties: false
       properties:
@@ -213,6 +165,21 @@ components:
         - port
         - use_ip
         - available
+      type: object
+    IncidentActivityListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/IncidentActivityResource"
+          type:
+            - array
+            - "null"
+        next_cursor:
+          type: string
+      required:
+        - items
+        - next_cursor
       type: object
     IncidentActivityResource:
       additionalProperties: false
@@ -286,6 +253,22 @@ components:
         - user_id
         - display_name
         - followed_at
+      type: object
+    IncidentListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/IncidentResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
       type: object
     IncidentResource:
       additionalProperties: false
@@ -429,6 +412,18 @@ components:
         - tags
         - followers
       type: object
+    ItemListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/ItemResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     ItemResource:
       additionalProperties: false
       properties:
@@ -499,89 +494,6 @@ components:
         - trigger_name
         - aggregation_function
         - evaluation_window_seconds
-      type: object
-    ListIncidentsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/IncidentResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
-      type: object
-    ListItemsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/ItemResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    ListMaintenanceWindowsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/MaintenanceWindowResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    ListServersResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/ServerResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
-      type: object
-    ListTimelineResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/IncidentActivityResource"
-          type:
-            - array
-            - "null"
-        next_cursor:
-          type: string
-      required:
-        - items
-        - next_cursor
-      type: object
-    ListWebChecksResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/WebCheckResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
       type: object
     MaintenancePeriodRequest:
       additionalProperties: false
@@ -658,6 +570,18 @@ components:
         - every
         - weekdays
       type: object
+    MaintenanceWindowListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/MaintenanceWindowResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     MaintenanceWindowResource:
       additionalProperties: false
       properties:
@@ -730,6 +654,43 @@ components:
         - value
         - min_value
         - max_value
+      type: object
+    MetricResponseBody:
+      additionalProperties: false
+      properties:
+        downsampled:
+          type: boolean
+        effective_from:
+          format: date-time
+          type: string
+        effective_to:
+          format: date-time
+          type: string
+        from_trends:
+          description: 数据来自趋势表，每个点是一小时的聚合
+          type: boolean
+        series:
+          items:
+            $ref: "#/components/schemas/MetricSeriesResource"
+          type:
+            - array
+            - "null"
+        thresholds:
+          items:
+            $ref: "#/components/schemas/ItemThresholdResource"
+          type:
+            - array
+            - "null"
+        truncated:
+          type: boolean
+      required:
+        - series
+        - from_trends
+        - truncated
+        - downsampled
+        - effective_from
+        - effective_to
+        - thresholds
       type: object
     MetricSeriesResource:
       additionalProperties: false
@@ -940,6 +901,18 @@ components:
       required:
         - steps
       type: object
+    SLIReportResponseBody:
+      additionalProperties: false
+      properties:
+        rows:
+          items:
+            $ref: "#/components/schemas/SLIReportRowResource"
+          type:
+            - array
+            - "null"
+      required:
+        - rows
+      type: object
     SLIReportRowResource:
       additionalProperties: false
       properties:
@@ -1084,6 +1057,33 @@ components:
         - start_time_seconds
         - end_time_seconds
       type: object
+    ServerEnrollmentResponseBody:
+      additionalProperties: false
+      properties:
+        enrollment:
+          $ref: "#/components/schemas/EnrollmentResource"
+        server:
+          $ref: "#/components/schemas/ServerResource"
+      required:
+        - server
+        - enrollment
+      type: object
+    ServerListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/ServerResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
     ServerResource:
       additionalProperties: false
       properties:
@@ -1212,18 +1212,6 @@ components:
       required:
         - following
       type: object
-    SliReportResponseBody:
-      additionalProperties: false
-      properties:
-        rows:
-          items:
-            $ref: "#/components/schemas/SLIReportRowResource"
-          type:
-            - array
-            - "null"
-      required:
-        - rows
-      type: object
     SnapshotResource:
       additionalProperties: false
       properties:
@@ -1293,6 +1281,18 @@ components:
       required:
         - template_key
       type: object
+    TopItemListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/TopItemResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     TopItemResource:
       additionalProperties: false
       properties:
@@ -1311,18 +1311,6 @@ components:
         - item_key
         - units
         - value
-      type: object
-    TopItemsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/TopItemResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
       type: object
     UpdateServerRequestBody:
       additionalProperties: false
@@ -1358,6 +1346,18 @@ components:
           items:
             $ref: "#/components/schemas/TemplateBindingRequest"
           type: array
+      type: object
+    WebCheckListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/WebCheckResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
       type: object
     WebCheckResource:
       additionalProperties: false
@@ -1644,7 +1644,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListIncidentsResponseBody"
+                $ref: "#/components/schemas/IncidentListResponseBody"
           description: OK
         default:
           content:
@@ -1962,7 +1962,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListTimelineResponseBody"
+                $ref: "#/components/schemas/IncidentActivityListResponseBody"
           description: OK
         default:
           content:
@@ -1989,7 +1989,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListMaintenanceWindowsResponseBody"
+                $ref: "#/components/schemas/MaintenanceWindowListResponseBody"
           description: OK
         default:
           content:
@@ -2186,7 +2186,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListServersResponseBody"
+                $ref: "#/components/schemas/ServerListResponseBody"
           description: OK
         default:
           content:
@@ -2331,7 +2331,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EnableMonitoringResponseBody"
+                $ref: "#/components/schemas/ServerEnrollmentResponseBody"
           description: OK
         default:
           content:
@@ -2414,7 +2414,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListItemsResponseBody"
+                $ref: "#/components/schemas/ItemListResponseBody"
           description: OK
         default:
           content:
@@ -2490,7 +2490,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetMetricResponseBody"
+                $ref: "#/components/schemas/MetricResponseBody"
           description: OK
         default:
           content:
@@ -2762,7 +2762,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SliReportResponseBody"
+                $ref: "#/components/schemas/SLIReportResponseBody"
           description: OK
         default:
           content:
@@ -2896,7 +2896,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TopItemsResponseBody"
+                $ref: "#/components/schemas/TopItemListResponseBody"
           description: OK
         default:
           content:
@@ -2930,7 +2930,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListWebChecksResponseBody"
+                $ref: "#/components/schemas/WebCheckListResponseBody"
           description: OK
         default:
           content:
