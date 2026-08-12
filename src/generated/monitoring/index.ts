@@ -23,44 +23,44 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
-  AcknowledgeIncidentInputBody,
-  AddCommentInputBody,
-  AssignIncidentInputBody,
-  CloseIncidentInputBody,
-  EnableMonitoringInputBody,
-  EnableMonitoringOutputBody,
-  EnrollmentView,
-  GetMetricOutputBody,
+  AcknowledgeIncidentRequestBody,
+  AddCommentRequestBody,
+  AssignIncidentRequestBody,
+  CloseIncidentRequestBody,
+  EnableMonitoringRequestBody,
+  EnableMonitoringResponseBody,
+  EnrollmentResource,
+  GetMetricResponseBody,
   GetServerMetricParams,
   GetSliReportParams,
-  IncidentActivityView,
-  IncidentView,
+  IncidentActivityResource,
+  IncidentResource,
   ListIncidentTimelineParams,
-  ListIncidentsOutputBody,
   ListIncidentsParams,
-  ListItemsOutputBody,
-  ListMaintenanceWindowsOutputBody,
+  ListIncidentsResponseBody,
+  ListItemsResponseBody,
+  ListMaintenanceWindowsResponseBody,
   ListProjectTopItemsParams,
   ListServerItemsParams,
-  ListServersOutputBody,
   ListServersParams,
-  ListTimelineOutputBody,
-  ListWebChecksOutputBody,
+  ListServersResponseBody,
+  ListTimelineResponseBody,
   ListWebChecksParams,
-  MaintenanceWindowView,
-  ProjectOverviewView,
-  PutMaintenanceWindowInputBody,
-  PutSLOInputBody,
-  PutWebCheckInputBody,
-  SLOView,
-  ServerResourcesView,
-  ServerView,
-  SetFollowingInputBody,
-  SliReportOutputBody,
-  SnapshotView,
-  TopItemsOutputBody,
-  UpdateServerInputBody,
-  WebCheckView
+  ListWebChecksResponseBody,
+  MaintenanceWindowResource,
+  ProjectOverviewResource,
+  PutMaintenanceWindowRequestBody,
+  PutSLORequestBody,
+  PutWebCheckRequestBody,
+  SLOResource,
+  ServerResource,
+  ServerResourcesResource,
+  SetFollowingRequestBody,
+  SliReportResponseBody,
+  SnapshotResource,
+  TopItemsResponseBody,
+  UpdateServerRequestBody,
+  WebCheckResource
 } from './models/index.js';
 
 import { request } from '../../http.js';
@@ -74,7 +74,7 @@ import { request } from '../../http.js';
 export const listIncidents = (
     params?: ListIncidentsParams,
  ) => {
-      return request<ListIncidentsOutputBody>(
+      return request<ListIncidentsResponseBody>(
       {url: `/api/v1/incidents`, method: 'GET',
         params
     },
@@ -87,7 +87,7 @@ export const listIncidents = (
 export const getIncident = (
     incidentId: string,
  ) => {
-      return request<IncidentView>(
+      return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}`, method: 'GET'
     },
       );
@@ -99,12 +99,12 @@ export const getIncident = (
  */
 export const acknowledgeIncident = (
     incidentId: string,
-    acknowledgeIncidentInputBody: AcknowledgeIncidentInputBody,
+    acknowledgeIncidentRequestBody: AcknowledgeIncidentRequestBody,
  ) => {
-      return request<IncidentView>(
+      return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/acknowledge`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: acknowledgeIncidentInputBody
+      data: acknowledgeIncidentRequestBody
     },
       );
     }
@@ -117,12 +117,12 @@ export const acknowledgeIncident = (
  */
 export const assignIncident = (
     incidentId: string,
-    assignIncidentInputBody: AssignIncidentInputBody,
+    assignIncidentRequestBody: AssignIncidentRequestBody,
  ) => {
-      return request<IncidentView>(
+      return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/assignee`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: assignIncidentInputBody
+      data: assignIncidentRequestBody
     },
       );
     }
@@ -133,12 +133,12 @@ export const assignIncident = (
  */
 export const closeIncident = (
     incidentId: string,
-    closeIncidentInputBody: CloseIncidentInputBody,
+    closeIncidentRequestBody: CloseIncidentRequestBody,
  ) => {
-      return request<IncidentView>(
+      return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/close`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: closeIncidentInputBody
+      data: closeIncidentRequestBody
     },
       );
     }
@@ -148,12 +148,12 @@ export const closeIncident = (
  */
 export const addIncidentComment = (
     incidentId: string,
-    addCommentInputBody: AddCommentInputBody,
+    addCommentRequestBody: AddCommentRequestBody,
  ) => {
-      return request<IncidentActivityView>(
+      return request<IncidentActivityResource>(
       {url: `/api/v1/incidents/${incidentId}/comments`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: addCommentInputBody
+      data: addCommentRequestBody
     },
       );
     }
@@ -164,12 +164,12 @@ export const addIncidentComment = (
  */
 export const setIncidentFollowing = (
     incidentId: string,
-    setFollowingInputBody: SetFollowingInputBody,
+    setFollowingRequestBody: SetFollowingRequestBody,
  ) => {
-      return request<IncidentView>(
+      return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/following`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: setFollowingInputBody
+      data: setFollowingRequestBody
     },
       );
     }
@@ -180,7 +180,7 @@ export const setIncidentFollowing = (
 export const reopenIncident = (
     incidentId: string,
  ) => {
-      return request<IncidentView>(
+      return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/reopen`, method: 'POST'
     },
       );
@@ -194,7 +194,7 @@ export const listIncidentTimeline = (
     incidentId: string,
     params?: ListIncidentTimelineParams,
  ) => {
-      return request<ListTimelineOutputBody>(
+      return request<ListTimelineResponseBody>(
       {url: `/api/v1/incidents/${incidentId}/timeline`, method: 'GET',
         params
     },
@@ -207,7 +207,7 @@ export const listIncidentTimeline = (
 export const listMaintenanceWindows = (
     
  ) => {
-      return request<ListMaintenanceWindowsOutputBody>(
+      return request<ListMaintenanceWindowsResponseBody>(
       {url: `/api/v1/maintenance-windows`, method: 'GET'
     },
       );
@@ -232,7 +232,7 @@ export const deleteMaintenanceWindow = (
 export const getMaintenanceWindow = (
     windowId: string,
  ) => {
-      return request<MaintenanceWindowView>(
+      return request<MaintenanceWindowResource>(
       {url: `/api/v1/maintenance-windows/${windowId}`, method: 'GET'
     },
       );
@@ -246,12 +246,12 @@ export const getMaintenanceWindow = (
  */
 export const putMaintenanceWindow = (
     windowId: string,
-    putMaintenanceWindowInputBody: PutMaintenanceWindowInputBody,
+    putMaintenanceWindowRequestBody: PutMaintenanceWindowRequestBody,
  ) => {
-      return request<MaintenanceWindowView>(
+      return request<MaintenanceWindowResource>(
       {url: `/api/v1/maintenance-windows/${windowId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: putMaintenanceWindowInputBody
+      data: putMaintenanceWindowRequestBody
     },
       );
     }
@@ -263,7 +263,7 @@ export const putMaintenanceWindow = (
 export const getProjectOverview = (
     
  ) => {
-      return request<ProjectOverviewView>(
+      return request<ProjectOverviewResource>(
       {url: `/api/v1/overview`, method: 'GET'
     },
       );
@@ -275,7 +275,7 @@ export const getProjectOverview = (
 export const listServers = (
     params?: ListServersParams,
  ) => {
-      return request<ListServersOutputBody>(
+      return request<ListServersResponseBody>(
       {url: `/api/v1/servers`, method: 'GET',
         params
     },
@@ -301,7 +301,7 @@ export const deleteServer = (
 export const getServer = (
     serverId: string,
  ) => {
-      return request<ServerView>(
+      return request<ServerResource>(
       {url: `/api/v1/servers/${serverId}`, method: 'GET'
     },
       );
@@ -313,12 +313,12 @@ export const getServer = (
  */
 export const updateServer = (
     serverId: string,
-    updateServerInputBody: UpdateServerInputBody,
+    updateServerRequestBody: UpdateServerRequestBody,
  ) => {
-      return request<ServerView>(
+      return request<ServerResource>(
       {url: `/api/v1/servers/${serverId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: updateServerInputBody
+      data: updateServerRequestBody
     },
       );
     }
@@ -333,12 +333,12 @@ export const updateServer = (
  */
 export const enableServerMonitoring = (
     serverId: string,
-    enableMonitoringInputBody: EnableMonitoringInputBody,
+    enableMonitoringRequestBody: EnableMonitoringRequestBody,
  ) => {
-      return request<EnableMonitoringOutputBody>(
+      return request<EnableMonitoringResponseBody>(
       {url: `/api/v1/servers/${serverId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: enableMonitoringInputBody
+      data: enableMonitoringRequestBody
     },
       );
     }
@@ -364,7 +364,7 @@ export const listServerItems = (
     serverId: string,
     params?: ListServerItemsParams,
  ) => {
-      return request<ListItemsOutputBody>(
+      return request<ListItemsResponseBody>(
       {url: `/api/v1/servers/${serverId}/items`, method: 'GET',
         params
     },
@@ -379,7 +379,7 @@ export const getServerMetric = (
     serverId: string,
     params?: GetServerMetricParams,
  ) => {
-      return request<GetMetricOutputBody>(
+      return request<GetMetricResponseBody>(
       {url: `/api/v1/servers/${serverId}/metrics`, method: 'GET',
         params
     },
@@ -393,7 +393,7 @@ export const getServerMetric = (
 export const rotateAgentPsk = (
     serverId: string,
  ) => {
-      return request<EnrollmentView>(
+      return request<EnrollmentResource>(
       {url: `/api/v1/servers/${serverId}/psk`, method: 'POST'
     },
       );
@@ -405,7 +405,7 @@ export const rotateAgentPsk = (
 export const getServerResources = (
     serverId: string,
  ) => {
-      return request<ServerResourcesView>(
+      return request<ServerResourcesResource>(
       {url: `/api/v1/servers/${serverId}/resources`, method: 'GET'
     },
       );
@@ -417,7 +417,7 @@ export const getServerResources = (
 export const getServerSnapshot = (
     serverId: string,
  ) => {
-      return request<SnapshotView>(
+      return request<SnapshotResource>(
       {url: `/api/v1/servers/${serverId}/snapshot`, method: 'GET'
     },
       );
@@ -444,7 +444,7 @@ export const getWebCheck = (
     serverId: string,
     checkId: string,
  ) => {
-      return request<WebCheckView>(
+      return request<WebCheckResource>(
       {url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'GET'
     },
       );
@@ -457,12 +457,12 @@ export const getWebCheck = (
 export const putWebCheck = (
     serverId: string,
     checkId: string,
-    putWebCheckInputBody: PutWebCheckInputBody,
+    putWebCheckRequestBody: PutWebCheckRequestBody,
  ) => {
-      return request<WebCheckView>(
+      return request<WebCheckResource>(
       {url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: putWebCheckInputBody
+      data: putWebCheckRequestBody
     },
       );
     }
@@ -476,7 +476,7 @@ export const putWebCheck = (
 export const getSliReport = (
     params?: GetSliReportParams,
  ) => {
-      return request<SliReportOutputBody>(
+      return request<SliReportResponseBody>(
       {url: `/api/v1/sli-report`, method: 'GET',
         params
     },
@@ -503,7 +503,7 @@ export const deleteSlo = (
 export const getSlo = (
     
  ) => {
-      return request<SLOView>(
+      return request<SLOResource>(
       {url: `/api/v1/slo`, method: 'GET'
     },
       );
@@ -516,12 +516,12 @@ export const getSlo = (
  * @summary 定下这个项目的可用率目标，或者改它
  */
 export const putSlo = (
-    putSLOInputBody: PutSLOInputBody,
+    putSLORequestBody: PutSLORequestBody,
  ) => {
-      return request<SLOView>(
+      return request<SLOResource>(
       {url: `/api/v1/slo`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: putSLOInputBody
+      data: putSLORequestBody
     },
       );
     }
@@ -532,7 +532,7 @@ export const putSlo = (
 export const listProjectTopItems = (
     params: ListProjectTopItemsParams,
  ) => {
-      return request<TopItemsOutputBody>(
+      return request<TopItemsResponseBody>(
       {url: `/api/v1/top-items`, method: 'GET',
         params
     },
@@ -545,7 +545,7 @@ export const listProjectTopItems = (
 export const listWebChecks = (
     params?: ListWebChecksParams,
  ) => {
-      return request<ListWebChecksOutputBody>(
+      return request<ListWebChecksResponseBody>(
       {url: `/api/v1/web-checks`, method: 'GET',
         params
     },

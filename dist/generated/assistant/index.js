@@ -43,10 +43,10 @@ export const listChannels = (params) => {
 /**
  * @summary 创建通道
  */
-export const createChannel = (createChannelInputBody) => {
+export const createChannel = (createChannelRequestBody) => {
     return request({ url: `/v1/channels`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createChannelInputBody
+        data: createChannelRequestBody
     });
 };
 /**
@@ -67,10 +67,10 @@ export const getChannel = (channel) => {
 /**
  * @summary 修改通道
  */
-export const updateChannel = (channel, updateChannelInputBody) => {
+export const updateChannel = (channel, updateChannelRequestBody) => {
     return request({ url: `/v1/channels/${channel}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: updateChannelInputBody
+        data: updateChannelRequestBody
     });
 };
 /**
@@ -107,7 +107,7 @@ export const beginWeixinLogin = (channel) => {
     });
 };
 /**
- * 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。清单与项目无关，但仍需要有效的项目令牌。
+ * 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。
  * @summary 列出可用模型
  */
 export const listModels = () => {
@@ -133,10 +133,10 @@ export const listThreads = (params) => {
 /**
  * @summary 创建对话
  */
-export const createThread = (createThreadInputBody) => {
+export const createThread = (createThreadRequestBody) => {
     return request({ url: `/v1/threads`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createThreadInputBody
+        data: createThreadRequestBody
     });
 };
 /**
@@ -151,20 +151,20 @@ export const getThread = (thread) => {
  * 可修改模型、推理档位、审批模式和归档状态。改动从下一次 turn 起生效，正在执行的 turn 沿用它启动时的设置。reasoningEffort 仅在同时提供 model 时生效。
  * @summary 修改对话设置
  */
-export const updateThread = (thread, updateThreadInputBody) => {
+export const updateThread = (thread, updateThreadRequestBody) => {
     return request({ url: `/v1/threads/${thread}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: updateThreadInputBody
+        data: updateThreadRequestBody
     });
 };
 /**
  * 批次 id 来自对话文档的 wait 字段。本接口是幂等的：重复提交同一批次不会改变已经生效的决定，也不会报错。批次不属于该对话时返回 404。
  * @summary 批准或拒绝一批工具调用
  */
-export const decideApproval = (thread, batch, decideInputBody) => {
+export const decideApproval = (thread, batch, decideRequestBody) => {
     return request({ url: `/v1/threads/${thread}/approvals/${batch}`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: decideInputBody
+        data: decideRequestBody
     });
 };
 /**
@@ -179,20 +179,20 @@ export const interruptThread = (thread) => {
  * 立即返回 turnId，不等待执行完成——一次 turn 可能持续数十分钟。执行进度通过对话文档中 stream 指向的实时流获取，不在本响应里。
  * @summary 发送消息并触发一次 turn
  */
-export const sendMessage = (thread, sendMessageInputBody) => {
+export const sendMessage = (thread, sendMessageRequestBody) => {
     return request({ url: `/v1/threads/${thread}/messages`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: sendMessageInputBody
+        data: sendMessageRequestBody
     });
 };
 /**
  * 问题 id 来自对话文档的 wait 字段。已被回答过的问题同样返回 204——可能是另一个页面提交在先，也可能是自动应答窗口已到期，两种情况下 turn 都已带着答案继续执行。
  * @summary 回答助手提出的问题
  */
-export const answerQuestion = (thread, item, answerInputBody) => {
+export const answerQuestion = (thread, item, answerRequestBody) => {
     return request({ url: `/v1/threads/${thread}/questions/${item}`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: answerInputBody
+        data: answerRequestBody
     });
 };
 /**
@@ -206,10 +206,10 @@ export const markThreadRead = (thread) => {
  * 撤回 ordinal 及其之后的全部条目。被撤回的条目仍留在逐字稿中并标记 reverted，序号不会重排。返回实际撤回的条目数。
  * @summary 从指定位置起撤回
  */
-export const revertThread = (thread, revertInputBody) => {
+export const revertThread = (thread, revertRequestBody) => {
     return request({ url: `/v1/threads/${thread}/revert`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: revertInputBody
+        data: revertRequestBody
     });
 };
 /**
@@ -224,9 +224,9 @@ export const getWeixinLogin = (login) => {
  * 微信在扫码后要求短信或设备验证码时使用。验证码由登录发起人在自己手机上获取。
  * @summary 补交登录验证码
  */
-export const submitWeixinVerifyCode = (login, verifyCodeInputBody) => {
+export const submitWeixinVerifyCode = (login, verifyCodeRequestBody) => {
     return request({ url: `/v1/weixin-logins/${login}/verify-code`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: verifyCodeInputBody
+        data: verifyCodeRequestBody
     });
 };

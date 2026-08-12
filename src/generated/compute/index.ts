@@ -24,66 +24,66 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
-  ActOnInstanceInputBody,
-  AllocateFloatingIPInputBody,
-  AttachDiskInputBody,
-  AttachFloatingIPInputBody,
-  AttachPortInputBody,
-  BindFloatingIPInputBody,
-  ConsoleOutputBody,
-  CreateDiskInputBody,
-  CreateInstanceImageInputBody,
-  CreateInstanceImageOutputBody,
-  CreatePortInputBody,
-  CreatePrivateNetworkInputBody,
-  CreateRouteInputBody,
-  CreateSecurityGroupInputBody,
-  CreateSecurityRuleInputBody,
-  CreateSnapshotInputBody,
-  CreateSubnetInputBody,
-  DiskTypesOutputBody,
-  DiskView,
-  DisksOutputBody,
-  FloatingIPView,
-  FloatingIPsOutputBody,
-  ImagesOutputBody,
-  InstanceTypesOutputBody,
-  InstanceView,
-  InstancesOutputBody,
-  Ipv6OutputBody,
-  LaunchInstanceInputBody,
-  LaunchInstanceOutputBody,
+  ActOnInstanceRequestBody,
+  AllocateFloatingIPRequestBody,
+  AttachDiskRequestBody,
+  AttachFloatingIPRequestBody,
+  AttachPortRequestBody,
+  BindFloatingIPRequestBody,
+  ConsoleResponseBody,
+  CreateDiskRequestBody,
+  CreateInstanceImageRequestBody,
+  CreateInstanceImageResponseBody,
+  CreatePortRequestBody,
+  CreatePrivateNetworkRequestBody,
+  CreateRouteRequestBody,
+  CreateSecurityGroupRequestBody,
+  CreateSecurityRuleRequestBody,
+  CreateSnapshotRequestBody,
+  CreateSubnetRequestBody,
+  DiskResource,
+  DiskTypesResponseBody,
+  DisksResponseBody,
+  FloatingIPResource,
+  FloatingIPsResponseBody,
+  ImagesResponseBody,
+  InstanceResource,
+  InstanceTypesResponseBody,
+  InstancesResponseBody,
+  Ipv6ResponseBody,
+  LaunchInstanceRequestBody,
+  LaunchInstanceResponseBody,
   ListDiskTypesParams,
   ListDisksParams,
   ListImagesParams,
   ListInstanceTypesParams,
   ListPrivateNetworksParams,
   ListSecurityGroupsParams,
-  NextFreeCidrOutputBody,
-  PortView,
-  PortsOutputBody,
-  PrivateNetworkView,
-  PrivateNetworksOutputBody,
-  RebuildInstanceInputBody,
-  RebuildInstanceOutputBody,
-  RegionsOutputBody,
-  RenameDiskInputBody,
-  RenameInstanceInputBody,
-  ResizeDiskInputBody,
-  ResizeInstanceInputBody,
-  RouteView,
-  RoutesOutputBody,
-  SecurityGroupView,
-  SecurityGroupsOutputBody,
-  SecurityRuleView,
-  SecurityRulesOutputBody,
-  SetBandwidthInputBody,
-  SnapshotView,
-  SnapshotsOutputBody,
-  SubnetView,
-  SubnetsOutputBody,
+  NextFreeCidrResponseBody,
+  PortResource,
+  PortsResponseBody,
+  PrivateNetworkResource,
+  PrivateNetworksResponseBody,
+  RebuildInstanceRequestBody,
+  RebuildInstanceResponseBody,
+  RegionsResponseBody,
+  RenameDiskRequestBody,
+  RenameInstanceRequestBody,
+  ResizeDiskRequestBody,
+  ResizeInstanceRequestBody,
+  RouteResource,
+  RoutesResponseBody,
+  SecurityGroupResource,
+  SecurityGroupsResponseBody,
+  SecurityRuleResource,
+  SecurityRulesResponseBody,
+  SetBandwidthRequestBody,
+  SnapshotResource,
+  SnapshotsResponseBody,
+  SubnetResource,
+  SubnetsResponseBody,
   SuggestSubnetCidrParams,
-  ZonesOutputBody
+  ZonesResponseBody
 } from './models/index.js';
 
 import { request } from '../../http.js';
@@ -96,7 +96,7 @@ import { request } from '../../http.js';
 export const listDiskTypes = (
     params: ListDiskTypesParams,
  ) => {
-      return request<DiskTypesOutputBody>(
+      return request<DiskTypesResponseBody>(
       {url: `/api/v1/disk-types`, method: 'GET',
         params
     },
@@ -110,7 +110,7 @@ export const listDiskTypes = (
 export const listDisks = (
     params?: ListDisksParams,
  ) => {
-      return request<DisksOutputBody>(
+      return request<DisksResponseBody>(
       {url: `/api/v1/disks`, method: 'GET',
         params
     },
@@ -122,12 +122,12 @@ export const listDisks = (
  * @summary 创建云硬盘
  */
 export const createDisk = (
-    createDiskInputBody: CreateDiskInputBody,
+    createDiskRequestBody: CreateDiskRequestBody,
  ) => {
-      return request<DiskView>(
+      return request<DiskResource>(
       {url: `/api/v1/disks`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createDiskInputBody
+      data: createDiskRequestBody
     },
       );
     }
@@ -152,7 +152,7 @@ export const deleteDisk = (
 export const getDisk = (
     diskId: string,
  ) => {
-      return request<DiskView>(
+      return request<DiskResource>(
       {url: `/api/v1/disks/${diskId}`, method: 'GET'
     },
       );
@@ -164,12 +164,12 @@ export const getDisk = (
  */
 export const renameDisk = (
     diskId: string,
-    renameDiskInputBody: RenameDiskInputBody,
+    renameDiskRequestBody: RenameDiskRequestBody,
  ) => {
-      return request<DiskView>(
+      return request<DiskResource>(
       {url: `/api/v1/disks/${diskId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: renameDiskInputBody
+      data: renameDiskRequestBody
     },
       );
     }
@@ -180,12 +180,12 @@ export const renameDisk = (
  */
 export const resizeDisk = (
     diskId: string,
-    resizeDiskInputBody: ResizeDiskInputBody,
+    resizeDiskRequestBody: ResizeDiskRequestBody,
  ) => {
-      return request<DiskView>(
+      return request<DiskResource>(
       {url: `/api/v1/disks/${diskId}/resize`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: resizeDiskInputBody
+      data: resizeDiskRequestBody
     },
       );
     }
@@ -196,7 +196,7 @@ export const resizeDisk = (
 export const listFloatingIps = (
     
  ) => {
-      return request<FloatingIPsOutputBody>(
+      return request<FloatingIPsResponseBody>(
       {url: `/api/v1/floating-ips`, method: 'GET'
     },
       );
@@ -209,12 +209,12 @@ IPv6 不通过本接口申请：IPv6 地址由 SLAAC 下发到网卡，启用 IP
  * @summary 申领公网 IP
  */
 export const allocateFloatingIp = (
-    allocateFloatingIPInputBody: AllocateFloatingIPInputBody,
+    allocateFloatingIPRequestBody: AllocateFloatingIPRequestBody,
  ) => {
-      return request<FloatingIPView>(
+      return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: allocateFloatingIPInputBody
+      data: allocateFloatingIPRequestBody
     },
       );
     }
@@ -238,7 +238,7 @@ export const releaseFloatingIp = (
 export const getFloatingIp = (
     floatingIpId: string,
  ) => {
-      return request<FloatingIPView>(
+      return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}`, method: 'GET'
     },
       );
@@ -250,12 +250,12 @@ export const getFloatingIp = (
  */
 export const setFloatingIpBandwidth = (
     floatingIpId: string,
-    setBandwidthInputBody: SetBandwidthInputBody,
+    setBandwidthRequestBody: SetBandwidthRequestBody,
  ) => {
-      return request<FloatingIPView>(
+      return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}/bandwidth`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: setBandwidthInputBody
+      data: setBandwidthRequestBody
     },
       );
     }
@@ -267,7 +267,7 @@ export const setFloatingIpBandwidth = (
 export const unbindFloatingIp = (
     floatingIpId: string,
  ) => {
-      return request<FloatingIPView>(
+      return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}/binding`, method: 'DELETE'
     },
       );
@@ -278,12 +278,12 @@ export const unbindFloatingIp = (
  */
 export const bindFloatingIp = (
     floatingIpId: string,
-    bindFloatingIPInputBody: BindFloatingIPInputBody,
+    bindFloatingIPRequestBody: BindFloatingIPRequestBody,
  ) => {
-      return request<FloatingIPView>(
+      return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}/binding`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: bindFloatingIPInputBody
+      data: bindFloatingIPRequestBody
     },
       );
     }
@@ -295,7 +295,7 @@ export const bindFloatingIp = (
 export const listImages = (
     params: ListImagesParams,
  ) => {
-      return request<ImagesOutputBody>(
+      return request<ImagesResponseBody>(
       {url: `/api/v1/images`, method: 'GET',
         params
     },
@@ -308,7 +308,7 @@ export const listImages = (
 export const listInstanceTypes = (
     params: ListInstanceTypesParams,
  ) => {
-      return request<InstanceTypesOutputBody>(
+      return request<InstanceTypesResponseBody>(
       {url: `/api/v1/instance-types`, method: 'GET',
         params
     },
@@ -321,7 +321,7 @@ export const listInstanceTypes = (
 export const listInstances = (
     
  ) => {
-      return request<InstancesOutputBody>(
+      return request<InstancesResponseBody>(
       {url: `/api/v1/instances`, method: 'GET'
     },
       );
@@ -336,12 +336,12 @@ export const listInstances = (
  * @summary 创建云服务器
  */
 export const launchInstance = (
-    launchInstanceInputBody: LaunchInstanceInputBody,
+    launchInstanceRequestBody: LaunchInstanceRequestBody,
  ) => {
-      return request<LaunchInstanceOutputBody>(
+      return request<LaunchInstanceResponseBody>(
       {url: `/api/v1/instances`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: launchInstanceInputBody
+      data: launchInstanceRequestBody
     },
       );
     }
@@ -366,7 +366,7 @@ export const deleteInstance = (
 export const getInstance = (
     instanceId: string,
  ) => {
-      return request<InstanceView>(
+      return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}`, method: 'GET'
     },
       );
@@ -378,12 +378,12 @@ export const getInstance = (
  */
 export const renameInstance = (
     instanceId: string,
-    renameInstanceInputBody: RenameInstanceInputBody,
+    renameInstanceRequestBody: RenameInstanceRequestBody,
  ) => {
-      return request<InstanceView>(
+      return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: renameInstanceInputBody
+      data: renameInstanceRequestBody
     },
       );
     }
@@ -394,12 +394,12 @@ export const renameInstance = (
  */
 export const actOnInstance = (
     instanceId: string,
-    actOnInstanceInputBody: ActOnInstanceInputBody,
+    actOnInstanceRequestBody: ActOnInstanceRequestBody,
  ) => {
-      return request<InstanceView>(
+      return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/actions`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: actOnInstanceInputBody
+      data: actOnInstanceRequestBody
     },
       );
     }
@@ -411,7 +411,7 @@ export const actOnInstance = (
 export const openInstanceConsole = (
     instanceId: string,
  ) => {
-      return request<ConsoleOutputBody>(
+      return request<ConsoleResponseBody>(
       {url: `/api/v1/instances/${instanceId}/console`, method: 'POST'
     },
       );
@@ -423,7 +423,7 @@ export const openInstanceConsole = (
 export const listInstanceDisks = (
     instanceId: string,
  ) => {
-      return request<DisksOutputBody>(
+      return request<DisksResponseBody>(
       {url: `/api/v1/instances/${instanceId}/disks`, method: 'GET'
     },
       );
@@ -435,12 +435,12 @@ export const listInstanceDisks = (
  */
 export const attachDisk = (
     instanceId: string,
-    attachDiskInputBody: AttachDiskInputBody,
+    attachDiskRequestBody: AttachDiskRequestBody,
  ) => {
-      return request<DiskView>(
+      return request<DiskResource>(
       {url: `/api/v1/instances/${instanceId}/disks`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: attachDiskInputBody
+      data: attachDiskRequestBody
     },
       );
     }
@@ -453,7 +453,7 @@ export const detachDisk = (
     instanceId: string,
     diskId: string,
  ) => {
-      return request<DiskView>(
+      return request<DiskResource>(
       {url: `/api/v1/instances/${instanceId}/disks/${diskId}`, method: 'DELETE'
     },
       );
@@ -465,12 +465,12 @@ export const detachDisk = (
  */
 export const attachInstanceFloatingIp = (
     instanceId: string,
-    attachFloatingIPInputBody: AttachFloatingIPInputBody,
+    attachFloatingIPRequestBody: AttachFloatingIPRequestBody,
  ) => {
-      return request<FloatingIPView>(
+      return request<FloatingIPResource>(
       {url: `/api/v1/instances/${instanceId}/floating-ips`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: attachFloatingIPInputBody
+      data: attachFloatingIPRequestBody
     },
       );
     }
@@ -482,7 +482,7 @@ export const detachInstanceFloatingIp = (
     instanceId: string,
     floatingIpId: string,
  ) => {
-      return request<FloatingIPView>(
+      return request<FloatingIPResource>(
       {url: `/api/v1/instances/${instanceId}/floating-ips/${floatingIpId}`, method: 'DELETE'
     },
       );
@@ -494,12 +494,12 @@ export const detachInstanceFloatingIp = (
  */
 export const createInstanceImage = (
     instanceId: string,
-    createInstanceImageInputBody: CreateInstanceImageInputBody,
+    createInstanceImageRequestBody: CreateInstanceImageRequestBody,
  ) => {
-      return request<CreateInstanceImageOutputBody>(
+      return request<CreateInstanceImageResponseBody>(
       {url: `/api/v1/instances/${instanceId}/image`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createInstanceImageInputBody
+      data: createInstanceImageRequestBody
     },
       );
     }
@@ -510,7 +510,7 @@ export const createInstanceImage = (
 export const listInstancePorts = (
     instanceId: string,
  ) => {
-      return request<PortsOutputBody>(
+      return request<PortsResponseBody>(
       {url: `/api/v1/instances/${instanceId}/ports`, method: 'GET'
     },
       );
@@ -521,12 +521,12 @@ export const listInstancePorts = (
  */
 export const attachPort = (
     instanceId: string,
-    attachPortInputBody: AttachPortInputBody,
+    attachPortRequestBody: AttachPortRequestBody,
  ) => {
-      return request<PortView>(
+      return request<PortResource>(
       {url: `/api/v1/instances/${instanceId}/ports`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: attachPortInputBody
+      data: attachPortRequestBody
     },
       );
     }
@@ -539,7 +539,7 @@ export const detachPort = (
     instanceId: string,
     portId: string,
  ) => {
-      return request<PortView>(
+      return request<PortResource>(
       {url: `/api/v1/instances/${instanceId}/ports/${portId}`, method: 'DELETE'
     },
       );
@@ -551,12 +551,12 @@ export const detachPort = (
  */
 export const rebuildInstance = (
     instanceId: string,
-    rebuildInstanceInputBody: RebuildInstanceInputBody,
+    rebuildInstanceRequestBody: RebuildInstanceRequestBody,
  ) => {
-      return request<RebuildInstanceOutputBody>(
+      return request<RebuildInstanceResponseBody>(
       {url: `/api/v1/instances/${instanceId}/rebuild`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: rebuildInstanceInputBody
+      data: rebuildInstanceRequestBody
     },
       );
     }
@@ -569,12 +569,12 @@ export const rebuildInstance = (
  */
 export const resizeInstance = (
     instanceId: string,
-    resizeInstanceInputBody: ResizeInstanceInputBody,
+    resizeInstanceRequestBody: ResizeInstanceRequestBody,
  ) => {
-      return request<InstanceView>(
+      return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/resize`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: resizeInstanceInputBody
+      data: resizeInstanceRequestBody
     },
       );
     }
@@ -585,7 +585,7 @@ export const resizeInstance = (
 export const confirmInstanceResize = (
     instanceId: string,
  ) => {
-      return request<InstanceView>(
+      return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/resize/confirm`, method: 'POST'
     },
       );
@@ -597,7 +597,7 @@ export const confirmInstanceResize = (
 export const revertInstanceResize = (
     instanceId: string,
  ) => {
-      return request<InstanceView>(
+      return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/resize/revert`, method: 'POST'
     },
       );
@@ -609,7 +609,7 @@ export const revertInstanceResize = (
 export const listPorts = (
     
  ) => {
-      return request<PortsOutputBody>(
+      return request<PortsResponseBody>(
       {url: `/api/v1/ports`, method: 'GET'
     },
       );
@@ -620,12 +620,12 @@ export const listPorts = (
  * @summary 创建网卡
  */
 export const createPort = (
-    createPortInputBody: CreatePortInputBody,
+    createPortRequestBody: CreatePortRequestBody,
  ) => {
-      return request<PortView>(
+      return request<PortResource>(
       {url: `/api/v1/ports`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createPortInputBody
+      data: createPortRequestBody
     },
       );
     }
@@ -649,7 +649,7 @@ export const deletePort = (
 export const listPrivateNetworks = (
     params?: ListPrivateNetworksParams,
  ) => {
-      return request<PrivateNetworksOutputBody>(
+      return request<PrivateNetworksResponseBody>(
       {url: `/api/v1/private-networks`, method: 'GET',
         params
     },
@@ -661,12 +661,12 @@ export const listPrivateNetworks = (
  * @summary 创建私有网络
  */
 export const createPrivateNetwork = (
-    createPrivateNetworkInputBody: CreatePrivateNetworkInputBody,
+    createPrivateNetworkRequestBody: CreatePrivateNetworkRequestBody,
  ) => {
-      return request<PrivateNetworkView>(
+      return request<PrivateNetworkResource>(
       {url: `/api/v1/private-networks`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createPrivateNetworkInputBody
+      data: createPrivateNetworkRequestBody
     },
       );
     }
@@ -690,7 +690,7 @@ export const deletePrivateNetwork = (
 export const getPrivateNetwork = (
     privateNetworkId: string,
  ) => {
-      return request<PrivateNetworkView>(
+      return request<PrivateNetworkResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}`, method: 'GET'
     },
       );
@@ -703,7 +703,7 @@ export const getPrivateNetwork = (
 export const detachInternetGateway = (
     privateNetworkId: string,
  ) => {
-      return request<PrivateNetworkView>(
+      return request<PrivateNetworkResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}/internet-gateway`, method: 'DELETE'
     },
       );
@@ -716,7 +716,7 @@ export const detachInternetGateway = (
 export const attachInternetGateway = (
     privateNetworkId: string,
  ) => {
-      return request<PrivateNetworkView>(
+      return request<PrivateNetworkResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}/internet-gateway`, method: 'POST'
     },
       );
@@ -741,7 +741,7 @@ export const disablePrivateNetworkIpv6 = (
 export const getPrivateNetworkIpv6 = (
     privateNetworkId: string,
  ) => {
-      return request<Ipv6OutputBody>(
+      return request<Ipv6ResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/ipv6`, method: 'GET'
     },
       );
@@ -756,7 +756,7 @@ export const getPrivateNetworkIpv6 = (
 export const enablePrivateNetworkIpv6 = (
     privateNetworkId: string,
  ) => {
-      return request<Ipv6OutputBody>(
+      return request<Ipv6ResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/ipv6`, method: 'POST'
     },
       );
@@ -768,7 +768,7 @@ export const enablePrivateNetworkIpv6 = (
 export const listRoutes = (
     privateNetworkId: string,
  ) => {
-      return request<RoutesOutputBody>(
+      return request<RoutesResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/routes`, method: 'GET'
     },
       );
@@ -780,12 +780,12 @@ export const listRoutes = (
  */
 export const createRoute = (
     privateNetworkId: string,
-    createRouteInputBody: CreateRouteInputBody,
+    createRouteRequestBody: CreateRouteRequestBody,
  ) => {
-      return request<RouteView>(
+      return request<RouteResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}/routes`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createRouteInputBody
+      data: createRouteRequestBody
     },
       );
     }
@@ -810,7 +810,7 @@ export const deleteRoute = (
 export const listSubnets = (
     privateNetworkId: string,
  ) => {
-      return request<SubnetsOutputBody>(
+      return request<SubnetsResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets`, method: 'GET'
     },
       );
@@ -821,12 +821,12 @@ export const listSubnets = (
  */
 export const createSubnet = (
     privateNetworkId: string,
-    createSubnetInputBody: CreateSubnetInputBody,
+    createSubnetRequestBody: CreateSubnetRequestBody,
  ) => {
-      return request<SubnetView>(
+      return request<SubnetResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createSubnetInputBody
+      data: createSubnetRequestBody
     },
       );
     }
@@ -839,7 +839,7 @@ export const suggestSubnetCidr = (
     privateNetworkId: string,
     params?: SuggestSubnetCidrParams,
  ) => {
-      return request<NextFreeCidrOutputBody>(
+      return request<NextFreeCidrResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets/next-free-cidr`, method: 'GET',
         params
     },
@@ -866,7 +866,7 @@ export const deleteSubnet = (
 export const listRegions = (
     
  ) => {
-      return request<RegionsOutputBody>(
+      return request<RegionsResponseBody>(
       {url: `/api/v1/regions`, method: 'GET'
     },
       );
@@ -879,7 +879,7 @@ export const listRegions = (
 export const listAvailabilityZones = (
     regionCode: string,
  ) => {
-      return request<ZonesOutputBody>(
+      return request<ZonesResponseBody>(
       {url: `/api/v1/regions/${regionCode}/availability-zones`, method: 'GET'
     },
       );
@@ -891,7 +891,7 @@ export const listAvailabilityZones = (
 export const listSecurityGroups = (
     params?: ListSecurityGroupsParams,
  ) => {
-      return request<SecurityGroupsOutputBody>(
+      return request<SecurityGroupsResponseBody>(
       {url: `/api/v1/security-groups`, method: 'GET',
         params
     },
@@ -903,12 +903,12 @@ export const listSecurityGroups = (
  * @summary 创建安全组
  */
 export const createSecurityGroup = (
-    createSecurityGroupInputBody: CreateSecurityGroupInputBody,
+    createSecurityGroupRequestBody: CreateSecurityGroupRequestBody,
  ) => {
-      return request<SecurityGroupView>(
+      return request<SecurityGroupResource>(
       {url: `/api/v1/security-groups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createSecurityGroupInputBody
+      data: createSecurityGroupRequestBody
     },
       );
     }
@@ -932,7 +932,7 @@ export const deleteSecurityGroup = (
 export const getSecurityGroup = (
     securityGroupId: string,
  ) => {
-      return request<SecurityGroupView>(
+      return request<SecurityGroupResource>(
       {url: `/api/v1/security-groups/${securityGroupId}`, method: 'GET'
     },
       );
@@ -944,7 +944,7 @@ export const getSecurityGroup = (
 export const listSecurityGroupRules = (
     securityGroupId: string,
  ) => {
-      return request<SecurityRulesOutputBody>(
+      return request<SecurityRulesResponseBody>(
       {url: `/api/v1/security-groups/${securityGroupId}/rules`, method: 'GET'
     },
       );
@@ -956,12 +956,12 @@ export const listSecurityGroupRules = (
  */
 export const createSecurityGroupRule = (
     securityGroupId: string,
-    createSecurityRuleInputBody: CreateSecurityRuleInputBody,
+    createSecurityRuleRequestBody: CreateSecurityRuleRequestBody,
  ) => {
-      return request<SecurityRuleView>(
+      return request<SecurityRuleResource>(
       {url: `/api/v1/security-groups/${securityGroupId}/rules`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createSecurityRuleInputBody
+      data: createSecurityRuleRequestBody
     },
       );
     }
@@ -985,7 +985,7 @@ export const deleteSecurityGroupRule = (
 export const listSnapshots = (
     
  ) => {
-      return request<SnapshotsOutputBody>(
+      return request<SnapshotsResponseBody>(
       {url: `/api/v1/snapshots`, method: 'GET'
     },
       );
@@ -996,12 +996,12 @@ export const listSnapshots = (
  * @summary 创建快照
  */
 export const createSnapshot = (
-    createSnapshotInputBody: CreateSnapshotInputBody,
+    createSnapshotRequestBody: CreateSnapshotRequestBody,
  ) => {
-      return request<SnapshotView>(
+      return request<SnapshotResource>(
       {url: `/api/v1/snapshots`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createSnapshotInputBody
+      data: createSnapshotRequestBody
     },
       );
     }
@@ -1024,7 +1024,7 @@ export const deleteSnapshot = (
 export const getSnapshot = (
     snapshotId: string,
  ) => {
-      return request<SnapshotView>(
+      return request<SnapshotResource>(
       {url: `/api/v1/snapshots/${snapshotId}`, method: 'GET'
     },
       );

@@ -19,10 +19,10 @@ export const getIncident = (incidentId) => {
  * 同时会在监控系统中标记为已确认，便于其他渠道也能看到该告警已有人处理。
  * @summary 确认这条告警
  */
-export const acknowledgeIncident = (incidentId, acknowledgeIncidentInputBody) => {
+export const acknowledgeIncident = (incidentId, acknowledgeIncidentRequestBody) => {
     return request({ url: `/api/v1/incidents/${incidentId}/acknowledge`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: acknowledgeIncidentInputBody
+        data: acknowledgeIncidentRequestBody
     });
 };
 /**
@@ -31,39 +31,39 @@ export const acknowledgeIncident = (incidentId, acknowledgeIncidentInputBody) =>
 **这里不校验被指派的人在不在这个项目里**——那要问 IAM，而这个服务的准入还没接。
  * @summary 把这条告警交给谁，或者收回来
  */
-export const assignIncident = (incidentId, assignIncidentInputBody) => {
+export const assignIncident = (incidentId, assignIncidentRequestBody) => {
     return request({ url: `/api/v1/incidents/${incidentId}/assignee`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: assignIncidentInputBody
+        data: assignIncidentRequestBody
     });
 };
 /**
  * 了结的是**平台上的处理流程**，不是告警本身的状态：尚未恢复的告警也可以按「已接受的风险」了结，它在监控系统中仍为未恢复。
  * @summary 了结这条告警
  */
-export const closeIncident = (incidentId, closeIncidentInputBody) => {
+export const closeIncident = (incidentId, closeIncidentRequestBody) => {
     return request({ url: `/api/v1/incidents/${incidentId}/close`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: closeIncidentInputBody
+        data: closeIncidentRequestBody
     });
 };
 /**
  * @summary 在时间线上写一条备注
  */
-export const addIncidentComment = (incidentId, addCommentInputBody) => {
+export const addIncidentComment = (incidentId, addCommentRequestBody) => {
     return request({ url: `/api/v1/incidents/${incidentId}/comments`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: addCommentInputBody
+        data: addCommentRequestBody
     });
 };
 /**
  * 关注的是**自己**：操作者就是被加进关注列表的那个人。
  * @summary 关注这条告警，或者取消关注
  */
-export const setIncidentFollowing = (incidentId, setFollowingInputBody) => {
+export const setIncidentFollowing = (incidentId, setFollowingRequestBody) => {
     return request({ url: `/api/v1/incidents/${incidentId}/following`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: setFollowingInputBody
+        data: setFollowingRequestBody
     });
 };
 /**
@@ -110,10 +110,10 @@ export const getMaintenanceWindow = (windowId) => {
 窗口期内这些机器的问题不告警，也不扣 SLA 的可用率。`server_ids` 留空表示整个项目，包括窗口开着的时候新接进来的机器。
  * @summary 开一个维护窗口，或者按同一个 id 覆盖它
  */
-export const putMaintenanceWindow = (windowId, putMaintenanceWindowInputBody) => {
+export const putMaintenanceWindow = (windowId, putMaintenanceWindowRequestBody) => {
     return request({ url: `/api/v1/maintenance-windows/${windowId}`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: putMaintenanceWindowInputBody
+        data: putMaintenanceWindowRequestBody
     });
 };
 /**
@@ -151,10 +151,10 @@ export const getServer = (serverId) => {
  * 只更新请求体中出现的字段。`address` 与 `address_kind` 必须一并提供：只改其中一个会得到互相矛盾的接入配置，该错误不会被报出，表现为 agent 连不上。
  * @summary 改一台机器的接入参数
  */
-export const updateServer = (serverId, updateServerInputBody) => {
+export const updateServer = (serverId, updateServerRequestBody) => {
     return request({ url: `/api/v1/servers/${serverId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: updateServerInputBody
+        data: updateServerRequestBody
     });
 };
 /**
@@ -165,10 +165,10 @@ export const updateServer = (serverId, updateServerInputBody) => {
 响应中的 `tls_psk` **只返回这一次**，请及时保存；遗失后需要轮换。
  * @summary 把一台机器接入监控
  */
-export const enableServerMonitoring = (serverId, enableMonitoringInputBody) => {
+export const enableServerMonitoring = (serverId, enableMonitoringRequestBody) => {
     return request({ url: `/api/v1/servers/${serverId}`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: enableMonitoringInputBody
+        data: enableMonitoringRequestBody
     });
 };
 /**
@@ -238,10 +238,10 @@ export const getWebCheck = (serverId, checkId) => {
  * **创建即覆盖**：修改一个检查即用同一个 id 再次调用本接口，无需先判断它是否已存在。
  * @summary 建一个网页检查，或者按同一个 id 覆盖它
  */
-export const putWebCheck = (serverId, checkId, putWebCheckInputBody) => {
+export const putWebCheck = (serverId, checkId, putWebCheckRequestBody) => {
     return request({ url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: putWebCheckInputBody
+        data: putWebCheckRequestBody
     });
 };
 /**
@@ -277,10 +277,10 @@ export const getSlo = () => {
 `min_severity` 必须显式选：它决定什么算「不可用」，是这条承诺的一半内容。
  * @summary 定下这个项目的可用率目标，或者改它
  */
-export const putSlo = (putSLOInputBody) => {
+export const putSlo = (putSLORequestBody) => {
     return request({ url: `/api/v1/slo`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: putSLOInputBody
+        data: putSLORequestBody
     });
 };
 /**

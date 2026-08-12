@@ -31,10 +31,10 @@ export const listConsents = () => {
 只收当前生效的版本，签旧版答 409。重复提交同一版不报错，第一次那条记录会留着。
  * @summary 同意条款
  */
-export const acceptAgreements = (acceptConsentsInputBody) => {
+export const acceptAgreements = (acceptConsentsRequestBody) => {
     return request({ url: `/api/v1/me/consents`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: acceptConsentsInputBody
+        data: acceptConsentsRequestBody
     });
 };
 /**
@@ -49,10 +49,10 @@ export const getIdentityVerification = () => {
  * 已经在等人审的和已经核过的都会被拒。被驳回之后可以改了再交。
  * @summary 提交实名核验材料
  */
-export const submitIdentityVerification = (submitIdentityVerificationInputBody) => {
+export const submitIdentityVerification = (submitIdentityVerificationRequestBody) => {
     return request({ url: `/api/v1/me/identity-verification`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: submitIdentityVerificationInputBody
+        data: submitIdentityVerificationRequestBody
     });
 };
 /**
@@ -68,10 +68,10 @@ export const listMyInvitations = (params) => {
  * token 对不上和这份要约已经不作数了是同一个回答：持有者对这两种情况能做的事完全一样，分开报会把这个接口变成一个可以拿来试 token 的探针。
  * @summary 顺着邀请链接接受
  */
-export const acceptInvitationByToken = (acceptInvitationByTokenInputBody) => {
+export const acceptInvitationByToken = (acceptInvitationByTokenRequestBody) => {
     return request({ url: `/api/v1/me/invitations/accept`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: acceptInvitationByTokenInputBody
+        data: acceptInvitationByTokenRequestBody
     });
 };
 /**
@@ -93,10 +93,10 @@ export const listMySshKeys = (params) => {
 /**
  * @summary 添加一把我的公钥
  */
-export const createMySshKey = (createUserSSHKeyInputBody) => {
+export const createMySshKey = (createUserSSHKeyRequestBody) => {
     return request({ url: `/api/v1/me/ssh-keys`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createUserSSHKeyInputBody
+        data: createUserSSHKeyRequestBody
     });
 };
 /**
@@ -118,10 +118,10 @@ export const getMySshKey = (keyId) => {
  * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
  * @summary 给我的公钥改名
  */
-export const renameMySshKey = (keyId, renameUserSSHKeyInputBody) => {
+export const renameMySshKey = (keyId, renameUserSSHKeyRequestBody) => {
     return request({ url: `/api/v1/me/ssh-keys/${keyId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: renameUserSSHKeyInputBody
+        data: renameUserSSHKeyRequestBody
     });
 };
 /**
@@ -145,10 +145,10 @@ export const listProjects = (params) => {
  * 建的人就是所有者。项目会连带预置 OWNER、ADMIN 两个内置角色和一个空权限的 member 角色。
  * @summary 建一个项目
  */
-export const createProject = (createProjectInputBody) => {
+export const createProject = (createProjectRequestBody) => {
     return request({ url: `/api/v1/projects`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createProjectInputBody
+        data: createProjectRequestBody
     });
 };
 /**
@@ -170,10 +170,10 @@ export const getProject = (projectId) => {
 /**
  * @summary 改项目的名称与描述
  */
-export const updateProject = (projectId, updateProjectInputBody) => {
+export const updateProject = (projectId, updateProjectRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: updateProjectInputBody
+        data: updateProjectRequestBody
     });
 };
 /**
@@ -189,10 +189,10 @@ export const listProjectInvitations = (projectId, params) => {
  * 要约站 14 天。有上限是因为里面那些角色是按发出那一刻的项目校验的，一份活得比它所依据的安排还久的要约会授出现在没人打算授的权限。
  * @summary 发出一份邀请
  */
-export const issueInvitation = (projectId, issueInvitationInputBody) => {
+export const issueInvitation = (projectId, issueInvitationRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/invitations`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: issueInvitationInputBody
+        data: issueInvitationRequestBody
     });
 };
 /**
@@ -222,10 +222,10 @@ export const removeMember = (projectId, userId) => {
  * 整体替换而不是增删：调用方拿到的就是一份完整清单，让它自己算差集只会让「我以为我取消了那个角色」这种事变得可能。所有者身上的 OWNER 不受影响。
  * @summary 设置一个成员持有的角色
  */
-export const setMemberRoles = (projectId, userId, setMemberRolesInputBody) => {
+export const setMemberRoles = (projectId, userId, setMemberRolesRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/members/${userId}/roles`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: setMemberRolesInputBody
+        data: setMemberRolesRequestBody
     });
 };
 /**
@@ -246,10 +246,10 @@ export const listRoles = (projectId) => {
 /**
  * @summary 建一个角色
  */
-export const createRole = (projectId, createRoleInputBody) => {
+export const createRole = (projectId, createRoleRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/roles`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createRoleInputBody
+        data: createRoleRequestBody
     });
 };
 /**
@@ -271,10 +271,10 @@ export const getRole = (projectId, code) => {
  * 名称、描述和权限整体替换。改完会在同一个事务里重新编译持有它的每一个成员——角色的权限变了，就是那些人的权限变了，而下一次请求是拿编译结果判定的。
  * @summary 改一个角色
  */
-export const updateRole = (projectId, code, updateRoleInputBody) => {
+export const updateRole = (projectId, code, updateRoleRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/roles/${code}`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: updateRoleInputBody
+        data: updateRoleRequestBody
     });
 };
 /**
@@ -288,10 +288,10 @@ export const listProjectSshKeys = (projectId, params) => {
 /**
  * @summary 给项目添加一把公钥
  */
-export const createProjectSshKey = (projectId, createProjectSSHKeyInputBody) => {
+export const createProjectSshKey = (projectId, createProjectSSHKeyRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createProjectSSHKeyInputBody
+        data: createProjectSSHKeyRequestBody
     });
 };
 /**
@@ -311,10 +311,10 @@ export const getProjectSshKey = (projectId, keyId) => {
 /**
  * @summary 给项目的公钥改名
  */
-export const renameProjectSshKey = (projectId, keyId, renameProjectSSHKeyInputBody) => {
+export const renameProjectSshKey = (projectId, keyId, renameProjectSSHKeyRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: renameProjectSSHKeyInputBody
+        data: renameProjectSSHKeyRequestBody
     });
 };
 /**
@@ -337,10 +337,10 @@ export const exchangeProjectToken = (projectId) => {
  * OWNER 唯一的移动方式，只有所有者本人能发起——能像普通角色那样授予的话，任何管理员都可以顺手把自己变成所有者。
  * @summary 转移项目所有权
  */
-export const transferProjectOwnership = (projectId, transferOwnershipInputBody) => {
+export const transferProjectOwnership = (projectId, transferOwnershipRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/transfer-ownership`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: transferOwnershipInputBody
+        data: transferOwnershipRequestBody
     });
 };
 /**
@@ -349,9 +349,9 @@ export const transferProjectOwnership = (projectId, transferOwnershipInputBody) 
 `consents` 要覆盖 `GET /api/v1/agreements` 返回的每一份，版本号也要一致；漏一份答 400，版本对不上答 409（多半是页面开着的时候条款改版了，重新拉一次清单即可）。已经注册过的答 409。
  * @summary 注册账号
  */
-export const register = (registerInputBody) => {
+export const register = (registerRequestBody) => {
     return request({ url: `/api/v1/register`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: registerInputBody
+        data: registerRequestBody
     });
 };

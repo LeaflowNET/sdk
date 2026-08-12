@@ -23,21 +23,21 @@
 - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
  * OpenAPI spec version: 1.0.0
  */
-import type { ActOnInstanceInputBody, AllocateFloatingIPInputBody, AttachDiskInputBody, AttachFloatingIPInputBody, AttachPortInputBody, BindFloatingIPInputBody, ConsoleOutputBody, CreateDiskInputBody, CreateInstanceImageInputBody, CreateInstanceImageOutputBody, CreatePortInputBody, CreatePrivateNetworkInputBody, CreateRouteInputBody, CreateSecurityGroupInputBody, CreateSecurityRuleInputBody, CreateSnapshotInputBody, CreateSubnetInputBody, DiskTypesOutputBody, DiskView, DisksOutputBody, FloatingIPView, FloatingIPsOutputBody, ImagesOutputBody, InstanceTypesOutputBody, InstanceView, InstancesOutputBody, Ipv6OutputBody, LaunchInstanceInputBody, LaunchInstanceOutputBody, ListDiskTypesParams, ListDisksParams, ListImagesParams, ListInstanceTypesParams, ListPrivateNetworksParams, ListSecurityGroupsParams, NextFreeCidrOutputBody, PortView, PortsOutputBody, PrivateNetworkView, PrivateNetworksOutputBody, RebuildInstanceInputBody, RebuildInstanceOutputBody, RegionsOutputBody, RenameDiskInputBody, RenameInstanceInputBody, ResizeDiskInputBody, ResizeInstanceInputBody, RouteView, RoutesOutputBody, SecurityGroupView, SecurityGroupsOutputBody, SecurityRuleView, SecurityRulesOutputBody, SetBandwidthInputBody, SnapshotView, SnapshotsOutputBody, SubnetView, SubnetsOutputBody, SuggestSubnetCidrParams, ZonesOutputBody } from './models/index.js';
+import type { ActOnInstanceRequestBody, AllocateFloatingIPRequestBody, AttachDiskRequestBody, AttachFloatingIPRequestBody, AttachPortRequestBody, BindFloatingIPRequestBody, ConsoleResponseBody, CreateDiskRequestBody, CreateInstanceImageRequestBody, CreateInstanceImageResponseBody, CreatePortRequestBody, CreatePrivateNetworkRequestBody, CreateRouteRequestBody, CreateSecurityGroupRequestBody, CreateSecurityRuleRequestBody, CreateSnapshotRequestBody, CreateSubnetRequestBody, DiskResource, DiskTypesResponseBody, DisksResponseBody, FloatingIPResource, FloatingIPsResponseBody, ImagesResponseBody, InstanceResource, InstanceTypesResponseBody, InstancesResponseBody, Ipv6ResponseBody, LaunchInstanceRequestBody, LaunchInstanceResponseBody, ListDiskTypesParams, ListDisksParams, ListImagesParams, ListInstanceTypesParams, ListPrivateNetworksParams, ListSecurityGroupsParams, NextFreeCidrResponseBody, PortResource, PortsResponseBody, PrivateNetworkResource, PrivateNetworksResponseBody, RebuildInstanceRequestBody, RebuildInstanceResponseBody, RegionsResponseBody, RenameDiskRequestBody, RenameInstanceRequestBody, ResizeDiskRequestBody, ResizeInstanceRequestBody, RouteResource, RoutesResponseBody, SecurityGroupResource, SecurityGroupsResponseBody, SecurityRuleResource, SecurityRulesResponseBody, SetBandwidthRequestBody, SnapshotResource, SnapshotsResponseBody, SubnetResource, SubnetsResponseBody, SuggestSubnetCidrParams, ZonesResponseBody } from './models/index.js';
 /**
 * @summary 列出在售硬盘类型
 */
-export declare const listDiskTypes: (params: ListDiskTypesParams) => Promise<DiskTypesOutputBody>;
+export declare const listDiskTypes: (params: ListDiskTypesParams) => Promise<DiskTypesResponseBody>;
 /**
  * 同时提供 region_code 与 availability_zone 时，只返回可挂载到该位置云服务器的云硬盘。
  * @summary 列出云硬盘
  */
-export declare const listDisks: (params?: ListDisksParams) => Promise<DisksOutputBody>;
+export declare const listDisks: (params?: ListDisksParams) => Promise<DisksResponseBody>;
 /**
  * 云硬盘创建在所选硬盘类型所属的可用区，云服务器必须位于同一可用区才能挂载。因此选定硬盘类型即确定了可用区。
  * @summary 创建云硬盘
  */
-export declare const createDisk: (createDiskInputBody: CreateDiskInputBody) => Promise<DiskView>;
+export declare const createDisk: (createDiskRequestBody: CreateDiskRequestBody) => Promise<DiskResource>;
 /**
  * 云硬盘仍处于挂载状态，或仍存在快照时，删除会被拒绝。
  * @summary 删除云硬盘
@@ -47,28 +47,28 @@ export declare const deleteDisk: (diskId: string) => Promise<void>;
  * 会同步一次底层的当前状态，因此比列表接口慢但更准确。
  * @summary 查看云硬盘
  */
-export declare const getDisk: (diskId: string) => Promise<DiskView>;
+export declare const getDisk: (diskId: string) => Promise<DiskResource>;
 /**
  * 仅可修改名称。容量请使用扩容接口，类型与可用区不可修改。
  * @summary 重命名云硬盘
  */
-export declare const renameDisk: (diskId: string, renameDiskInputBody: RenameDiskInputBody) => Promise<DiskView>;
+export declare const renameDisk: (diskId: string, renameDiskRequestBody: RenameDiskRequestBody) => Promise<DiskResource>;
 /**
  * 容量只能增加，不支持缩容。扩容完成后需在云服务器内自行扩展文件系统。
  * @summary 扩容
  */
-export declare const resizeDisk: (diskId: string, resizeDiskInputBody: ResizeDiskInputBody) => Promise<DiskView>;
+export declare const resizeDisk: (diskId: string, resizeDiskRequestBody: ResizeDiskRequestBody) => Promise<DiskResource>;
 /**
  * @summary 列出公网 IP
  */
-export declare const listFloatingIps: () => Promise<FloatingIPsOutputBody>;
+export declare const listFloatingIps: () => Promise<FloatingIPsResponseBody>;
 /**
  * 若该私有网络尚未连通外网，会一并为其接入外网。
 
 IPv6 不通过本接口申请：IPv6 地址由 SLAAC 下发到网卡，启用 IPv6 是私有网络上的一个开关。
  * @summary 申领公网 IP
  */
-export declare const allocateFloatingIp: (allocateFloatingIPInputBody: AllocateFloatingIPInputBody) => Promise<FloatingIPView>;
+export declare const allocateFloatingIp: (allocateFloatingIPRequestBody: AllocateFloatingIPRequestBody) => Promise<FloatingIPResource>;
 /**
  * 地址释放后进入冷却期才会重新分配，以免仍指向它的 DNS 记录和访问白名单立即失效。因此释放后的短时间内**无法重新申领同一个地址**，请谨慎操作。
  * @summary 释放公网 IP
@@ -77,34 +77,34 @@ export declare const releaseFloatingIp: (floatingIpId: string) => Promise<void>;
 /**
  * @summary 查看公网 IP
  */
-export declare const getFloatingIp: (floatingIpId: string) => Promise<FloatingIPView>;
+export declare const getFloatingIp: (floatingIpId: string) => Promise<FloatingIPResource>;
 /**
  * 出入两个方向同时限速。仅限制出方向无法防止入方向流量打满上联带宽。
  * @summary 设带宽上限
  */
-export declare const setFloatingIpBandwidth: (floatingIpId: string, setBandwidthInputBody: SetBandwidthInputBody) => Promise<FloatingIPView>;
+export declare const setFloatingIpBandwidth: (floatingIpId: string, setBandwidthRequestBody: SetBandwidthRequestBody) => Promise<FloatingIPResource>;
 /**
  * 地址仍归本项目持有，只是不再指向任何网卡。
  * @summary 解绑公网 IP
  */
-export declare const unbindFloatingIp: (floatingIpId: string) => Promise<FloatingIPView>;
+export declare const unbindFloatingIp: (floatingIpId: string) => Promise<FloatingIPResource>;
 /**
  * @summary 将公网 IP 绑定到网卡
  */
-export declare const bindFloatingIp: (floatingIpId: string, bindFloatingIPInputBody: BindFloatingIPInputBody) => Promise<FloatingIPView>;
+export declare const bindFloatingIp: (floatingIpId: string, bindFloatingIPRequestBody: BindFloatingIPRequestBody) => Promise<FloatingIPResource>;
 /**
  * min_ram_mb 超过所选机型内存的镜像无法启动，请据此过滤可选项。
  * @summary 列出在售镜像
  */
-export declare const listImages: (params: ListImagesParams) => Promise<ImagesOutputBody>;
+export declare const listImages: (params: ListImagesParams) => Promise<ImagesResponseBody>;
 /**
  * @summary 列出在售机型
  */
-export declare const listInstanceTypes: (params: ListInstanceTypesParams) => Promise<InstanceTypesOutputBody>;
+export declare const listInstanceTypes: (params: ListInstanceTypesParams) => Promise<InstanceTypesResponseBody>;
 /**
  * @summary 列出云服务器
  */
-export declare const listInstances: () => Promise<InstancesOutputBody>;
+export declare const listInstances: () => Promise<InstancesResponseBody>;
 /**
  * **必须提供一种登录方式**：项目上已有 SSH 公钥，或在请求中设置密码。两者都没有时请求会被拒绝，否则创建出的云服务器将无法登录。
 
@@ -113,7 +113,7 @@ export declare const listInstances: () => Promise<InstancesOutputBody>;
 接口返回时创建尚未完成（status 为 provisioning），请轮询 GET 确认结果。
  * @summary 创建云服务器
  */
-export declare const launchInstance: (launchInstanceInputBody: LaunchInstanceInputBody) => Promise<LaunchInstanceOutputBody>;
+export declare const launchInstance: (launchInstanceRequestBody: LaunchInstanceRequestBody) => Promise<LaunchInstanceResponseBody>;
 /**
  * 系统盘随云服务器一并删除。数据盘会被卸载并保留。主网卡随云服务器一并释放。
  * @summary 释放云服务器
@@ -123,92 +123,92 @@ export declare const deleteInstance: (instanceId: string) => Promise<void>;
  * 会同步一次底层的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
  * @summary 查看云服务器
  */
-export declare const getInstance: (instanceId: string) => Promise<InstanceView>;
+export declare const getInstance: (instanceId: string) => Promise<InstanceResource>;
 /**
  * 仅修改显示名称。云服务器内的主机名不变，它等于云服务器 id。
  * @summary 重命名云服务器
  */
-export declare const renameInstance: (instanceId: string, renameInstanceInputBody: RenameInstanceInputBody) => Promise<InstanceView>;
+export declare const renameInstance: (instanceId: string, renameInstanceRequestBody: RenameInstanceRequestBody) => Promise<InstanceResource>;
 /**
  * 重启为软重启，由操作系统正常关闭后重新启动。已被平台停服的云服务器需先解除停服。
  * @summary 开机、关机、重启
  */
-export declare const actOnInstance: (instanceId: string, actOnInstanceInputBody: ActOnInstanceInputBody) => Promise<InstanceView>;
+export declare const actOnInstance: (instanceId: string, actOnInstanceRequestBody: ActOnInstanceRequestBody) => Promise<InstanceResource>;
 /**
  * 返回的地址一次性使用，数分钟后失效。**请勿缓存**，每次使用前重新获取。
  * @summary 打开 VNC 控制台
  */
-export declare const openInstanceConsole: (instanceId: string) => Promise<ConsoleOutputBody>;
+export declare const openInstanceConsole: (instanceId: string) => Promise<ConsoleResponseBody>;
 /**
  * @summary 列出云服务器已挂载的云硬盘
  */
-export declare const listInstanceDisks: (instanceId: string) => Promise<DisksOutputBody>;
+export declare const listInstanceDisks: (instanceId: string) => Promise<DisksResponseBody>;
 /**
  * 云硬盘必须与云服务器位于同一地区和可用区。挂载后需在云服务器内自行分区并挂载文件系统。
  * @summary 挂载云硬盘
  */
-export declare const attachDisk: (instanceId: string, attachDiskInputBody: AttachDiskInputBody) => Promise<DiskView>;
+export declare const attachDisk: (instanceId: string, attachDiskRequestBody: AttachDiskRequestBody) => Promise<DiskResource>;
 /**
  * 请先在云服务器内卸载（umount）该设备再调用本接口，正在写入的文件系统被强制卸载会损坏数据。
  * @summary 卸载云硬盘
  */
-export declare const detachDisk: (instanceId: string, diskId: string) => Promise<DiskView>;
+export declare const detachDisk: (instanceId: string, diskId: string) => Promise<DiskResource>;
 /**
  * 公网 IP 绑定在云服务器的主网卡上。
  * @summary 为云服务器绑定公网 IP
  */
-export declare const attachInstanceFloatingIp: (instanceId: string, attachFloatingIPInputBody: AttachFloatingIPInputBody) => Promise<FloatingIPView>;
+export declare const attachInstanceFloatingIp: (instanceId: string, attachFloatingIPRequestBody: AttachFloatingIPRequestBody) => Promise<FloatingIPResource>;
 /**
  * @summary 解绑云服务器的公网 IP
  */
-export declare const detachInstanceFloatingIp: (instanceId: string, floatingIpId: string) => Promise<FloatingIPView>;
+export declare const detachInstanceFloatingIp: (instanceId: string, floatingIpId: string) => Promise<FloatingIPResource>;
 /**
  * 创建出的镜像不会自动上架，仅归本项目所有。
  * @summary 将云服务器创建为镜像
  */
-export declare const createInstanceImage: (instanceId: string, createInstanceImageInputBody: CreateInstanceImageInputBody) => Promise<CreateInstanceImageOutputBody>;
+export declare const createInstanceImage: (instanceId: string, createInstanceImageRequestBody: CreateInstanceImageRequestBody) => Promise<CreateInstanceImageResponseBody>;
 /**
  * @summary 列出云服务器的网卡
  */
-export declare const listInstancePorts: (instanceId: string) => Promise<PortsOutputBody>;
+export declare const listInstancePorts: (instanceId: string) => Promise<PortsResponseBody>;
 /**
  * @summary 挂载网卡
  */
-export declare const attachPort: (instanceId: string, attachPortInputBody: AttachPortInputBody) => Promise<PortView>;
+export declare const attachPort: (instanceId: string, attachPortRequestBody: AttachPortRequestBody) => Promise<PortResource>;
 /**
  * 主网卡不可卸载，卸载后云服务器将失去网络地址。
  * @summary 卸载网卡
  */
-export declare const detachPort: (instanceId: string, portId: string) => Promise<PortView>;
+export declare const detachPort: (instanceId: string, portId: string) => Promise<PortResource>;
 /**
  * **系统盘数据将被清除且无法恢复。** 数据盘不受影响。
  * @summary 重装系统
  */
-export declare const rebuildInstance: (instanceId: string, rebuildInstanceInputBody: RebuildInstanceInputBody) => Promise<RebuildInstanceOutputBody>;
+export declare const rebuildInstance: (instanceId: string, rebuildInstanceRequestBody: RebuildInstanceRequestBody) => Promise<RebuildInstanceResponseBody>;
 /**
  * 只能变更为同一地区、同一可用区的机型，否则已挂载的云硬盘无法随之迁移。
 
 变配后需调用确认接口才算完成；未确认时原规格占用的资源不会释放。
  * @summary 变配
  */
-export declare const resizeInstance: (instanceId: string, resizeInstanceInputBody: ResizeInstanceInputBody) => Promise<InstanceView>;
+export declare const resizeInstance: (instanceId: string, resizeInstanceRequestBody: ResizeInstanceRequestBody) => Promise<InstanceResource>;
 /**
  * @summary 确认变配
  */
-export declare const confirmInstanceResize: (instanceId: string) => Promise<InstanceView>;
+export declare const confirmInstanceResize: (instanceId: string) => Promise<InstanceResource>;
 /**
  * @summary 回滚变配
  */
-export declare const revertInstanceResize: (instanceId: string) => Promise<InstanceView>;
+export declare const revertInstanceResize: (instanceId: string) => Promise<InstanceResource>;
 /**
  * @summary 列出网卡
  */
-export declare const listPorts: () => Promise<PortsOutputBody>;
+export declare const listPorts: () => Promise<PortsResponseBody>;
 /**
  * 创建出的网卡尚未挂载到任何云服务器。主网卡不由本接口创建，它随云服务器一并创建。
  * @summary 创建网卡
  */
-export declare const createPort: (createPortInputBody: CreatePortInputBody) => Promise<PortView>;
+export declare const createPort: (createPortRequestBody: CreatePortRequestBody) => Promise<PortResource>;
 /**
  * 主网卡不可单独删除，它随云服务器一并释放。仍挂载在云服务器上的网卡也无法删除。
  * @summary 删除网卡
@@ -217,12 +217,12 @@ export declare const deletePort: (portId: string) => Promise<void>;
 /**
  * @summary 列出私有网络
  */
-export declare const listPrivateNetworks: (params?: ListPrivateNetworksParams) => Promise<PrivateNetworksOutputBody>;
+export declare const listPrivateNetworks: (params?: ListPrivateNetworksParams) => Promise<PrivateNetworksResponseBody>;
 /**
  * 同时创建一张网络、一台路由器和一个默认安全组。默认安全组拒绝全部入站流量、放行全部出站流量。
  * @summary 创建私有网络
  */
-export declare const createPrivateNetwork: (createPrivateNetworkInputBody: CreatePrivateNetworkInputBody) => Promise<PrivateNetworkView>;
+export declare const createPrivateNetwork: (createPrivateNetworkRequestBody: CreatePrivateNetworkRequestBody) => Promise<PrivateNetworkResource>;
 /**
  * 其中仍有云服务器或网卡时，释放会被拒绝。IPv6、路由器与安全组随之一并释放。
  * @summary 释放私有网络
@@ -231,17 +231,17 @@ export declare const deletePrivateNetwork: (privateNetworkId: string) => Promise
 /**
  * @summary 查看私有网络
  */
-export declare const getPrivateNetwork: (privateNetworkId: string) => Promise<PrivateNetworkView>;
+export declare const getPrivateNetwork: (privateNetworkId: string) => Promise<PrivateNetworkResource>;
 /**
  * 项目中仍有已绑定的公网 IP 时会被拒绝：断开外网接入会使这些地址立即不可达。
  * @summary 断开私有网络的外网接入
  */
-export declare const detachInternetGateway: (privateNetworkId: string) => Promise<PrivateNetworkView>;
+export declare const detachInternetGateway: (privateNetworkId: string) => Promise<PrivateNetworkResource>;
 /**
  * 申领公网 IP 时会自动完成此步骤，通常无需单独调用。启用 IPv6 前必须先接入外网。
  * @summary 为私有网络接入外网
  */
-export declare const attachInternetGateway: (privateNetworkId: string) => Promise<PrivateNetworkView>;
+export declare const attachInternetGateway: (privateNetworkId: string) => Promise<PrivateNetworkResource>;
 /**
  * 释放的前缀不会立即重新分配。
  * @summary 关闭私有网络的 IPv6
@@ -250,23 +250,23 @@ export declare const disablePrivateNetworkIpv6: (privateNetworkId: string) => Pr
 /**
  * @summary 查看私有网络的 IPv6
  */
-export declare const getPrivateNetworkIpv6: (privateNetworkId: string) => Promise<Ipv6OutputBody>;
+export declare const getPrivateNetworkIpv6: (privateNetworkId: string) => Promise<Ipv6ResponseBody>;
 /**
  * 为该私有网络分配一个 /64 前缀。IPv6 地址由 SLAAC 下发到网卡，无需也无法单独申领。
 
 前提是该私有网络已接入外网。
  * @summary 为私有网络启用 IPv6
  */
-export declare const enablePrivateNetworkIpv6: (privateNetworkId: string) => Promise<Ipv6OutputBody>;
+export declare const enablePrivateNetworkIpv6: (privateNetworkId: string) => Promise<Ipv6ResponseBody>;
 /**
  * @summary 列出静态路由
  */
-export declare const listRoutes: (privateNetworkId: string) => Promise<RoutesOutputBody>;
+export declare const listRoutes: (privateNetworkId: string) => Promise<RoutesResponseBody>;
 /**
  * 以下三种会导致网络中断的写法会被拒绝：目的网段为 0.0.0.0/0（覆盖默认路由，所有公网 IP 立即失效）、目的网段为某个子网自身（覆盖直连路由）、下一跳为某个子网的网关（指回路由器自身）。
  * @summary 创建静态路由
  */
-export declare const createRoute: (privateNetworkId: string, createRouteInputBody: CreateRouteInputBody) => Promise<RouteView>;
+export declare const createRoute: (privateNetworkId: string, createRouteRequestBody: CreateRouteRequestBody) => Promise<RouteResource>;
 /**
  * @summary 删除静态路由
  */
@@ -275,16 +275,16 @@ export declare const deleteRoute: (privateNetworkId: string, routeId: string) =>
  * IPv6 子网也在返回结果中，ip_version 为 6。它在启用 IPv6 时自动创建，不可单独删除。
  * @summary 列出子网
  */
-export declare const listSubnets: (privateNetworkId: string) => Promise<SubnetsOutputBody>;
+export declare const listSubnets: (privateNetworkId: string) => Promise<SubnetsResponseBody>;
 /**
  * @summary 创建子网
  */
-export declare const createSubnet: (privateNetworkId: string, createSubnetInputBody: CreateSubnetInputBody) => Promise<SubnetView>;
+export declare const createSubnet: (privateNetworkId: string, createSubnetRequestBody: CreateSubnetRequestBody) => Promise<SubnetResource>;
 /**
  * 返回的只是建议值，创建子网时仍会重新校验。用于避免手工计算下一个空闲网段时出错。
  * @summary 推荐下一个空闲网段
  */
-export declare const suggestSubnetCidr: (privateNetworkId: string, params?: SuggestSubnetCidrParams) => Promise<NextFreeCidrOutputBody>;
+export declare const suggestSubnetCidr: (privateNetworkId: string, params?: SuggestSubnetCidrParams) => Promise<NextFreeCidrResponseBody>;
 /**
  * 该子网中仍有网卡，或仍有静态路由的下一跳落在该网段内时，删除会被拒绝。
  * @summary 删除子网
@@ -293,21 +293,21 @@ export declare const deleteSubnet: (privateNetworkId: string, subnetId: string) 
 /**
  * @summary 列出可用的地区
  */
-export declare const listRegions: () => Promise<RegionsOutputBody>;
+export declare const listRegions: () => Promise<RegionsResponseBody>;
 /**
  * 云硬盘与云服务器必须位于同一可用区才能挂载，创建前请确认所选可用区。
  * @summary 列出一个地区的可用区
  */
-export declare const listAvailabilityZones: (regionCode: string) => Promise<ZonesOutputBody>;
+export declare const listAvailabilityZones: (regionCode: string) => Promise<ZonesResponseBody>;
 /**
  * @summary 列出安全组
  */
-export declare const listSecurityGroups: (params?: ListSecurityGroupsParams) => Promise<SecurityGroupsOutputBody>;
+export declare const listSecurityGroups: (params?: ListSecurityGroupsParams) => Promise<SecurityGroupsResponseBody>;
 /**
  * 新建的安全组带有一条规则：放行 ICMP 需要分片（type 3 code 4）。缺少该规则会导致路径 MTU 发现失败，表现为连接建立后传输大数据包时卡住。
  * @summary 创建安全组
  */
-export declare const createSecurityGroup: (createSecurityGroupInputBody: CreateSecurityGroupInputBody) => Promise<SecurityGroupView>;
+export declare const createSecurityGroup: (createSecurityGroupRequestBody: CreateSecurityGroupRequestBody) => Promise<SecurityGroupResource>;
 /**
  * 默认安全组不可删除，它随私有网络一并释放。仍被网卡引用的安全组也无法删除。
  * @summary 删除安全组
@@ -316,16 +316,16 @@ export declare const deleteSecurityGroup: (securityGroupId: string) => Promise<v
 /**
  * @summary 查看安全组
  */
-export declare const getSecurityGroup: (securityGroupId: string) => Promise<SecurityGroupView>;
+export declare const getSecurityGroup: (securityGroupId: string) => Promise<SecurityGroupResource>;
 /**
  * @summary 列出安全组规则
  */
-export declare const listSecurityGroupRules: (securityGroupId: string) => Promise<SecurityRulesOutputBody>;
+export declare const listSecurityGroupRules: (securityGroupId: string) => Promise<SecurityRulesResponseBody>;
 /**
  * 重复添加同一条规则会被拒绝。判重时 `0.0.0.0/0`、`::/0` 与留空视为等同。
  * @summary 创建安全组规则
  */
-export declare const createSecurityGroupRule: (securityGroupId: string, createSecurityRuleInputBody: CreateSecurityRuleInputBody) => Promise<SecurityRuleView>;
+export declare const createSecurityGroupRule: (securityGroupId: string, createSecurityRuleRequestBody: CreateSecurityRuleRequestBody) => Promise<SecurityRuleResource>;
 /**
  * @summary 删除安全组规则
  */
@@ -333,12 +333,12 @@ export declare const deleteSecurityGroupRule: (securityGroupId: string, ruleId: 
 /**
  * @summary 列出快照
  */
-export declare const listSnapshots: () => Promise<SnapshotsOutputBody>;
+export declare const listSnapshots: () => Promise<SnapshotsResponseBody>;
 /**
  * 运行中云服务器上挂载的云硬盘同样可以创建快照。快照记录的是某一时刻的块设备状态，文件系统层面可能不一致，重要数据建议先在云服务器内执行 sync。
  * @summary 创建快照
  */
-export declare const createSnapshot: (createSnapshotInputBody: CreateSnapshotInputBody) => Promise<SnapshotView>;
+export declare const createSnapshot: (createSnapshotRequestBody: CreateSnapshotRequestBody) => Promise<SnapshotResource>;
 /**
  * @summary 删除快照
  */
@@ -346,7 +346,7 @@ export declare const deleteSnapshot: (snapshotId: string) => Promise<void>;
 /**
  * @summary 查看快照
  */
-export declare const getSnapshot: (snapshotId: string) => Promise<SnapshotView>;
+export declare const getSnapshot: (snapshotId: string) => Promise<SnapshotResource>;
 export type ListDiskTypesResult = NonNullable<Awaited<ReturnType<typeof listDiskTypes>>>;
 export type ListDisksResult = NonNullable<Awaited<ReturnType<typeof listDisks>>>;
 export type CreateDiskResult = NonNullable<Awaited<ReturnType<typeof createDisk>>>;

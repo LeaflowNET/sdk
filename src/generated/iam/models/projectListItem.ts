@@ -19,10 +19,10 @@
 `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
  * OpenAPI spec version: 1.0.0
  */
-import type { GrantView } from './grantView.js';
-import type { ProjectView } from './projectView.js';
+import type { GrantResource } from './grantResource.js';
+import type { ProjectResource } from './projectResource.js';
 
 export interface ProjectListItem {
-  grant: GrantView;
-  project: ProjectView;
+  grant: GrantResource;
+  project: ProjectResource;
 }

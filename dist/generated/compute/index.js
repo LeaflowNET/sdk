@@ -20,10 +20,10 @@ export const listDisks = (params) => {
  * 云硬盘创建在所选硬盘类型所属的可用区，云服务器必须位于同一可用区才能挂载。因此选定硬盘类型即确定了可用区。
  * @summary 创建云硬盘
  */
-export const createDisk = (createDiskInputBody) => {
+export const createDisk = (createDiskRequestBody) => {
     return request({ url: `/api/v1/disks`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createDiskInputBody
+        data: createDiskRequestBody
     });
 };
 /**
@@ -46,20 +46,20 @@ export const getDisk = (diskId) => {
  * 仅可修改名称。容量请使用扩容接口，类型与可用区不可修改。
  * @summary 重命名云硬盘
  */
-export const renameDisk = (diskId, renameDiskInputBody) => {
+export const renameDisk = (diskId, renameDiskRequestBody) => {
     return request({ url: `/api/v1/disks/${diskId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: renameDiskInputBody
+        data: renameDiskRequestBody
     });
 };
 /**
  * 容量只能增加，不支持缩容。扩容完成后需在云服务器内自行扩展文件系统。
  * @summary 扩容
  */
-export const resizeDisk = (diskId, resizeDiskInputBody) => {
+export const resizeDisk = (diskId, resizeDiskRequestBody) => {
     return request({ url: `/api/v1/disks/${diskId}/resize`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: resizeDiskInputBody
+        data: resizeDiskRequestBody
     });
 };
 /**
@@ -75,10 +75,10 @@ export const listFloatingIps = () => {
 IPv6 不通过本接口申请：IPv6 地址由 SLAAC 下发到网卡，启用 IPv6 是私有网络上的一个开关。
  * @summary 申领公网 IP
  */
-export const allocateFloatingIp = (allocateFloatingIPInputBody) => {
+export const allocateFloatingIp = (allocateFloatingIPRequestBody) => {
     return request({ url: `/api/v1/floating-ips`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: allocateFloatingIPInputBody
+        data: allocateFloatingIPRequestBody
     });
 };
 /**
@@ -100,10 +100,10 @@ export const getFloatingIp = (floatingIpId) => {
  * 出入两个方向同时限速。仅限制出方向无法防止入方向流量打满上联带宽。
  * @summary 设带宽上限
  */
-export const setFloatingIpBandwidth = (floatingIpId, setBandwidthInputBody) => {
+export const setFloatingIpBandwidth = (floatingIpId, setBandwidthRequestBody) => {
     return request({ url: `/api/v1/floating-ips/${floatingIpId}/bandwidth`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: setBandwidthInputBody
+        data: setBandwidthRequestBody
     });
 };
 /**
@@ -117,10 +117,10 @@ export const unbindFloatingIp = (floatingIpId) => {
 /**
  * @summary 将公网 IP 绑定到网卡
  */
-export const bindFloatingIp = (floatingIpId, bindFloatingIPInputBody) => {
+export const bindFloatingIp = (floatingIpId, bindFloatingIPRequestBody) => {
     return request({ url: `/api/v1/floating-ips/${floatingIpId}/binding`, method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
-        data: bindFloatingIPInputBody
+        data: bindFloatingIPRequestBody
     });
 };
 /**
@@ -155,10 +155,10 @@ export const listInstances = () => {
 接口返回时创建尚未完成（status 为 provisioning），请轮询 GET 确认结果。
  * @summary 创建云服务器
  */
-export const launchInstance = (launchInstanceInputBody) => {
+export const launchInstance = (launchInstanceRequestBody) => {
     return request({ url: `/api/v1/instances`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: launchInstanceInputBody
+        data: launchInstanceRequestBody
     });
 };
 /**
@@ -181,20 +181,20 @@ export const getInstance = (instanceId) => {
  * 仅修改显示名称。云服务器内的主机名不变，它等于云服务器 id。
  * @summary 重命名云服务器
  */
-export const renameInstance = (instanceId, renameInstanceInputBody) => {
+export const renameInstance = (instanceId, renameInstanceRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: renameInstanceInputBody
+        data: renameInstanceRequestBody
     });
 };
 /**
  * 重启为软重启，由操作系统正常关闭后重新启动。已被平台停服的云服务器需先解除停服。
  * @summary 开机、关机、重启
  */
-export const actOnInstance = (instanceId, actOnInstanceInputBody) => {
+export const actOnInstance = (instanceId, actOnInstanceRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}/actions`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: actOnInstanceInputBody
+        data: actOnInstanceRequestBody
     });
 };
 /**
@@ -216,10 +216,10 @@ export const listInstanceDisks = (instanceId) => {
  * 云硬盘必须与云服务器位于同一地区和可用区。挂载后需在云服务器内自行分区并挂载文件系统。
  * @summary 挂载云硬盘
  */
-export const attachDisk = (instanceId, attachDiskInputBody) => {
+export const attachDisk = (instanceId, attachDiskRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}/disks`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: attachDiskInputBody
+        data: attachDiskRequestBody
     });
 };
 /**
@@ -234,10 +234,10 @@ export const detachDisk = (instanceId, diskId) => {
  * 公网 IP 绑定在云服务器的主网卡上。
  * @summary 为云服务器绑定公网 IP
  */
-export const attachInstanceFloatingIp = (instanceId, attachFloatingIPInputBody) => {
+export const attachInstanceFloatingIp = (instanceId, attachFloatingIPRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}/floating-ips`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: attachFloatingIPInputBody
+        data: attachFloatingIPRequestBody
     });
 };
 /**
@@ -251,10 +251,10 @@ export const detachInstanceFloatingIp = (instanceId, floatingIpId) => {
  * 创建出的镜像不会自动上架，仅归本项目所有。
  * @summary 将云服务器创建为镜像
  */
-export const createInstanceImage = (instanceId, createInstanceImageInputBody) => {
+export const createInstanceImage = (instanceId, createInstanceImageRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}/image`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createInstanceImageInputBody
+        data: createInstanceImageRequestBody
     });
 };
 /**
@@ -267,10 +267,10 @@ export const listInstancePorts = (instanceId) => {
 /**
  * @summary 挂载网卡
  */
-export const attachPort = (instanceId, attachPortInputBody) => {
+export const attachPort = (instanceId, attachPortRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}/ports`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: attachPortInputBody
+        data: attachPortRequestBody
     });
 };
 /**
@@ -285,10 +285,10 @@ export const detachPort = (instanceId, portId) => {
  * **系统盘数据将被清除且无法恢复。** 数据盘不受影响。
  * @summary 重装系统
  */
-export const rebuildInstance = (instanceId, rebuildInstanceInputBody) => {
+export const rebuildInstance = (instanceId, rebuildInstanceRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}/rebuild`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: rebuildInstanceInputBody
+        data: rebuildInstanceRequestBody
     });
 };
 /**
@@ -297,10 +297,10 @@ export const rebuildInstance = (instanceId, rebuildInstanceInputBody) => {
 变配后需调用确认接口才算完成；未确认时原规格占用的资源不会释放。
  * @summary 变配
  */
-export const resizeInstance = (instanceId, resizeInstanceInputBody) => {
+export const resizeInstance = (instanceId, resizeInstanceRequestBody) => {
     return request({ url: `/api/v1/instances/${instanceId}/resize`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: resizeInstanceInputBody
+        data: resizeInstanceRequestBody
     });
 };
 /**
@@ -328,10 +328,10 @@ export const listPorts = () => {
  * 创建出的网卡尚未挂载到任何云服务器。主网卡不由本接口创建，它随云服务器一并创建。
  * @summary 创建网卡
  */
-export const createPort = (createPortInputBody) => {
+export const createPort = (createPortRequestBody) => {
     return request({ url: `/api/v1/ports`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createPortInputBody
+        data: createPortRequestBody
     });
 };
 /**
@@ -354,10 +354,10 @@ export const listPrivateNetworks = (params) => {
  * 同时创建一张网络、一台路由器和一个默认安全组。默认安全组拒绝全部入站流量、放行全部出站流量。
  * @summary 创建私有网络
  */
-export const createPrivateNetwork = (createPrivateNetworkInputBody) => {
+export const createPrivateNetwork = (createPrivateNetworkRequestBody) => {
     return request({ url: `/api/v1/private-networks`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createPrivateNetworkInputBody
+        data: createPrivateNetworkRequestBody
     });
 };
 /**
@@ -427,10 +427,10 @@ export const listRoutes = (privateNetworkId) => {
  * 以下三种会导致网络中断的写法会被拒绝：目的网段为 0.0.0.0/0（覆盖默认路由，所有公网 IP 立即失效）、目的网段为某个子网自身（覆盖直连路由）、下一跳为某个子网的网关（指回路由器自身）。
  * @summary 创建静态路由
  */
-export const createRoute = (privateNetworkId, createRouteInputBody) => {
+export const createRoute = (privateNetworkId, createRouteRequestBody) => {
     return request({ url: `/api/v1/private-networks/${privateNetworkId}/routes`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createRouteInputBody
+        data: createRouteRequestBody
     });
 };
 /**
@@ -451,10 +451,10 @@ export const listSubnets = (privateNetworkId) => {
 /**
  * @summary 创建子网
  */
-export const createSubnet = (privateNetworkId, createSubnetInputBody) => {
+export const createSubnet = (privateNetworkId, createSubnetRequestBody) => {
     return request({ url: `/api/v1/private-networks/${privateNetworkId}/subnets`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createSubnetInputBody
+        data: createSubnetRequestBody
     });
 };
 /**
@@ -501,10 +501,10 @@ export const listSecurityGroups = (params) => {
  * 新建的安全组带有一条规则：放行 ICMP 需要分片（type 3 code 4）。缺少该规则会导致路径 MTU 发现失败，表现为连接建立后传输大数据包时卡住。
  * @summary 创建安全组
  */
-export const createSecurityGroup = (createSecurityGroupInputBody) => {
+export const createSecurityGroup = (createSecurityGroupRequestBody) => {
     return request({ url: `/api/v1/security-groups`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createSecurityGroupInputBody
+        data: createSecurityGroupRequestBody
     });
 };
 /**
@@ -533,10 +533,10 @@ export const listSecurityGroupRules = (securityGroupId) => {
  * 重复添加同一条规则会被拒绝。判重时 `0.0.0.0/0`、`::/0` 与留空视为等同。
  * @summary 创建安全组规则
  */
-export const createSecurityGroupRule = (securityGroupId, createSecurityRuleInputBody) => {
+export const createSecurityGroupRule = (securityGroupId, createSecurityRuleRequestBody) => {
     return request({ url: `/api/v1/security-groups/${securityGroupId}/rules`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createSecurityRuleInputBody
+        data: createSecurityRuleRequestBody
     });
 };
 /**
@@ -557,10 +557,10 @@ export const listSnapshots = () => {
  * 运行中云服务器上挂载的云硬盘同样可以创建快照。快照记录的是某一时刻的块设备状态，文件系统层面可能不一致，重要数据建议先在云服务器内执行 sync。
  * @summary 创建快照
  */
-export const createSnapshot = (createSnapshotInputBody) => {
+export const createSnapshot = (createSnapshotRequestBody) => {
     return request({ url: `/api/v1/snapshots`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createSnapshotInputBody
+        data: createSnapshotRequestBody
     });
 };
 /**
