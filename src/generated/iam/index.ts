@@ -22,42 +22,42 @@
 import type {
   AcceptConsentsRequestBody,
   AcceptInvitationByTokenRequestBody,
-  AcceptInvitationResponseBody,
+  AcceptedInvitationResponseBody,
   AccountResource,
+  AgreementListResponseBody,
+  ConsentListResponseBody,
   CreateProjectRequestBody,
   CreateProjectSSHKeyRequestBody,
   CreateRoleRequestBody,
   CreateUserSSHKeyRequestBody,
-  ExchangeTokenResponseBody,
   IdentityVerificationResource,
+  InvitationListResponseBody,
   IssueInvitationRequestBody,
-  IssueInvitationResponseBody,
-  ListAgreementsResponseBody,
-  ListConsentsResponseBody,
-  ListInvitationsResponseBody,
+  IssuedInvitationResponseBody,
   ListMembersParams,
-  ListMembersResponseBody,
   ListMyInvitationsParams,
   ListMySshKeysParams,
-  ListPermissionsResponseBody,
   ListProjectInvitationsParams,
   ListProjectSshKeysParams,
   ListProjectsParams,
-  ListProjectsResponseBody,
-  ListRolesResponseBody,
-  ListSSHKeysResponseBody,
+  MemberListResponseBody,
   MemberResource,
   MembershipResource,
-  ProjectListItem,
+  OwnershipTransferResponseBody,
+  PermissionListResponseBody,
+  ProjectAccessListResponseBody,
+  ProjectAccessResource,
+  ProjectTokenResponseBody,
   RegisterRequestBody,
   RenameProjectSSHKeyRequestBody,
   RenameUserSSHKeyRequestBody,
+  RoleListResponseBody,
   RoleResource,
+  SSHKeyListResponseBody,
   SSHKeyResource,
   SetMemberRolesRequestBody,
   SubmitIdentityVerificationRequestBody,
   TransferOwnershipRequestBody,
-  TransferOwnershipResponseBody,
   UpdateProjectRequestBody,
   UpdateRoleRequestBody
 } from './models/index.js';
@@ -75,7 +75,7 @@ import { request } from '../../http.js';
 export const listAgreements = (
     
  ) => {
-      return request<ListAgreementsResponseBody>(
+      return request<AgreementListResponseBody>(
       {url: `/api/v1/agreements`, method: 'GET'
     },
       );
@@ -101,7 +101,7 @@ export const getAccount = (
 export const listConsents = (
     
  ) => {
-      return request<ListConsentsResponseBody>(
+      return request<ConsentListResponseBody>(
       {url: `/api/v1/me/consents`, method: 'GET'
     },
       );
@@ -159,7 +159,7 @@ export const submitIdentityVerification = (
 export const listMyInvitations = (
     params?: ListMyInvitationsParams,
  ) => {
-      return request<ListInvitationsResponseBody>(
+      return request<InvitationListResponseBody>(
       {url: `/api/v1/me/invitations`, method: 'GET',
         params
     },
@@ -173,7 +173,7 @@ export const listMyInvitations = (
 export const acceptInvitationByToken = (
     acceptInvitationByTokenRequestBody: AcceptInvitationByTokenRequestBody,
  ) => {
-      return request<AcceptInvitationResponseBody>(
+      return request<AcceptedInvitationResponseBody>(
       {url: `/api/v1/me/invitations/accept`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: acceptInvitationByTokenRequestBody
@@ -188,7 +188,7 @@ export const acceptInvitationByToken = (
 export const acceptInvitation = (
     invitationId: string,
  ) => {
-      return request<AcceptInvitationResponseBody>(
+      return request<AcceptedInvitationResponseBody>(
       {url: `/api/v1/me/invitations/${invitationId}/accept`, method: 'POST'
     },
       );
@@ -200,7 +200,7 @@ export const acceptInvitation = (
 export const listMySshKeys = (
     params?: ListMySshKeysParams,
  ) => {
-      return request<ListSSHKeysResponseBody>(
+      return request<SSHKeyListResponseBody>(
       {url: `/api/v1/me/ssh-keys`, method: 'GET',
         params
     },
@@ -269,7 +269,7 @@ export const renameMySshKey = (
 export const listPermissions = (
     
  ) => {
-      return request<ListPermissionsResponseBody>(
+      return request<PermissionListResponseBody>(
       {url: `/api/v1/permissions`, method: 'GET'
     },
       );
@@ -282,7 +282,7 @@ export const listPermissions = (
 export const listProjects = (
     params?: ListProjectsParams,
  ) => {
-      return request<ListProjectsResponseBody>(
+      return request<ProjectAccessListResponseBody>(
       {url: `/api/v1/projects`, method: 'GET',
         params
     },
@@ -296,7 +296,7 @@ export const listProjects = (
 export const createProject = (
     createProjectRequestBody: CreateProjectRequestBody,
  ) => {
-      return request<ProjectListItem>(
+      return request<ProjectAccessResource>(
       {url: `/api/v1/projects`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createProjectRequestBody
@@ -311,7 +311,7 @@ export const createProject = (
 export const deleteProject = (
     projectId: string,
  ) => {
-      return request<ProjectListItem>(
+      return request<ProjectAccessResource>(
       {url: `/api/v1/projects/${projectId}`, method: 'DELETE'
     },
       );
@@ -324,7 +324,7 @@ export const deleteProject = (
 export const getProject = (
     projectId: string,
  ) => {
-      return request<ProjectListItem>(
+      return request<ProjectAccessResource>(
       {url: `/api/v1/projects/${projectId}`, method: 'GET'
     },
       );
@@ -337,7 +337,7 @@ export const updateProject = (
     projectId: string,
     updateProjectRequestBody: UpdateProjectRequestBody,
  ) => {
-      return request<ProjectListItem>(
+      return request<ProjectAccessResource>(
       {url: `/api/v1/projects/${projectId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateProjectRequestBody
@@ -353,7 +353,7 @@ export const listProjectInvitations = (
     projectId: string,
     params?: ListProjectInvitationsParams,
  ) => {
-      return request<ListInvitationsResponseBody>(
+      return request<InvitationListResponseBody>(
       {url: `/api/v1/projects/${projectId}/invitations`, method: 'GET',
         params
     },
@@ -368,7 +368,7 @@ export const issueInvitation = (
     projectId: string,
     issueInvitationRequestBody: IssueInvitationRequestBody,
  ) => {
-      return request<IssueInvitationResponseBody>(
+      return request<IssuedInvitationResponseBody>(
       {url: `/api/v1/projects/${projectId}/invitations`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: issueInvitationRequestBody
@@ -396,7 +396,7 @@ export const listMembers = (
     projectId: string,
     params?: ListMembersParams,
  ) => {
-      return request<ListMembersResponseBody>(
+      return request<MemberListResponseBody>(
       {url: `/api/v1/projects/${projectId}/members`, method: 'GET',
         params
     },
@@ -453,7 +453,7 @@ export const getProjectMembership = (
 export const listRoles = (
     projectId: string,
  ) => {
-      return request<ListRolesResponseBody>(
+      return request<RoleListResponseBody>(
       {url: `/api/v1/projects/${projectId}/roles`, method: 'GET'
     },
       );
@@ -525,7 +525,7 @@ export const listProjectSshKeys = (
     projectId: string,
     params?: ListProjectSshKeysParams,
  ) => {
-      return request<ListSSHKeysResponseBody>(
+      return request<SSHKeyListResponseBody>(
       {url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'GET',
         params
     },
@@ -604,7 +604,7 @@ export const renameProjectSshKey = (
 export const exchangeProjectToken = (
     projectId: string,
  ) => {
-      return request<ExchangeTokenResponseBody>(
+      return request<ProjectTokenResponseBody>(
       {url: `/api/v1/projects/${projectId}/token`, method: 'POST'
     },
       );
@@ -618,7 +618,7 @@ export const transferProjectOwnership = (
     projectId: string,
     transferOwnershipRequestBody: TransferOwnershipRequestBody,
  ) => {
-      return request<TransferOwnershipResponseBody>(
+      return request<OwnershipTransferResponseBody>(
       {url: `/api/v1/projects/${projectId}/transfer-ownership`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: transferOwnershipRequestBody

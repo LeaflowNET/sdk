@@ -41,16 +41,16 @@ import type {
   CreateSecurityRuleRequestBody,
   CreateSnapshotRequestBody,
   CreateSubnetRequestBody,
+  DiskListResponseBody,
   DiskResource,
-  DiskTypesResponseBody,
-  DisksResponseBody,
+  DiskTypeListResponseBody,
+  FloatingIPListResponseBody,
   FloatingIPResource,
-  FloatingIPsResponseBody,
-  ImagesResponseBody,
+  IPv6ResponseBody,
+  ImageListResponseBody,
+  InstanceListResponseBody,
   InstanceResource,
-  InstanceTypesResponseBody,
-  InstancesResponseBody,
-  Ipv6ResponseBody,
+  InstanceTypeListResponseBody,
   LaunchInstanceRequestBody,
   LaunchInstanceResponseBody,
   ListDiskTypesParams,
@@ -60,30 +60,30 @@ import type {
   ListPrivateNetworksParams,
   ListSecurityGroupsParams,
   NextFreeCidrResponseBody,
+  PortListResponseBody,
   PortResource,
-  PortsResponseBody,
+  PrivateNetworkListResponseBody,
   PrivateNetworkResource,
-  PrivateNetworksResponseBody,
   RebuildInstanceRequestBody,
   RebuildInstanceResponseBody,
-  RegionsResponseBody,
+  RegionListResponseBody,
   RenameDiskRequestBody,
   RenameInstanceRequestBody,
   ResizeDiskRequestBody,
   ResizeInstanceRequestBody,
+  RouteListResponseBody,
   RouteResource,
-  RoutesResponseBody,
+  SecurityGroupListResponseBody,
   SecurityGroupResource,
-  SecurityGroupsResponseBody,
+  SecurityRuleListResponseBody,
   SecurityRuleResource,
-  SecurityRulesResponseBody,
   SetBandwidthRequestBody,
+  SnapshotListResponseBody,
   SnapshotResource,
-  SnapshotsResponseBody,
+  SubnetListResponseBody,
   SubnetResource,
-  SubnetsResponseBody,
   SuggestSubnetCidrParams,
-  ZonesResponseBody
+  ZoneListResponseBody
 } from './models/index.js';
 
 import { request } from '../../http.js';
@@ -96,7 +96,7 @@ import { request } from '../../http.js';
 export const listDiskTypes = (
     params: ListDiskTypesParams,
  ) => {
-      return request<DiskTypesResponseBody>(
+      return request<DiskTypeListResponseBody>(
       {url: `/api/v1/disk-types`, method: 'GET',
         params
     },
@@ -110,7 +110,7 @@ export const listDiskTypes = (
 export const listDisks = (
     params?: ListDisksParams,
  ) => {
-      return request<DisksResponseBody>(
+      return request<DiskListResponseBody>(
       {url: `/api/v1/disks`, method: 'GET',
         params
     },
@@ -196,7 +196,7 @@ export const resizeDisk = (
 export const listFloatingIps = (
     
  ) => {
-      return request<FloatingIPsResponseBody>(
+      return request<FloatingIPListResponseBody>(
       {url: `/api/v1/floating-ips`, method: 'GET'
     },
       );
@@ -295,7 +295,7 @@ export const bindFloatingIp = (
 export const listImages = (
     params: ListImagesParams,
  ) => {
-      return request<ImagesResponseBody>(
+      return request<ImageListResponseBody>(
       {url: `/api/v1/images`, method: 'GET',
         params
     },
@@ -308,7 +308,7 @@ export const listImages = (
 export const listInstanceTypes = (
     params: ListInstanceTypesParams,
  ) => {
-      return request<InstanceTypesResponseBody>(
+      return request<InstanceTypeListResponseBody>(
       {url: `/api/v1/instance-types`, method: 'GET',
         params
     },
@@ -321,7 +321,7 @@ export const listInstanceTypes = (
 export const listInstances = (
     
  ) => {
-      return request<InstancesResponseBody>(
+      return request<InstanceListResponseBody>(
       {url: `/api/v1/instances`, method: 'GET'
     },
       );
@@ -423,7 +423,7 @@ export const openInstanceConsole = (
 export const listInstanceDisks = (
     instanceId: string,
  ) => {
-      return request<DisksResponseBody>(
+      return request<DiskListResponseBody>(
       {url: `/api/v1/instances/${instanceId}/disks`, method: 'GET'
     },
       );
@@ -510,7 +510,7 @@ export const createInstanceImage = (
 export const listInstancePorts = (
     instanceId: string,
  ) => {
-      return request<PortsResponseBody>(
+      return request<PortListResponseBody>(
       {url: `/api/v1/instances/${instanceId}/ports`, method: 'GET'
     },
       );
@@ -609,7 +609,7 @@ export const revertInstanceResize = (
 export const listPorts = (
     
  ) => {
-      return request<PortsResponseBody>(
+      return request<PortListResponseBody>(
       {url: `/api/v1/ports`, method: 'GET'
     },
       );
@@ -649,7 +649,7 @@ export const deletePort = (
 export const listPrivateNetworks = (
     params?: ListPrivateNetworksParams,
  ) => {
-      return request<PrivateNetworksResponseBody>(
+      return request<PrivateNetworkListResponseBody>(
       {url: `/api/v1/private-networks`, method: 'GET',
         params
     },
@@ -741,7 +741,7 @@ export const disablePrivateNetworkIpv6 = (
 export const getPrivateNetworkIpv6 = (
     privateNetworkId: string,
  ) => {
-      return request<Ipv6ResponseBody>(
+      return request<IPv6ResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/ipv6`, method: 'GET'
     },
       );
@@ -756,7 +756,7 @@ export const getPrivateNetworkIpv6 = (
 export const enablePrivateNetworkIpv6 = (
     privateNetworkId: string,
  ) => {
-      return request<Ipv6ResponseBody>(
+      return request<IPv6ResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/ipv6`, method: 'POST'
     },
       );
@@ -768,7 +768,7 @@ export const enablePrivateNetworkIpv6 = (
 export const listRoutes = (
     privateNetworkId: string,
  ) => {
-      return request<RoutesResponseBody>(
+      return request<RouteListResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/routes`, method: 'GET'
     },
       );
@@ -810,7 +810,7 @@ export const deleteRoute = (
 export const listSubnets = (
     privateNetworkId: string,
  ) => {
-      return request<SubnetsResponseBody>(
+      return request<SubnetListResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets`, method: 'GET'
     },
       );
@@ -866,7 +866,7 @@ export const deleteSubnet = (
 export const listRegions = (
     
  ) => {
-      return request<RegionsResponseBody>(
+      return request<RegionListResponseBody>(
       {url: `/api/v1/regions`, method: 'GET'
     },
       );
@@ -879,7 +879,7 @@ export const listRegions = (
 export const listAvailabilityZones = (
     regionCode: string,
  ) => {
-      return request<ZonesResponseBody>(
+      return request<ZoneListResponseBody>(
       {url: `/api/v1/regions/${regionCode}/availability-zones`, method: 'GET'
     },
       );
@@ -891,7 +891,7 @@ export const listAvailabilityZones = (
 export const listSecurityGroups = (
     params?: ListSecurityGroupsParams,
  ) => {
-      return request<SecurityGroupsResponseBody>(
+      return request<SecurityGroupListResponseBody>(
       {url: `/api/v1/security-groups`, method: 'GET',
         params
     },
@@ -944,7 +944,7 @@ export const getSecurityGroup = (
 export const listSecurityGroupRules = (
     securityGroupId: string,
  ) => {
-      return request<SecurityRulesResponseBody>(
+      return request<SecurityRuleListResponseBody>(
       {url: `/api/v1/security-groups/${securityGroupId}/rules`, method: 'GET'
     },
       );
@@ -985,7 +985,7 @@ export const deleteSecurityGroupRule = (
 export const listSnapshots = (
     
  ) => {
-      return request<SnapshotsResponseBody>(
+      return request<SnapshotListResponseBody>(
       {url: `/api/v1/snapshots`, method: 'GET'
     },
       );

@@ -28,7 +28,7 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
 - 三种结束事件：`done` 本次 turn 完成（附带最终状态）、`paused` 助手在等待用户处理（重新取回对话文档读 `wait`）、`stalled` 执行已中断且不会恢复，不要重连。
  * OpenAPI spec version: 1.0.0
  */
-import type { AnswerRequestBody, ChannelResource, ClaimCodeResponseBody, CreateChannelRequestBody, CreateThreadRequestBody, DecideRequestBody, DocumentResource, ListBindingsParams, ListBindingsResponseBody, ListChannelRejectionsParams, ListChannelsParams, ListChannelsResponseBody, ListModelsResponseBody, ListPlatformsResponseBody, ListRejectionsResponseBody, ListThreadsParams, ListThreadsResponseBody, LoginResource, RevertRequestBody, RevertResponseBody, RotateSecretResponseBody, SendMessageRequestBody, SendMessageResponseBody, ThreadSummaryResource, UpdateChannelRequestBody, UpdateThreadRequestBody, UploadedResource, VerifyCodeRequestBody } from './models/index.js';
+import type { AnswerRequestBody, BindingListResponseBody, ChannelListResponseBody, ChannelResource, ClaimCodeResponseBody, CreateChannelRequestBody, CreateThreadRequestBody, DecideRequestBody, DocumentResource, ListBindingsParams, ListChannelRejectionsParams, ListChannelsParams, ListThreadsParams, LoginResource, ModelListResponseBody, PlatformListResponseBody, RejectionListResponseBody, RevertRequestBody, RevertedCountResponseBody, SendMessageRequestBody, ThreadListResponseBody, ThreadSummaryResource, TurnIDResponseBody, UpdateChannelRequestBody, UpdateThreadRequestBody, UploadedResource, VerifyCodeRequestBody, WebhookSecretResponseBody } from './models/index.js';
 /**
 * 请求体直接是文件字节，不使用 multipart 封装，一次上传一个文件。类型由内容判定，与 Content-Type 无关。返回的 id 在发送消息时放进 attachmentIds；从未被任何消息引用的附件会被定期清除。
 * @summary 上传图片
@@ -42,7 +42,7 @@ export declare const downloadAttachment: (attachment: string) => Promise<void>;
 /**
  * @summary 列出绑定
  */
-export declare const listBindings: (params?: ListBindingsParams) => Promise<ListBindingsResponseBody>;
+export declare const listBindings: (params?: ListBindingsParams) => Promise<BindingListResponseBody>;
 /**
  * @summary 解除绑定
  */
@@ -50,7 +50,7 @@ export declare const deleteBinding: (binding: string) => Promise<void>;
 /**
  * @summary 列出通道
  */
-export declare const listChannels: (params?: ListChannelsParams) => Promise<ListChannelsResponseBody>;
+export declare const listChannels: (params?: ListChannelsParams) => Promise<ChannelListResponseBody>;
 /**
  * @summary 创建通道
  */
@@ -77,12 +77,12 @@ export declare const createClaimCode: (channel: string) => Promise<ClaimCodeResp
  * 排查「发了消息但助手没有响应」时使用。按时间倒序返回最近被这条通道拒绝的入站消息及其拒绝原因，最常见的原因是发送方尚未绑定。
  * @summary 查看最近被拒绝的入站消息
  */
-export declare const listChannelRejections: (channel: string, params?: ListChannelRejectionsParams) => Promise<ListRejectionsResponseBody>;
+export declare const listChannelRejections: (channel: string, params?: ListChannelRejectionsParams) => Promise<RejectionListResponseBody>;
 /**
  * 生成新的回调密钥并立即使旧密钥失效。新密钥仅在本次响应中返回，之后无法再次取回，请先在平台侧完成配置。
  * @summary 轮换回调密钥
  */
-export declare const rotateChannelSecret: (channel: string) => Promise<RotateSecretResponseBody>;
+export declare const rotateChannelSecret: (channel: string) => Promise<WebhookSecretResponseBody>;
 /**
  * 微信个人号通道需要本人扫码登录后才能收发消息。本接口返回二维码，之后轮询 `GET /v1/weixin-logins/{login}` 获取进度；状态提示需要验证码时，调用 `POST /v1/weixin-logins/{login}/verify-code` 补交。
  * @summary 发起微信扫码登录
@@ -92,16 +92,16 @@ export declare const beginWeixinLogin: (channel: string) => Promise<LoginResourc
  * 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。
  * @summary 列出可用模型
  */
-export declare const listModels: () => Promise<ListModelsResponseBody>;
+export declare const listModels: () => Promise<ModelListResponseBody>;
 /**
  * 返回本平台当前支持接入的即时通讯平台，以及各自建通道时需要提供的凭据字段。用于填充新建通道表单。
  * @summary 列出可接入的平台
  */
-export declare const listPlatforms: () => Promise<ListPlatformsResponseBody>;
+export declare const listPlatforms: () => Promise<PlatformListResponseBody>;
 /**
  * @summary 列出对话
  */
-export declare const listThreads: (params?: ListThreadsParams) => Promise<ListThreadsResponseBody>;
+export declare const listThreads: (params?: ListThreadsParams) => Promise<ThreadListResponseBody>;
 /**
  * @summary 创建对话
  */
@@ -130,7 +130,7 @@ export declare const interruptThread: (thread: string) => Promise<void>;
  * 立即返回 turnId，不等待执行完成——一次 turn 可能持续数十分钟。执行进度通过对话文档中 stream 指向的实时流获取，不在本响应里。
  * @summary 发送消息并触发一次 turn
  */
-export declare const sendMessage: (thread: string, sendMessageRequestBody: SendMessageRequestBody) => Promise<SendMessageResponseBody>;
+export declare const sendMessage: (thread: string, sendMessageRequestBody: SendMessageRequestBody) => Promise<TurnIDResponseBody>;
 /**
  * 问题 id 来自对话文档的 wait 字段。已被回答过的问题同样返回 204——可能是另一个页面提交在先，也可能是自动应答窗口已到期，两种情况下 turn 都已带着答案继续执行。
  * @summary 回答助手提出的问题
@@ -144,7 +144,7 @@ export declare const markThreadRead: (thread: string) => Promise<void>;
  * 撤回 ordinal 及其之后的全部条目。被撤回的条目仍留在逐字稿中并标记 reverted，序号不会重排。返回实际撤回的条目数。
  * @summary 从指定位置起撤回
  */
-export declare const revertThread: (thread: string, revertRequestBody: RevertRequestBody) => Promise<RevertResponseBody>;
+export declare const revertThread: (thread: string, revertRequestBody: RevertRequestBody) => Promise<RevertedCountResponseBody>;
 /**
  * 轮询本接口直到状态变为成功或失败。状态提示需要验证码时，调用补交验证码接口。
  * @summary 查询扫码登录状态

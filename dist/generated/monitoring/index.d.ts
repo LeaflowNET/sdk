@@ -22,12 +22,12 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { AcknowledgeIncidentRequestBody, AddCommentRequestBody, AssignIncidentRequestBody, CloseIncidentRequestBody, EnableMonitoringRequestBody, EnableMonitoringResponseBody, EnrollmentResource, GetMetricResponseBody, GetServerMetricParams, GetSliReportParams, IncidentActivityResource, IncidentResource, ListIncidentTimelineParams, ListIncidentsParams, ListIncidentsResponseBody, ListItemsResponseBody, ListMaintenanceWindowsResponseBody, ListProjectTopItemsParams, ListServerItemsParams, ListServersParams, ListServersResponseBody, ListTimelineResponseBody, ListWebChecksParams, ListWebChecksResponseBody, MaintenanceWindowResource, ProjectOverviewResource, PutMaintenanceWindowRequestBody, PutSLORequestBody, PutWebCheckRequestBody, SLOResource, ServerResource, ServerResourcesResource, SetFollowingRequestBody, SliReportResponseBody, SnapshotResource, TopItemsResponseBody, UpdateServerRequestBody, WebCheckResource } from './models/index.js';
+import type { AcknowledgeIncidentRequestBody, AddCommentRequestBody, AssignIncidentRequestBody, CloseIncidentRequestBody, EnableMonitoringRequestBody, EnrollmentResource, GetServerMetricParams, GetSliReportParams, IncidentActivityListResponseBody, IncidentActivityResource, IncidentListResponseBody, IncidentResource, ItemListResponseBody, ListIncidentTimelineParams, ListIncidentsParams, ListProjectTopItemsParams, ListServerItemsParams, ListServersParams, ListWebChecksParams, MaintenanceWindowListResponseBody, MaintenanceWindowResource, MetricResponseBody, ProjectOverviewResource, PutMaintenanceWindowRequestBody, PutSLORequestBody, PutWebCheckRequestBody, SLIReportResponseBody, SLOResource, ServerEnrollmentResponseBody, ServerListResponseBody, ServerResource, ServerResourcesResource, SetFollowingRequestBody, SnapshotResource, TopItemListResponseBody, UpdateServerRequestBody, WebCheckListResponseBody, WebCheckResource } from './models/index.js';
 /**
 * `incident_status` 表示监控系统是否判定已恢复，`closed` 表示是否有人完成了处理。两者相互独立，可分别筛选。
 * @summary 列出告警
 */
-export declare const listIncidents: (params?: ListIncidentsParams) => Promise<ListIncidentsResponseBody>;
+export declare const listIncidents: (params?: ListIncidentsParams) => Promise<IncidentListResponseBody>;
 /**
  * @summary 查一条告警
  */
@@ -66,11 +66,11 @@ export declare const reopenIncident: (incidentId: string) => Promise<IncidentRes
  * 游标翻页而不是偏移量：时间线是只增的，用偏移量翻页会在新记录写入时漏行和重行。
  * @summary 列出这条告警的时间线
  */
-export declare const listIncidentTimeline: (incidentId: string, params?: ListIncidentTimelineParams) => Promise<ListTimelineResponseBody>;
+export declare const listIncidentTimeline: (incidentId: string, params?: ListIncidentTimelineParams) => Promise<IncidentActivityListResponseBody>;
 /**
  * @summary 列出维护窗口
  */
-export declare const listMaintenanceWindows: () => Promise<ListMaintenanceWindowsResponseBody>;
+export declare const listMaintenanceWindows: () => Promise<MaintenanceWindowListResponseBody>;
 /**
  * 立刻恢复告警，哪怕窗口还没到期。
  * @summary 撤掉一个维护窗口
@@ -95,7 +95,7 @@ export declare const getProjectOverview: () => Promise<ProjectOverviewResource>;
 /**
  * @summary 列出项目里的机器
  */
-export declare const listServers: (params?: ListServersParams) => Promise<ListServersResponseBody>;
+export declare const listServers: (params?: ListServersParams) => Promise<ServerListResponseBody>;
 /**
  * **不可逆**：监控主机、历史数据和这台机器名下的告警会一并删除。若只是想暂时停止采集，改用 /disable。
  * @summary 删掉这台机器
@@ -118,7 +118,7 @@ export declare const updateServer: (serverId: string, updateServerRequestBody: U
 响应中的 `tls_psk` **只返回这一次**，请及时保存；遗失后需要轮换。
  * @summary 把一台机器接入监控
  */
-export declare const enableServerMonitoring: (serverId: string, enableMonitoringRequestBody: EnableMonitoringRequestBody) => Promise<EnableMonitoringResponseBody>;
+export declare const enableServerMonitoring: (serverId: string, enableMonitoringRequestBody: EnableMonitoringRequestBody) => Promise<ServerEnrollmentResponseBody>;
 /**
  * 可逆操作：监控主机保留，仅停止采集，历史数据不受影响。重新接入即可恢复采集。如需连同历史数据一并删除，改用 DELETE。
  * @summary 停止监控这台机器
@@ -128,12 +128,12 @@ export declare const disableServerMonitoring: (serverId: string) => Promise<void
  * 原样返回采集到的监控项，不做筛选或重命名。哪些属于重要指标，由调用方依据监控项自带的标签自行判断。
  * @summary 列出一台机器的监控项
  */
-export declare const listServerItems: (serverId: string, params?: ListServerItemsParams) => Promise<ListItemsResponseBody>;
+export declare const listServerItems: (serverId: string, params?: ListServerItemsParams) => Promise<ItemListResponseBody>;
 /**
  * `item_key` 是**前缀匹配**：按分区、按网卡发现出来的监控项 key 带参数（`vfs.fs.size[/var,pused]`），所以 `vfs.fs.size` 这一个请求就能画出每个挂载点一条线。
  * @summary 取一个监控项的时间序列
  */
-export declare const getServerMetric: (serverId: string, params?: GetServerMetricParams) => Promise<GetMetricResponseBody>;
+export declare const getServerMetric: (serverId: string, params?: GetServerMetricParams) => Promise<MetricResponseBody>;
 /**
  * 换完要同步改 agent 侧的配置，否则那台机器立刻失联。新密钥同样**只在这个响应里明文出现一次**。
  * @summary 换一把 agent 的 PSK
@@ -167,7 +167,7 @@ export declare const putWebCheck: (serverId: string, checkId: string, putWebChec
 `server_id` 为空的那一行是项目整体。
  * @summary 查实测的达成情况
  */
-export declare const getSliReport: (params?: GetSliReportParams) => Promise<SliReportResponseBody>;
+export declare const getSliReport: (params?: GetSliReportParams) => Promise<SLIReportResponseBody>;
 /**
  * 同时移除监控系统中对应的服务树，此后不再统计可用率。
  * @summary 撤掉这个项目的可用率目标
@@ -188,11 +188,11 @@ export declare const putSlo: (putSLORequestBody: PutSLORequestBody) => Promise<S
 /**
  * @summary 某个指标最高的前几台
  */
-export declare const listProjectTopItems: (params: ListProjectTopItemsParams) => Promise<TopItemsResponseBody>;
+export declare const listProjectTopItems: (params: ListProjectTopItemsParams) => Promise<TopItemListResponseBody>;
 /**
  * @summary 列出网页检查
  */
-export declare const listWebChecks: (params?: ListWebChecksParams) => Promise<ListWebChecksResponseBody>;
+export declare const listWebChecks: (params?: ListWebChecksParams) => Promise<WebCheckListResponseBody>;
 export type ListIncidentsResult = NonNullable<Awaited<ReturnType<typeof listIncidents>>>;
 export type GetIncidentResult = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
 export type AcknowledgeIncidentResult = NonNullable<Awaited<ReturnType<typeof acknowledgeIncident>>>;

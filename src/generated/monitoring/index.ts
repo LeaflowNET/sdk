@@ -28,38 +28,38 @@ import type {
   AssignIncidentRequestBody,
   CloseIncidentRequestBody,
   EnableMonitoringRequestBody,
-  EnableMonitoringResponseBody,
   EnrollmentResource,
-  GetMetricResponseBody,
   GetServerMetricParams,
   GetSliReportParams,
+  IncidentActivityListResponseBody,
   IncidentActivityResource,
+  IncidentListResponseBody,
   IncidentResource,
+  ItemListResponseBody,
   ListIncidentTimelineParams,
   ListIncidentsParams,
-  ListIncidentsResponseBody,
-  ListItemsResponseBody,
-  ListMaintenanceWindowsResponseBody,
   ListProjectTopItemsParams,
   ListServerItemsParams,
   ListServersParams,
-  ListServersResponseBody,
-  ListTimelineResponseBody,
   ListWebChecksParams,
-  ListWebChecksResponseBody,
+  MaintenanceWindowListResponseBody,
   MaintenanceWindowResource,
+  MetricResponseBody,
   ProjectOverviewResource,
   PutMaintenanceWindowRequestBody,
   PutSLORequestBody,
   PutWebCheckRequestBody,
+  SLIReportResponseBody,
   SLOResource,
+  ServerEnrollmentResponseBody,
+  ServerListResponseBody,
   ServerResource,
   ServerResourcesResource,
   SetFollowingRequestBody,
-  SliReportResponseBody,
   SnapshotResource,
-  TopItemsResponseBody,
+  TopItemListResponseBody,
   UpdateServerRequestBody,
+  WebCheckListResponseBody,
   WebCheckResource
 } from './models/index.js';
 
@@ -74,7 +74,7 @@ import { request } from '../../http.js';
 export const listIncidents = (
     params?: ListIncidentsParams,
  ) => {
-      return request<ListIncidentsResponseBody>(
+      return request<IncidentListResponseBody>(
       {url: `/api/v1/incidents`, method: 'GET',
         params
     },
@@ -194,7 +194,7 @@ export const listIncidentTimeline = (
     incidentId: string,
     params?: ListIncidentTimelineParams,
  ) => {
-      return request<ListTimelineResponseBody>(
+      return request<IncidentActivityListResponseBody>(
       {url: `/api/v1/incidents/${incidentId}/timeline`, method: 'GET',
         params
     },
@@ -207,7 +207,7 @@ export const listIncidentTimeline = (
 export const listMaintenanceWindows = (
     
  ) => {
-      return request<ListMaintenanceWindowsResponseBody>(
+      return request<MaintenanceWindowListResponseBody>(
       {url: `/api/v1/maintenance-windows`, method: 'GET'
     },
       );
@@ -275,7 +275,7 @@ export const getProjectOverview = (
 export const listServers = (
     params?: ListServersParams,
  ) => {
-      return request<ListServersResponseBody>(
+      return request<ServerListResponseBody>(
       {url: `/api/v1/servers`, method: 'GET',
         params
     },
@@ -335,7 +335,7 @@ export const enableServerMonitoring = (
     serverId: string,
     enableMonitoringRequestBody: EnableMonitoringRequestBody,
  ) => {
-      return request<EnableMonitoringResponseBody>(
+      return request<ServerEnrollmentResponseBody>(
       {url: `/api/v1/servers/${serverId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: enableMonitoringRequestBody
@@ -364,7 +364,7 @@ export const listServerItems = (
     serverId: string,
     params?: ListServerItemsParams,
  ) => {
-      return request<ListItemsResponseBody>(
+      return request<ItemListResponseBody>(
       {url: `/api/v1/servers/${serverId}/items`, method: 'GET',
         params
     },
@@ -379,7 +379,7 @@ export const getServerMetric = (
     serverId: string,
     params?: GetServerMetricParams,
  ) => {
-      return request<GetMetricResponseBody>(
+      return request<MetricResponseBody>(
       {url: `/api/v1/servers/${serverId}/metrics`, method: 'GET',
         params
     },
@@ -476,7 +476,7 @@ export const putWebCheck = (
 export const getSliReport = (
     params?: GetSliReportParams,
  ) => {
-      return request<SliReportResponseBody>(
+      return request<SLIReportResponseBody>(
       {url: `/api/v1/sli-report`, method: 'GET',
         params
     },
@@ -532,7 +532,7 @@ export const putSlo = (
 export const listProjectTopItems = (
     params: ListProjectTopItemsParams,
  ) => {
-      return request<TopItemsResponseBody>(
+      return request<TopItemListResponseBody>(
       {url: `/api/v1/top-items`, method: 'GET',
         params
     },
@@ -545,7 +545,7 @@ export const listProjectTopItems = (
 export const listWebChecks = (
     params?: ListWebChecksParams,
  ) => {
-      return request<ListWebChecksResponseBody>(
+      return request<WebCheckListResponseBody>(
       {url: `/api/v1/web-checks`, method: 'GET',
         params
     },

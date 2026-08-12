@@ -30,6 +30,8 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
  */
 import type {
   AnswerRequestBody,
+  BindingListResponseBody,
+  ChannelListResponseBody,
   ChannelResource,
   ClaimCodeResponseBody,
   CreateChannelRequestBody,
@@ -37,26 +39,24 @@ import type {
   DecideRequestBody,
   DocumentResource,
   ListBindingsParams,
-  ListBindingsResponseBody,
   ListChannelRejectionsParams,
   ListChannelsParams,
-  ListChannelsResponseBody,
-  ListModelsResponseBody,
-  ListPlatformsResponseBody,
-  ListRejectionsResponseBody,
   ListThreadsParams,
-  ListThreadsResponseBody,
   LoginResource,
+  ModelListResponseBody,
+  PlatformListResponseBody,
+  RejectionListResponseBody,
   RevertRequestBody,
-  RevertResponseBody,
-  RotateSecretResponseBody,
+  RevertedCountResponseBody,
   SendMessageRequestBody,
-  SendMessageResponseBody,
+  ThreadListResponseBody,
   ThreadSummaryResource,
+  TurnIDResponseBody,
   UpdateChannelRequestBody,
   UpdateThreadRequestBody,
   UploadedResource,
-  VerifyCodeRequestBody
+  VerifyCodeRequestBody,
+  WebhookSecretResponseBody
 } from './models/index.js';
 
 import { request } from '../../http.js';
@@ -97,7 +97,7 @@ export const downloadAttachment = (
 export const listBindings = (
     params?: ListBindingsParams,
  ) => {
-      return request<ListBindingsResponseBody>(
+      return request<BindingListResponseBody>(
       {url: `/v1/bindings`, method: 'GET',
         params
     },
@@ -122,7 +122,7 @@ export const deleteBinding = (
 export const listChannels = (
     params?: ListChannelsParams,
  ) => {
-      return request<ListChannelsResponseBody>(
+      return request<ChannelListResponseBody>(
       {url: `/v1/channels`, method: 'GET',
         params
     },
@@ -204,7 +204,7 @@ export const listChannelRejections = (
     channel: string,
     params?: ListChannelRejectionsParams,
  ) => {
-      return request<ListRejectionsResponseBody>(
+      return request<RejectionListResponseBody>(
       {url: `/v1/channels/${channel}/rejections`, method: 'GET',
         params
     },
@@ -218,7 +218,7 @@ export const listChannelRejections = (
 export const rotateChannelSecret = (
     channel: string,
  ) => {
-      return request<RotateSecretResponseBody>(
+      return request<WebhookSecretResponseBody>(
       {url: `/v1/channels/${channel}/secret`, method: 'POST'
     },
       );
@@ -244,7 +244,7 @@ export const beginWeixinLogin = (
 export const listModels = (
     
  ) => {
-      return request<ListModelsResponseBody>(
+      return request<ModelListResponseBody>(
       {url: `/v1/models`, method: 'GET'
     },
       );
@@ -257,7 +257,7 @@ export const listModels = (
 export const listPlatforms = (
     
  ) => {
-      return request<ListPlatformsResponseBody>(
+      return request<PlatformListResponseBody>(
       {url: `/v1/platforms`, method: 'GET'
     },
       );
@@ -269,7 +269,7 @@ export const listPlatforms = (
 export const listThreads = (
     params?: ListThreadsParams,
  ) => {
-      return request<ListThreadsResponseBody>(
+      return request<ThreadListResponseBody>(
       {url: `/v1/threads`, method: 'GET',
         params
     },
@@ -357,7 +357,7 @@ export const sendMessage = (
     thread: string,
     sendMessageRequestBody: SendMessageRequestBody,
  ) => {
-      return request<SendMessageResponseBody>(
+      return request<TurnIDResponseBody>(
       {url: `/v1/threads/${thread}/messages`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: sendMessageRequestBody
@@ -402,7 +402,7 @@ export const revertThread = (
     thread: string,
     revertRequestBody: RevertRequestBody,
  ) => {
-      return request<RevertResponseBody>(
+      return request<RevertedCountResponseBody>(
       {url: `/v1/threads/${thread}/revert`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: revertRequestBody

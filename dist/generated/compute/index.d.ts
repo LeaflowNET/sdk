@@ -23,16 +23,16 @@
 - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
  * OpenAPI spec version: 1.0.0
  */
-import type { ActOnInstanceRequestBody, AllocateFloatingIPRequestBody, AttachDiskRequestBody, AttachFloatingIPRequestBody, AttachPortRequestBody, BindFloatingIPRequestBody, ConsoleResponseBody, CreateDiskRequestBody, CreateInstanceImageRequestBody, CreateInstanceImageResponseBody, CreatePortRequestBody, CreatePrivateNetworkRequestBody, CreateRouteRequestBody, CreateSecurityGroupRequestBody, CreateSecurityRuleRequestBody, CreateSnapshotRequestBody, CreateSubnetRequestBody, DiskResource, DiskTypesResponseBody, DisksResponseBody, FloatingIPResource, FloatingIPsResponseBody, ImagesResponseBody, InstanceResource, InstanceTypesResponseBody, InstancesResponseBody, Ipv6ResponseBody, LaunchInstanceRequestBody, LaunchInstanceResponseBody, ListDiskTypesParams, ListDisksParams, ListImagesParams, ListInstanceTypesParams, ListPrivateNetworksParams, ListSecurityGroupsParams, NextFreeCidrResponseBody, PortResource, PortsResponseBody, PrivateNetworkResource, PrivateNetworksResponseBody, RebuildInstanceRequestBody, RebuildInstanceResponseBody, RegionsResponseBody, RenameDiskRequestBody, RenameInstanceRequestBody, ResizeDiskRequestBody, ResizeInstanceRequestBody, RouteResource, RoutesResponseBody, SecurityGroupResource, SecurityGroupsResponseBody, SecurityRuleResource, SecurityRulesResponseBody, SetBandwidthRequestBody, SnapshotResource, SnapshotsResponseBody, SubnetResource, SubnetsResponseBody, SuggestSubnetCidrParams, ZonesResponseBody } from './models/index.js';
+import type { ActOnInstanceRequestBody, AllocateFloatingIPRequestBody, AttachDiskRequestBody, AttachFloatingIPRequestBody, AttachPortRequestBody, BindFloatingIPRequestBody, ConsoleResponseBody, CreateDiskRequestBody, CreateInstanceImageRequestBody, CreateInstanceImageResponseBody, CreatePortRequestBody, CreatePrivateNetworkRequestBody, CreateRouteRequestBody, CreateSecurityGroupRequestBody, CreateSecurityRuleRequestBody, CreateSnapshotRequestBody, CreateSubnetRequestBody, DiskListResponseBody, DiskResource, DiskTypeListResponseBody, FloatingIPListResponseBody, FloatingIPResource, IPv6ResponseBody, ImageListResponseBody, InstanceListResponseBody, InstanceResource, InstanceTypeListResponseBody, LaunchInstanceRequestBody, LaunchInstanceResponseBody, ListDiskTypesParams, ListDisksParams, ListImagesParams, ListInstanceTypesParams, ListPrivateNetworksParams, ListSecurityGroupsParams, NextFreeCidrResponseBody, PortListResponseBody, PortResource, PrivateNetworkListResponseBody, PrivateNetworkResource, RebuildInstanceRequestBody, RebuildInstanceResponseBody, RegionListResponseBody, RenameDiskRequestBody, RenameInstanceRequestBody, ResizeDiskRequestBody, ResizeInstanceRequestBody, RouteListResponseBody, RouteResource, SecurityGroupListResponseBody, SecurityGroupResource, SecurityRuleListResponseBody, SecurityRuleResource, SetBandwidthRequestBody, SnapshotListResponseBody, SnapshotResource, SubnetListResponseBody, SubnetResource, SuggestSubnetCidrParams, ZoneListResponseBody } from './models/index.js';
 /**
 * @summary 列出在售硬盘类型
 */
-export declare const listDiskTypes: (params: ListDiskTypesParams) => Promise<DiskTypesResponseBody>;
+export declare const listDiskTypes: (params: ListDiskTypesParams) => Promise<DiskTypeListResponseBody>;
 /**
  * 同时提供 region_code 与 availability_zone 时，只返回可挂载到该位置云服务器的云硬盘。
  * @summary 列出云硬盘
  */
-export declare const listDisks: (params?: ListDisksParams) => Promise<DisksResponseBody>;
+export declare const listDisks: (params?: ListDisksParams) => Promise<DiskListResponseBody>;
 /**
  * 云硬盘创建在所选硬盘类型所属的可用区，云服务器必须位于同一可用区才能挂载。因此选定硬盘类型即确定了可用区。
  * @summary 创建云硬盘
@@ -61,7 +61,7 @@ export declare const resizeDisk: (diskId: string, resizeDiskRequestBody: ResizeD
 /**
  * @summary 列出公网 IP
  */
-export declare const listFloatingIps: () => Promise<FloatingIPsResponseBody>;
+export declare const listFloatingIps: () => Promise<FloatingIPListResponseBody>;
 /**
  * 若该私有网络尚未连通外网，会一并为其接入外网。
 
@@ -96,15 +96,15 @@ export declare const bindFloatingIp: (floatingIpId: string, bindFloatingIPReques
  * min_ram_mb 超过所选机型内存的镜像无法启动，请据此过滤可选项。
  * @summary 列出在售镜像
  */
-export declare const listImages: (params: ListImagesParams) => Promise<ImagesResponseBody>;
+export declare const listImages: (params: ListImagesParams) => Promise<ImageListResponseBody>;
 /**
  * @summary 列出在售机型
  */
-export declare const listInstanceTypes: (params: ListInstanceTypesParams) => Promise<InstanceTypesResponseBody>;
+export declare const listInstanceTypes: (params: ListInstanceTypesParams) => Promise<InstanceTypeListResponseBody>;
 /**
  * @summary 列出云服务器
  */
-export declare const listInstances: () => Promise<InstancesResponseBody>;
+export declare const listInstances: () => Promise<InstanceListResponseBody>;
 /**
  * **必须提供一种登录方式**：项目上已有 SSH 公钥，或在请求中设置密码。两者都没有时请求会被拒绝，否则创建出的云服务器将无法登录。
 
@@ -142,7 +142,7 @@ export declare const openInstanceConsole: (instanceId: string) => Promise<Consol
 /**
  * @summary 列出云服务器已挂载的云硬盘
  */
-export declare const listInstanceDisks: (instanceId: string) => Promise<DisksResponseBody>;
+export declare const listInstanceDisks: (instanceId: string) => Promise<DiskListResponseBody>;
 /**
  * 云硬盘必须与云服务器位于同一地区和可用区。挂载后需在云服务器内自行分区并挂载文件系统。
  * @summary 挂载云硬盘
@@ -170,7 +170,7 @@ export declare const createInstanceImage: (instanceId: string, createInstanceIma
 /**
  * @summary 列出云服务器的网卡
  */
-export declare const listInstancePorts: (instanceId: string) => Promise<PortsResponseBody>;
+export declare const listInstancePorts: (instanceId: string) => Promise<PortListResponseBody>;
 /**
  * @summary 挂载网卡
  */
@@ -203,7 +203,7 @@ export declare const revertInstanceResize: (instanceId: string) => Promise<Insta
 /**
  * @summary 列出网卡
  */
-export declare const listPorts: () => Promise<PortsResponseBody>;
+export declare const listPorts: () => Promise<PortListResponseBody>;
 /**
  * 创建出的网卡尚未挂载到任何云服务器。主网卡不由本接口创建，它随云服务器一并创建。
  * @summary 创建网卡
@@ -217,7 +217,7 @@ export declare const deletePort: (portId: string) => Promise<void>;
 /**
  * @summary 列出私有网络
  */
-export declare const listPrivateNetworks: (params?: ListPrivateNetworksParams) => Promise<PrivateNetworksResponseBody>;
+export declare const listPrivateNetworks: (params?: ListPrivateNetworksParams) => Promise<PrivateNetworkListResponseBody>;
 /**
  * 同时创建一张网络、一台路由器和一个默认安全组。默认安全组拒绝全部入站流量、放行全部出站流量。
  * @summary 创建私有网络
@@ -250,18 +250,18 @@ export declare const disablePrivateNetworkIpv6: (privateNetworkId: string) => Pr
 /**
  * @summary 查看私有网络的 IPv6
  */
-export declare const getPrivateNetworkIpv6: (privateNetworkId: string) => Promise<Ipv6ResponseBody>;
+export declare const getPrivateNetworkIpv6: (privateNetworkId: string) => Promise<IPv6ResponseBody>;
 /**
  * 为该私有网络分配一个 /64 前缀。IPv6 地址由 SLAAC 下发到网卡，无需也无法单独申领。
 
 前提是该私有网络已接入外网。
  * @summary 为私有网络启用 IPv6
  */
-export declare const enablePrivateNetworkIpv6: (privateNetworkId: string) => Promise<Ipv6ResponseBody>;
+export declare const enablePrivateNetworkIpv6: (privateNetworkId: string) => Promise<IPv6ResponseBody>;
 /**
  * @summary 列出静态路由
  */
-export declare const listRoutes: (privateNetworkId: string) => Promise<RoutesResponseBody>;
+export declare const listRoutes: (privateNetworkId: string) => Promise<RouteListResponseBody>;
 /**
  * 以下三种会导致网络中断的写法会被拒绝：目的网段为 0.0.0.0/0（覆盖默认路由，所有公网 IP 立即失效）、目的网段为某个子网自身（覆盖直连路由）、下一跳为某个子网的网关（指回路由器自身）。
  * @summary 创建静态路由
@@ -275,7 +275,7 @@ export declare const deleteRoute: (privateNetworkId: string, routeId: string) =>
  * IPv6 子网也在返回结果中，ip_version 为 6。它在启用 IPv6 时自动创建，不可单独删除。
  * @summary 列出子网
  */
-export declare const listSubnets: (privateNetworkId: string) => Promise<SubnetsResponseBody>;
+export declare const listSubnets: (privateNetworkId: string) => Promise<SubnetListResponseBody>;
 /**
  * @summary 创建子网
  */
@@ -293,16 +293,16 @@ export declare const deleteSubnet: (privateNetworkId: string, subnetId: string) 
 /**
  * @summary 列出可用的地区
  */
-export declare const listRegions: () => Promise<RegionsResponseBody>;
+export declare const listRegions: () => Promise<RegionListResponseBody>;
 /**
  * 云硬盘与云服务器必须位于同一可用区才能挂载，创建前请确认所选可用区。
  * @summary 列出一个地区的可用区
  */
-export declare const listAvailabilityZones: (regionCode: string) => Promise<ZonesResponseBody>;
+export declare const listAvailabilityZones: (regionCode: string) => Promise<ZoneListResponseBody>;
 /**
  * @summary 列出安全组
  */
-export declare const listSecurityGroups: (params?: ListSecurityGroupsParams) => Promise<SecurityGroupsResponseBody>;
+export declare const listSecurityGroups: (params?: ListSecurityGroupsParams) => Promise<SecurityGroupListResponseBody>;
 /**
  * 新建的安全组带有一条规则：放行 ICMP 需要分片（type 3 code 4）。缺少该规则会导致路径 MTU 发现失败，表现为连接建立后传输大数据包时卡住。
  * @summary 创建安全组
@@ -320,7 +320,7 @@ export declare const getSecurityGroup: (securityGroupId: string) => Promise<Secu
 /**
  * @summary 列出安全组规则
  */
-export declare const listSecurityGroupRules: (securityGroupId: string) => Promise<SecurityRulesResponseBody>;
+export declare const listSecurityGroupRules: (securityGroupId: string) => Promise<SecurityRuleListResponseBody>;
 /**
  * 重复添加同一条规则会被拒绝。判重时 `0.0.0.0/0`、`::/0` 与留空视为等同。
  * @summary 创建安全组规则
@@ -333,7 +333,7 @@ export declare const deleteSecurityGroupRule: (securityGroupId: string, ruleId: 
 /**
  * @summary 列出快照
  */
-export declare const listSnapshots: () => Promise<SnapshotsResponseBody>;
+export declare const listSnapshots: () => Promise<SnapshotListResponseBody>;
 /**
  * 运行中云服务器上挂载的云硬盘同样可以创建快照。快照记录的是某一时刻的块设备状态，文件系统层面可能不一致，重要数据建议先在云服务器内执行 sync。
  * @summary 创建快照
