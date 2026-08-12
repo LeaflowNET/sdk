@@ -21,7 +21,7 @@
     "url": "git+https://github.com/LeaflowNET/sdk.git"
   },
   "scripts": {
-    "generate": "orval --config orval.config.ts",
+    "generate": "node scripts/clean-generated.mjs && orval --config orval.config.ts",
     "build": "pnpm generate && node scripts/fix-generated-imports.mjs && node scripts/build-index.mjs && tsc -p tsconfig.build.json",
     "typecheck": "pnpm generate && node scripts/fix-generated-imports.mjs && node scripts/build-index.mjs && tsc -p tsconfig.json --noEmit"
   },
