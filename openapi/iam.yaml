@@ -22,7 +22,7 @@ components:
       required:
         - token
       type: object
-    AcceptInvitationResponseBody:
+    AcceptedInvitationResponseBody:
       additionalProperties: false
       properties:
         project:
@@ -75,6 +75,18 @@ components:
         - created_at
         - pending_agreements
       type: object
+    AgreementListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/AgreementResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     AgreementResource:
       additionalProperties: false
       properties:
@@ -115,6 +127,18 @@ components:
       required:
         - type
         - version
+      type: object
+    ConsentListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/ConsentResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
       type: object
     ConsentResource:
       additionalProperties: false
@@ -223,37 +247,6 @@ components:
         - status
         - message
       type: object
-    ExchangeTokenResponseBody:
-      additionalProperties: false
-      properties:
-        expires_at:
-          description: 过期时刻。到点之前拿用户身份再换一张，别等第一个 401
-          format: date-time
-          type: string
-        expires_in:
-          description: 还能活多少秒
-          format: int64
-          type: integer
-        grant:
-          $ref: "#/components/schemas/GrantResource"
-          description: "**这一份是此刻的快照，不在令牌里，也不要缓存它。** 它只用来决定界面上画什么；真正的判定每次都要重新问"
-        project:
-          $ref: "#/components/schemas/ProjectResource"
-          description: 顺带带上项目本身，省掉换完之后立刻再查一次
-        token:
-          description: "项目令牌，放进 Authorization: Bearer 里用"
-          type: string
-        token_type:
-          description: 固定是 Bearer
-          type: string
-      required:
-        - token
-        - token_type
-        - expires_at
-        - expires_in
-        - project
-        - grant
-      type: object
     GrantResource:
       additionalProperties: false
       properties:
@@ -311,6 +304,22 @@ components:
         - verified_at
         - reject_reason
       type: object
+    InvitationListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/InvitationResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
     InvitationResource:
       additionalProperties: false
       properties:
@@ -365,7 +374,7 @@ components:
         - email
         - roles
       type: object
-    IssueInvitationResponseBody:
+    IssuedInvitationResponseBody:
       additionalProperties: false
       properties:
         invitation:
@@ -377,108 +386,12 @@ components:
         - invitation
         - token
       type: object
-    ListAgreementsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/AgreementResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    ListConsentsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/ConsentResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    ListInvitationsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/InvitationResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
-      type: object
-    ListMembersResponseBody:
+    MemberListResponseBody:
       additionalProperties: false
       properties:
         items:
           items:
             $ref: "#/components/schemas/MemberResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
-      type: object
-    ListPermissionsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/PermissionResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    ListProjectsResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/ProjectListItem"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
-      type: object
-    ListRolesResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/RoleResource"
-          type:
-            - array
-            - "null"
-      required:
-        - items
-      type: object
-    ListSSHKeysResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/SSHKeyResource"
           type:
             - array
             - "null"
@@ -533,6 +446,30 @@ components:
         - user_status
         - project_status
       type: object
+    OwnershipTransferResponseBody:
+      additionalProperties: false
+      properties:
+        from:
+          $ref: "#/components/schemas/MemberResource"
+          description: 原所有者。他保留其余的角色——转让的是所有权，不是把人踢出去
+        to:
+          $ref: "#/components/schemas/MemberResource"
+      required:
+        - from
+        - to
+      type: object
+    PermissionListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/PermissionResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
     PermissionResource:
       additionalProperties: false
       properties:
@@ -548,7 +485,23 @@ components:
         - description
         - owner_only
       type: object
-    ProjectListItem:
+    ProjectAccessListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/ProjectAccessResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
+    ProjectAccessResource:
       additionalProperties: false
       properties:
         grant:
@@ -615,6 +568,37 @@ components:
         - created_at
         - updated_at
       type: object
+    ProjectTokenResponseBody:
+      additionalProperties: false
+      properties:
+        expires_at:
+          description: 过期时刻。到点之前拿用户身份再换一张，别等第一个 401
+          format: date-time
+          type: string
+        expires_in:
+          description: 还能活多少秒
+          format: int64
+          type: integer
+        grant:
+          $ref: "#/components/schemas/GrantResource"
+          description: "**这一份是此刻的快照，不在令牌里，也不要缓存它。** 它只用来决定界面上画什么；真正的判定每次都要重新问"
+        project:
+          $ref: "#/components/schemas/ProjectResource"
+          description: 顺带带上项目本身，省掉换完之后立刻再查一次
+        token:
+          description: "项目令牌，放进 Authorization: Bearer 里用"
+          type: string
+        token_type:
+          description: 固定是 Bearer
+          type: string
+      required:
+        - token
+        - token_type
+        - expires_at
+        - expires_in
+        - project
+        - grant
+      type: object
     RegisterRequestBody:
       additionalProperties: false
       properties:
@@ -645,6 +629,18 @@ components:
           type: string
       required:
         - name
+      type: object
+    RoleListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/RoleResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
       type: object
     RoleResource:
       additionalProperties: false
@@ -678,6 +674,22 @@ components:
         - permissions
         - created_at
         - updated_at
+      type: object
+    SSHKeyListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/SSHKeyResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
       type: object
     SSHKeyResource:
       additionalProperties: false
@@ -749,18 +761,6 @@ components:
       required:
         - to_user_id
       type: object
-    TransferOwnershipResponseBody:
-      additionalProperties: false
-      properties:
-        from:
-          $ref: "#/components/schemas/MemberResource"
-          description: 原所有者。他保留其余的角色——转让的是所有权，不是把人踢出去
-        to:
-          $ref: "#/components/schemas/MemberResource"
-      required:
-        - from
-        - to
-      type: object
     UpdateProjectRequestBody:
       additionalProperties: false
       properties:
@@ -822,7 +822,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListAgreementsResponseBody"
+                $ref: "#/components/schemas/AgreementListResponseBody"
           description: OK
         default:
           content:
@@ -878,7 +878,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListConsentsResponseBody"
+                $ref: "#/components/schemas/ConsentListResponseBody"
           description: OK
         default:
           content:
@@ -1023,7 +1023,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListInvitationsResponseBody"
+                $ref: "#/components/schemas/InvitationListResponseBody"
           description: OK
         default:
           content:
@@ -1057,7 +1057,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcceptInvitationResponseBody"
+                $ref: "#/components/schemas/AcceptedInvitationResponseBody"
           description: OK
         default:
           content:
@@ -1091,7 +1091,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcceptInvitationResponseBody"
+                $ref: "#/components/schemas/AcceptedInvitationResponseBody"
           description: OK
         default:
           content:
@@ -1148,7 +1148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListSSHKeysResponseBody"
+                $ref: "#/components/schemas/SSHKeyListResponseBody"
           description: OK
         default:
           content:
@@ -1305,7 +1305,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListPermissionsResponseBody"
+                $ref: "#/components/schemas/PermissionListResponseBody"
           description: OK
         default:
           content:
@@ -1374,7 +1374,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListProjectsResponseBody"
+                $ref: "#/components/schemas/ProjectAccessListResponseBody"
           description: OK
         default:
           content:
@@ -1407,7 +1407,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProjectListItem"
+                $ref: "#/components/schemas/ProjectAccessResource"
           description: Created
         default:
           content:
@@ -1441,7 +1441,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProjectListItem"
+                $ref: "#/components/schemas/ProjectAccessResource"
           description: OK
         default:
           content:
@@ -1474,7 +1474,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProjectListItem"
+                $ref: "#/components/schemas/ProjectAccessResource"
           description: OK
         default:
           content:
@@ -1512,7 +1512,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProjectListItem"
+                $ref: "#/components/schemas/ProjectAccessResource"
           description: OK
         default:
           content:
@@ -1566,7 +1566,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListInvitationsResponseBody"
+                $ref: "#/components/schemas/InvitationListResponseBody"
           description: OK
         default:
           content:
@@ -1605,7 +1605,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IssueInvitationResponseBody"
+                $ref: "#/components/schemas/IssuedInvitationResponseBody"
           description: Created
         default:
           content:
@@ -1701,7 +1701,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListMembersResponseBody"
+                $ref: "#/components/schemas/MemberListResponseBody"
           description: OK
         default:
           content:
@@ -1850,7 +1850,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListRolesResponseBody"
+                $ref: "#/components/schemas/RoleListResponseBody"
           description: OK
         default:
           content:
@@ -2068,7 +2068,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListSSHKeysResponseBody"
+                $ref: "#/components/schemas/SSHKeyListResponseBody"
           description: OK
         default:
           content:
@@ -2270,7 +2270,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ExchangeTokenResponseBody"
+                $ref: "#/components/schemas/ProjectTokenResponseBody"
           description: Created
         default:
           content:
@@ -2310,7 +2310,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransferOwnershipResponseBody"
+                $ref: "#/components/schemas/OwnershipTransferResponseBody"
           description: OK
         default:
           content:
