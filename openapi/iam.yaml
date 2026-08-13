@@ -179,19 +179,6 @@ components:
       required:
         - name
       type: object
-    CreateProjectSSHKeyRequestBody:
-      additionalProperties: false
-      properties:
-        name:
-          maxLength: 128
-          type: string
-        public_key:
-          maxLength: 16384
-          type: string
-      required:
-        - name
-        - public_key
-      type: object
     CreateRoleRequestBody:
       additionalProperties: false
       properties:
@@ -216,11 +203,18 @@ components:
         - code
         - name
       type: object
-    CreateUserSSHKeyRequestBody:
+    CreateSSHKeyRequestBody:
       additionalProperties: false
       properties:
         name:
           maxLength: 128
+          type: string
+        owner:
+          default: me
+          description: 这把钥匙归谁
+          enum:
+            - me
+            - project
           type: string
         public_key:
           description: OpenSSH 格式的公钥。类型和指纹从它算出来，都不可改
@@ -668,16 +662,7 @@ components:
       required:
         - consents
       type: object
-    RenameProjectSSHKeyRequestBody:
-      additionalProperties: false
-      properties:
-        name:
-          maxLength: 128
-          type: string
-      required:
-        - name
-      type: object
-    RenameUserSSHKeyRequestBody:
+    RenameSSHKeyRequestBody:
       additionalProperties: false
       properties:
         name:
@@ -745,6 +730,9 @@ components:
         key_type:
           type: string
         name:
+          type: string
+        owner_user_id:
+          description: 归属人；不给表示这把钥匙归项目本身
           type: string
         public_key:
           type: string
@@ -1143,201 +1131,6 @@ paths:
       summary: 接受一份列在我名下的要约
       tags:
         - Invitation
-  /api/v1/me/ssh-keys:
-    get:
-      operationId: list-my-ssh-keys
-      parameters:
-        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-            type: string
-        - description: 这一页最多返回多少条
-          explode: false
-          in: query
-          name: limit
-          schema:
-            default: 50
-            description: 这一页最多返回多少条
-            format: int64
-            maximum: 200
-            minimum: 1
-            type: integer
-        - description: 跳过多少条。要翻得更深请改用游标翻页的接口
-          explode: false
-          in: query
-          name: offset
-          schema:
-            description: 跳过多少条。要翻得更深请改用游标翻页的接口
-            format: int64
-            maximum: 10000
-            minimum: 0
-            type: integer
-        - description: 不传时两种都返回
-          explode: false
-          in: query
-          name: status
-          schema:
-            description: 不传时两种都返回
-            enum:
-              - ACTIVE
-              - REVOKED
-            type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LengthAwarePageSSHKeyResource"
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Error
-      summary: 列出我的公钥
-      tags:
-        - SSHKey
-    post:
-      operationId: create-my-ssh-key
-      parameters:
-        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateUserSSHKeyRequestBody"
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SSHKeyResource"
-          description: Created
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Error
-      summary: 添加一把我的公钥
-      tags:
-        - SSHKey
-  /api/v1/me/ssh-keys/{keyId}:
-    delete:
-      description: 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
-      operationId: revoke-my-ssh-key
-      parameters:
-        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-            type: string
-        - in: path
-          name: keyId
-          required: true
-          schema:
-            format: uuid
-            type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SSHKeyResource"
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Error
-      summary: 吊销我的一把公钥
-      tags:
-        - SSHKey
-    get:
-      operationId: get-my-ssh-key
-      parameters:
-        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-            type: string
-        - in: path
-          name: keyId
-          required: true
-          schema:
-            format: uuid
-            type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SSHKeyResource"
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Error
-      summary: 查看我的一把公钥
-      tags:
-        - SSHKey
-    patch:
-      description: 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
-      operationId: rename-my-ssh-key
-      parameters:
-        - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
-            type: string
-        - in: path
-          name: keyId
-          required: true
-          schema:
-            format: uuid
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RenameUserSSHKeyRequestBody"
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SSHKeyResource"
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Error
-      summary: 给我的公钥改名
-      tags:
-        - SSHKey
   /api/v1/permissions:
     get:
       description: "**只有 IAM 这一份。** 别的服务的操作不在这里——权限目录是各服务各自声明、由 各个服务自己声明的，IAM 认识它们就等于要跟着每个下游一起发版。"
@@ -2065,7 +1858,8 @@ paths:
         - Role
   /api/v1/projects/{projectId}/ssh-keys:
     get:
-      operationId: list-project-ssh-keys
+      description: 归成员的和归项目的都在里面，靠每一条上的 owner_user_id 区分。
+      operationId: list-ssh-keys
       parameters:
         - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
           in: header
@@ -2101,10 +1895,12 @@ paths:
           schema:
             format: uuid
             type: string
-        - explode: false
+        - description: 不传时两种都返回
+          explode: false
           in: query
           name: status
           schema:
+            description: 不传时两种都返回
             enum:
               - ACTIVE
               - REVOKED
@@ -2122,11 +1918,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 列出项目的公钥
+      summary: 列出这个项目的公钥
       tags:
         - SSHKey
     post:
-      operationId: create-project-ssh-key
+      description: owner=me 是自己的，是成员就能加；owner=project 是项目公用的，要 iam:ssh_keys.manage —— 它会进这个项目之后开出来的每一台机器。
+      operationId: create-ssh-key
       parameters:
         - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
           in: header
@@ -2145,7 +1942,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateProjectSSHKeyRequestBody"
+              $ref: "#/components/schemas/CreateSSHKeyRequestBody"
         required: true
       responses:
         "201":
@@ -2160,12 +1957,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 给项目添加一把公钥
+      summary: 添加一把公钥
       tags:
         - SSHKey
   /api/v1/projects/{projectId}/ssh-keys/{keyId}:
     delete:
-      operationId: revoke-project-ssh-key
+      description: 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
+      operationId: revoke-ssh-key
       parameters:
         - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
           in: header
@@ -2199,11 +1997,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 吊销项目的一把公钥
+      summary: 吊销一把公钥
       tags:
         - SSHKey
     get:
-      operationId: get-project-ssh-key
+      operationId: get-ssh-key
       parameters:
         - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
           in: header
@@ -2237,11 +2035,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 查看项目的一把公钥
+      summary: 查看一把公钥
       tags:
         - SSHKey
     patch:
-      operationId: rename-project-ssh-key
+      description: 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
+      operationId: rename-ssh-key
       parameters:
         - description: Bearer 令牌。选定项目之前用 auth.leaflow.net 签发的账号令牌，选定之后用项目令牌
           in: header
@@ -2266,7 +2065,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RenameProjectSSHKeyRequestBody"
+              $ref: "#/components/schemas/RenameSSHKeyRequestBody"
         required: true
       responses:
         "200":
@@ -2281,7 +2080,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 给项目的公钥改名
+      summary: 给公钥改名
       tags:
         - SSHKey
   /api/v1/projects/{projectId}/token:
