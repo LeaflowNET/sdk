@@ -27,22 +27,6 @@ components:
         - width
         - height
       type: object
-    BindingListResponseBody:
-      additionalProperties: false
-      properties:
-        bindings:
-          items:
-            $ref: "#/components/schemas/BindingResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - bindings
-        - total
-      type: object
     BindingResource:
       additionalProperties: false
       properties:
@@ -74,22 +58,6 @@ components:
         - status
         - verifiedAt
         - createdAt
-      type: object
-    ChannelListResponseBody:
-      additionalProperties: false
-      properties:
-        channels:
-          items:
-            $ref: "#/components/schemas/ChannelResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - channels
-        - total
       type: object
     ChannelResource:
       additionalProperties: false
@@ -229,6 +197,26 @@ components:
             - yolo
           type: string
       type: object
+    CredentialFieldResource:
+      additionalProperties: false
+      properties:
+        help:
+          type: string
+        key:
+          type: string
+        label:
+          type: string
+        required:
+          type: boolean
+        secret:
+          type: boolean
+      required:
+        - key
+        - label
+        - required
+        - secret
+        - help
+      type: object
     DecideRequestBody:
       additionalProperties: false
       properties:
@@ -291,31 +279,20 @@ components:
         - before
         - foldedAbove
       type: object
-    Entry:
+    EarlierResponseBody:
       additionalProperties: false
       properties:
-        at:
-          format: date-time
-          type: string
-        peer_id:
-          type: string
-        peer_name:
-          type: string
-        peer_username:
-          type: string
-        platform:
-          type: string
-        text_length:
-          format: int64
-          type: integer
-        verdict:
-          type: string
+        earlier:
+          $ref: "#/components/schemas/EarlierResource"
+        items:
+          items:
+            $ref: "#/components/schemas/ItemResource"
+          type:
+            - array
+            - "null"
       required:
-        - peer_id
-        - platform
-        - verdict
-        - text_length
-        - at
+        - items
+        - earlier
       type: object
     Error:
       additionalProperties: false
@@ -424,6 +401,58 @@ components:
         - reverted
         - model
       type: object
+    LengthAwarePageBindingResource:
+      additionalProperties: false
+      properties:
+        items:
+          description: 这一页的内容
+          items:
+            $ref: "#/components/schemas/BindingResource"
+          type: array
+        limit:
+          description: 这一页最多几条，回显请求里的值
+          format: int64
+          type: integer
+        offset:
+          description: 跳过了多少条，回显请求里的值
+          format: int64
+          type: integer
+        total:
+          description: 命中的总条数，不只是这一页
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+        - limit
+        - offset
+      type: object
+    LengthAwarePageChannelResource:
+      additionalProperties: false
+      properties:
+        items:
+          description: 这一页的内容
+          items:
+            $ref: "#/components/schemas/ChannelResource"
+          type: array
+        limit:
+          description: 这一页最多几条，回显请求里的值
+          format: int64
+          type: integer
+        offset:
+          description: 跳过了多少条，回显请求里的值
+          format: int64
+          type: integer
+        total:
+          description: 命中的总条数，不只是这一页
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+        - limit
+        - offset
+      type: object
     LoginResource:
       additionalProperties: false
       properties:
@@ -502,10 +531,33 @@ components:
     PlatformResource:
       additionalProperties: false
       properties:
+        credentialFields:
+          items:
+            $ref: "#/components/schemas/CredentialFieldResource"
+          type:
+            - array
+            - "null"
         name:
           type: string
         resident:
           type: boolean
+        secretSource:
+          enum:
+            - generated
+            - supplied
+            - none
+          type: string
+        setupChallenge:
+          enum:
+            - none
+            - webhook
+            - scan
+          type: string
+        setupMethod:
+          enum:
+            - credentials
+            - scan
+          type: string
         webhookPath:
           description: 回调路径模板，{channel} 处替换为通道 id
           type: string
@@ -517,6 +569,10 @@ components:
       required:
         - name
         - resident
+        - setupMethod
+        - setupChallenge
+        - secretSource
+        - credentialFields
         - webhookPath
         - webhookUrlTemplate
       type: object
@@ -546,12 +602,40 @@ components:
       properties:
         rejections:
           items:
-            $ref: "#/components/schemas/Entry"
+            $ref: "#/components/schemas/RejectionResource"
           type:
             - array
             - "null"
       required:
         - rejections
+      type: object
+    RejectionResource:
+      additionalProperties: false
+      properties:
+        at:
+          format: date-time
+          type: string
+        peerId:
+          type: string
+        peerName:
+          type: string
+        peerUsername:
+          type: string
+        platform:
+          type: string
+        textLength:
+          format: int64
+          type: integer
+        verdict:
+          type: string
+      required:
+        - peerId
+        - peerName
+        - peerUsername
+        - platform
+        - verdict
+        - textLength
+        - at
       type: object
     RevertRequestBody:
       additionalProperties: false
@@ -572,6 +656,13 @@ components:
       required:
         - reverted
       type: object
+    RotateSecretRequestBody:
+      additionalProperties: false
+      properties:
+        webhookSecret:
+          description: 平台生成密钥的平台（secretSource=supplied）必须传新的那把；我们生成的（generated）不能传
+          type: string
+      type: object
     SendMessageRequestBody:
       additionalProperties: false
       properties:
@@ -586,6 +677,37 @@ components:
           type: string
       required:
         - text
+      type: object
+    SenderCheckResource:
+      additionalProperties: false
+      properties:
+        allowFrom:
+          items:
+            type: string
+          type:
+            - array
+            - "null"
+        allowed:
+          type: boolean
+        bindingId:
+          type:
+            - string
+            - "null"
+        senderPolicy:
+          type: string
+        verdict:
+          enum:
+            - ALLOWED_BY_BINDING
+            - ALLOWED_BY_ALLOW_FROM
+            - ALLOWED_BY_POLICY
+            - REJECTED_NOT_ALLOWED
+          type: string
+      required:
+        - allowed
+        - verdict
+        - senderPolicy
+        - allowFrom
+        - bindingId
       type: object
     StreamResource:
       additionalProperties: false
@@ -670,14 +792,28 @@ components:
     UpdateChannelRequestBody:
       additionalProperties: false
       properties:
+        allowFrom:
+          description: 放行名单。仅在同时传了 senderPolicy 时生效
+          items:
+            type: string
+          type:
+            - array
+            - "null"
         credentials:
           additionalProperties:
             type: string
+          description: 整份替换而不是逐键合并。不传表示不动
           type: object
         enabled:
           type: boolean
         name:
           maxLength: 128
+          type: string
+        senderPolicy:
+          description: 传了才会连同 allowFrom 一起替换
+          enum:
+            - BOUND_ONLY
+            - OPEN
           type: string
       type: object
     UpdateThreadRequestBody:
@@ -858,6 +994,7 @@ paths:
         - Attachment
   /v1/bindings:
     get:
+      description: 接入面那张表按通道列出各自绑了谁时用 channelId 过滤。
       operationId: list-bindings
       parameters:
         - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
@@ -867,20 +1004,25 @@ paths:
           schema:
             description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
             type: string
-        - explode: false
+        - description: 这一页最多返回多少条
+          explode: false
           in: query
           name: limit
           schema:
             default: 50
+            description: 这一页最多返回多少条
             format: int64
-            maximum: 100
-            minimum: 0
+            maximum: 200
+            minimum: 1
             type: integer
-        - explode: false
+        - description: 跳过多少条。要翻得更深请改用游标翻页的接口
+          explode: false
           in: query
           name: offset
           schema:
+            description: 跳过多少条。要翻得更深请改用游标翻页的接口
             format: int64
+            maximum: 10000
             minimum: 0
             type: integer
         - explode: false
@@ -888,12 +1030,25 @@ paths:
           name: platform
           schema:
             type: string
+        - explode: false
+          in: query
+          name: channelId
+          schema:
+            format: uuid
+            type: string
+        - description: 仅返回处于活跃状态的绑定
+          explode: false
+          in: query
+          name: active
+          schema:
+            description: 仅返回处于活跃状态的绑定
+            type: boolean
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BindingListResponseBody"
+                $ref: "#/components/schemas/LengthAwarePageBindingResource"
           description: OK
         default:
           content:
@@ -933,6 +1088,38 @@ paths:
       summary: 解除绑定
       tags:
         - Onboarding
+    get:
+      operationId: get-binding
+      parameters:
+        - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
+            type: string
+        - in: path
+          name: binding
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BindingResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看绑定
+      tags:
+        - Onboarding
   /v1/channels:
     get:
       operationId: list-channels
@@ -944,20 +1131,25 @@ paths:
           schema:
             description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
             type: string
-        - explode: false
+        - description: 这一页最多返回多少条
+          explode: false
           in: query
           name: limit
           schema:
             default: 50
+            description: 这一页最多返回多少条
             format: int64
-            maximum: 100
-            minimum: 0
+            maximum: 200
+            minimum: 1
             type: integer
-        - explode: false
+        - description: 跳过多少条。要翻得更深请改用游标翻页的接口
+          explode: false
           in: query
           name: offset
           schema:
+            description: 跳过多少条。要翻得更深请改用游标翻页的接口
             format: int64
+            maximum: 10000
             minimum: 0
             type: integer
         - explode: false
@@ -977,7 +1169,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelListResponseBody"
+                $ref: "#/components/schemas/LengthAwarePageChannelResource"
           description: OK
         default:
           content:
@@ -1083,6 +1275,7 @@ paths:
       tags:
         - Onboarding
     patch:
+      description: 只修改传了的字段。senderPolicy 与 allowFrom 是一对，由 senderPolicy 决定是否替换；改动对常驻连接要等连接重建后才生效，回调型平台立即生效。
       operationId: update-channel
       parameters:
         - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
@@ -1199,7 +1392,7 @@ paths:
         - Onboarding
   /v1/channels/{channel}/secret:
     post:
-      description: 生成新的回调密钥并立即使旧密钥失效。新密钥仅在本次响应中返回，之后无法再次取回，请先在平台侧完成配置。
+      description: 换一把新的回调密钥，旧的立即失效，通道降回待平台确认状态。密钥归谁定由平台决定，见 list-platforms 的 secretSource：generated 的平台不要传请求体，新密钥仅在本次响应中返回、之后无法再次取回；supplied 的平台必须把平台后台那把新密钥传进来。
       operationId: rotate-channel-secret
       parameters:
         - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
@@ -1215,6 +1408,11 @@ paths:
           schema:
             format: uuid
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RotateSecretRequestBody"
       responses:
         "200":
           content:
@@ -1229,6 +1427,55 @@ paths:
                 $ref: "#/components/schemas/Error"
           description: Error
       summary: 轮换回调密钥
+      tags:
+        - Onboarding
+  /v1/channels/{channel}/sender-check:
+    get:
+      description: 改完发件人策略之后用来自查，不发送任何消息、也不改变任何状态：它走的是和真实入站完全相同的那份判定，并说明结论由哪一条规则得出。无法推演认领码那一条——是否是认领码取决于对方发来的内容。
+      operationId: check-sender
+      parameters:
+        - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
+            type: string
+        - in: path
+          name: channel
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: 平台上那个人的 id，和绑定、被拒记录里的是同一个值
+          explode: false
+          in: query
+          name: peerId
+          required: true
+          schema:
+            description: 平台上那个人的 id，和绑定、被拒记录里的是同一个值
+            type: string
+        - description: 仅 Telegram 这类有用户名的平台填得出来，不带 @。留空即当作没有用户名
+          explode: false
+          in: query
+          name: username
+          schema:
+            description: 仅 Telegram 这类有用户名的平台填得出来，不带 @。留空即当作没有用户名
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SenderCheckResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 推演一个发件人会不会被放行
       tags:
         - Onboarding
   /v1/channels/{channel}/weixin-logins:
@@ -1295,7 +1542,7 @@ paths:
         - Thread
   /v1/platforms:
     get:
-      description: 返回本平台当前支持接入的即时通讯平台，以及各自建通道时需要提供的凭据字段。用于填充新建通道表单。
+      description: 返回本平台当前支持接入的即时通讯平台，以及各自建通道时要走的流程和要填的凭据字段。新建通道表单完全由这份响应驱动：setupMethod 决定展示录入表单还是扫码流程，credentialFields 是要填的字段，secretSource 决定要不要有回调密钥那一栏。
       operationId: list-platforms
       parameters:
         - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
@@ -1323,6 +1570,7 @@ paths:
         - Onboarding
   /v1/threads:
     get:
+      description: 按最近活动排序，只返回当前账号在当前项目里的对话。archived 是一个二选一的开关而不是「包含归档」：归档的对话不出现在默认列表里，要看它们就把这个参数打开。
       operationId: list-threads
       parameters:
         - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
@@ -1332,12 +1580,20 @@ paths:
           schema:
             description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
             type: string
-        - description: 仅返回已归档的对话
+        - description: 按标题搜索，大小写不敏感。留空则返回最近的对话
+          explode: false
+          in: query
+          name: q
+          schema:
+            description: 按标题搜索，大小写不敏感。留空则返回最近的对话
+            maxLength: 100
+            type: string
+        - description: 为真时**只**返回已归档的对话，否则只返回未归档的
           explode: false
           in: query
           name: archived
           schema:
-            description: 仅返回已归档的对话
+            description: 为真时**只**返回已归档的对话，否则只返回未归档的
             type: boolean
         - explode: false
           in: query
@@ -1504,6 +1760,49 @@ paths:
                 $ref: "#/components/schemas/Error"
           description: Error
       summary: 批准或拒绝一批工具调用
+      tags:
+        - Thread
+  /v1/threads/{thread}/earlier:
+    get:
+      description: 首屏只给对话最新的那一段，再往上的内容用本接口按需取回，一次一段。before 用文档里的 earlier.before，响应里的 earlier 是再往上那一段的游标，为 null 表示已经到顶。返回的条目和文档里的 items 是同一种形状，顺序也一样（由旧到新），直接接在现有内容前面即可。
+      operationId: list-earlier-items
+      parameters:
+        - description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
+          in: header
+          name: Authorization
+          required: true
+          schema:
+            description: Bearer + 项目令牌。一张项目令牌同时确定当前用户和当前项目，因此路径上不带 project_id
+            type: string
+        - in: path
+          name: thread
+          required: true
+          schema:
+            type: string
+        - description: 来自文档里的 earlier.before，取这个序号之前的条目
+          explode: false
+          in: query
+          name: before
+          required: true
+          schema:
+            description: 来自文档里的 earlier.before，取这个序号之前的条目
+            format: int64
+            minimum: 0
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EarlierResponseBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 取回更早的对话内容
       tags:
         - Thread
   /v1/threads/{thread}/interrupt:
