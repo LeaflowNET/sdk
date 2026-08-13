@@ -61,6 +61,21 @@ components:
         - key
         - count
       type: object
+    CursorPageIncidentActivityResource:
+      additionalProperties: false
+      properties:
+        items:
+          description: 这一页的内容
+          items:
+            $ref: "#/components/schemas/IncidentActivityResource"
+          type: array
+        next_cursor:
+          description: 下一页的游标；为空表示已经到底
+          type: string
+      required:
+        - items
+        - next_cursor
+      type: object
     EnableMonitoringRequestBody:
       additionalProperties: false
       properties:
@@ -166,21 +181,6 @@ components:
         - use_ip
         - available
       type: object
-    IncidentActivityListResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/IncidentActivityResource"
-          type:
-            - array
-            - "null"
-        next_cursor:
-          type: string
-      required:
-        - items
-        - next_cursor
-      type: object
     IncidentActivityResource:
       additionalProperties: false
       properties:
@@ -253,22 +253,6 @@ components:
         - user_id
         - display_name
         - followed_at
-      type: object
-    IncidentListResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/IncidentResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
       type: object
     IncidentResource:
       additionalProperties: false
@@ -494,6 +478,58 @@ components:
         - trigger_name
         - aggregation_function
         - evaluation_window_seconds
+      type: object
+    LengthAwarePageIncidentResource:
+      additionalProperties: false
+      properties:
+        items:
+          description: 这一页的内容
+          items:
+            $ref: "#/components/schemas/IncidentResource"
+          type: array
+        limit:
+          description: 这一页最多几条，回显请求里的值
+          format: int64
+          type: integer
+        offset:
+          description: 跳过了多少条，回显请求里的值
+          format: int64
+          type: integer
+        total:
+          description: 命中的总条数，不只是这一页
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+        - limit
+        - offset
+      type: object
+    LengthAwarePageServerResource:
+      additionalProperties: false
+      properties:
+        items:
+          description: 这一页的内容
+          items:
+            $ref: "#/components/schemas/ServerResource"
+          type: array
+        limit:
+          description: 这一页最多几条，回显请求里的值
+          format: int64
+          type: integer
+        offset:
+          description: 跳过了多少条，回显请求里的值
+          format: int64
+          type: integer
+        total:
+          description: 命中的总条数，不只是这一页
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+        - limit
+        - offset
       type: object
     MaintenancePeriodRequest:
       additionalProperties: false
@@ -1068,22 +1104,6 @@ components:
         - server
         - enrollment
       type: object
-    ServerListResponseBody:
-      additionalProperties: false
-      properties:
-        items:
-          items:
-            $ref: "#/components/schemas/ServerResource"
-          type:
-            - array
-            - "null"
-        total:
-          format: int64
-          type: integer
-      required:
-        - items
-        - total
-      type: object
     ServerResource:
       additionalProperties: false
       properties:
@@ -1516,24 +1536,25 @@ paths:
           schema:
             description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
             type: string
-        - description: 这一页最多返回多少条，0 表示用默认值
+        - description: 这一页最多返回多少条
           explode: false
           in: query
           name: limit
           schema:
             default: 50
-            description: 这一页最多返回多少条，0 表示用默认值
+            description: 这一页最多返回多少条
             format: int64
-            maximum: 500
-            minimum: 0
+            maximum: 200
+            minimum: 1
             type: integer
-        - description: 跳过多少条
+        - description: 跳过多少条。要翻得更深请改用游标翻页的接口
           explode: false
           in: query
           name: offset
           schema:
-            description: 跳过多少条
+            description: 跳过多少条。要翻得更深请改用游标翻页的接口
             format: int64
+            maximum: 10000
             minimum: 0
             type: integer
         - description: 只看某一台机器的
@@ -1644,7 +1665,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IncidentListResponseBody"
+                $ref: "#/components/schemas/LengthAwarePageIncidentResource"
           description: OK
         default:
           content:
@@ -1962,7 +1983,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IncidentActivityListResponseBody"
+                $ref: "#/components/schemas/CursorPageIncidentActivityResource"
           description: OK
         default:
           content:
@@ -2143,24 +2164,25 @@ paths:
           schema:
             description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
             type: string
-        - description: 这一页最多返回多少条，0 表示用默认值
+        - description: 这一页最多返回多少条
           explode: false
           in: query
           name: limit
           schema:
             default: 50
-            description: 这一页最多返回多少条，0 表示用默认值
+            description: 这一页最多返回多少条
             format: int64
-            maximum: 500
-            minimum: 0
+            maximum: 200
+            minimum: 1
             type: integer
-        - description: 跳过多少条
+        - description: 跳过多少条。要翻得更深请改用游标翻页的接口
           explode: false
           in: query
           name: offset
           schema:
-            description: 跳过多少条
+            description: 跳过多少条。要翻得更深请改用游标翻页的接口
             format: int64
+            maximum: 10000
             minimum: 0
             type: integer
         - description: 按名字或地址模糊匹配
@@ -2186,7 +2208,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServerListResponseBody"
+                $ref: "#/components/schemas/LengthAwarePageServerResource"
           description: OK
         default:
           content:
