@@ -1529,13 +1529,6 @@ paths:
       description: "`incident_status` 表示监控系统是否判定已恢复，`closed` 表示是否有人完成了处理。两者相互独立，可分别筛选。"
       operationId: list-incidents
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - description: 这一页最多返回多少条
           explode: false
           in: query
@@ -1680,13 +1673,6 @@ paths:
     get:
       operationId: get-incident
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1714,13 +1700,6 @@ paths:
       description: 同时会在监控系统中标记为已确认，便于其他渠道也能看到该告警已有人处理。
       operationId: acknowledge-incident
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1757,13 +1736,6 @@ paths:
         **这里不校验被指派的人在不在这个项目里**——那要问 IAM，而这个服务的准入还没接。
       operationId: assign-incident
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1797,13 +1769,6 @@ paths:
       description: 了结的是**平台上的处理流程**，不是告警本身的状态：尚未恢复的告警也可以按「已接受的风险」了结，它在监控系统中仍为未恢复。
       operationId: close-incident
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1836,13 +1801,6 @@ paths:
     post:
       operationId: add-incident-comment
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1876,13 +1834,6 @@ paths:
       description: 关注的是**自己**：操作者就是被加进关注列表的那个人。
       operationId: set-incident-following
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1915,13 +1866,6 @@ paths:
     post:
       operationId: reopen-incident
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1949,13 +1893,6 @@ paths:
       description: 游标翻页而不是偏移量：时间线是只增的，用偏移量翻页会在新记录写入时漏行和重行。
       operationId: list-incident-timeline
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: incidentId
           required: true
@@ -1997,14 +1934,6 @@ paths:
   /api/v1/maintenance-windows:
     get:
       operationId: list-maintenance-windows
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
       responses:
         "200":
           content:
@@ -2026,13 +1955,6 @@ paths:
       description: 立刻恢复告警，哪怕窗口还没到期。
       operationId: delete-maintenance-window
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: windowId
           required: true
@@ -2054,13 +1976,6 @@ paths:
     get:
       operationId: get-maintenance-window
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: windowId
           required: true
@@ -2090,13 +2005,6 @@ paths:
         窗口期内这些机器的问题不告警，也不扣 SLA 的可用率。`server_ids` 留空表示整个项目，包括窗口开着的时候新接进来的机器。
       operationId: put-maintenance-window
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: windowId
           required: true
@@ -2129,14 +2037,6 @@ paths:
     get:
       description: 项目下还没有任何机器时返回各项均为零的总览，而不是 404——空项目是一个正常状态。
       operationId: get-project-overview
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
       responses:
         "200":
           content:
@@ -2157,13 +2057,6 @@ paths:
     get:
       operationId: list-servers
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - description: 这一页最多返回多少条
           explode: false
           in: query
@@ -2224,13 +2117,6 @@ paths:
       description: "**不可逆**：监控主机、历史数据和这台机器名下的告警会一并删除。若只是想暂时停止采集，改用 /disable。"
       operationId: delete-server
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2252,13 +2138,6 @@ paths:
     get:
       operationId: get-server
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2285,13 +2164,6 @@ paths:
       description: 只更新请求体中出现的字段。`address` 与 `address_kind` 必须一并提供：只改其中一个会得到互相矛盾的接入配置，该错误不会被报出，表现为 agent 连不上。
       operationId: update-server
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2329,13 +2201,6 @@ paths:
         响应中的 `tls_psk` **只返回这一次**，请及时保存；遗失后需要轮换。
       operationId: enable-server-monitoring
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2369,13 +2234,6 @@ paths:
       description: 可逆操作：监控主机保留，仅停止采集，历史数据不受影响。重新接入即可恢复采集。如需连同历史数据一并删除，改用 DELETE。
       operationId: disable-server-monitoring
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2399,13 +2257,6 @@ paths:
       description: 原样返回采集到的监控项，不做筛选或重命名。哪些属于重要指标，由调用方依据监控项自带的标签自行判断。
       operationId: list-server-items
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2452,13 +2303,6 @@ paths:
       description: "`item_key` 是**前缀匹配**：按分区、按网卡发现出来的监控项 key 带参数（`vfs.fs.size[/var,pused]`），所以 `vfs.fs.size` 这一个请求就能画出每个挂载点一条线。"
       operationId: get-server-metric
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2528,13 +2372,6 @@ paths:
       description: 换完要同步改 agent 侧的配置，否则那台机器立刻失联。新密钥同样**只在这个响应里明文出现一次**。
       operationId: rotate-agent-psk
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2561,13 +2398,6 @@ paths:
     get:
       operationId: get-server-resources
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2594,13 +2424,6 @@ paths:
     get:
       operationId: get-server-snapshot
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2628,13 +2451,6 @@ paths:
       description: 同时删除监控系统中对应的检查任务和触发器，不会遗留永远无法恢复的告警。
       operationId: delete-web-check
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2662,13 +2478,6 @@ paths:
     get:
       operationId: get-web-check
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2701,13 +2510,6 @@ paths:
       description: "**创建即覆盖**：修改一个检查即用同一个 id 再次调用本接口，无需先判断它是否已存在。"
       operationId: put-web-check
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - in: path
           name: serverId
           required: true
@@ -2750,13 +2552,6 @@ paths:
         `server_id` 为空的那一行是项目整体。
       operationId: get-sli-report
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - explode: false
           in: query
           name: from
@@ -2799,14 +2594,6 @@ paths:
     delete:
       description: 同时移除监控系统中对应的服务树，此后不再统计可用率。
       operationId: delete-slo
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
       responses:
         "204":
           description: No Content
@@ -2822,14 +2609,6 @@ paths:
     get:
       description: 没定过就是 404，而不是一份默认目标：没承诺过和承诺了 99.9% 是两回事。
       operationId: get-slo
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
       responses:
         "200":
           content:
@@ -2852,14 +2631,6 @@ paths:
 
         `min_severity` 必须显式选：它决定什么算「不可用」，是这条承诺的一半内容。
       operationId: put-slo
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -2886,13 +2657,6 @@ paths:
     get:
       operationId: list-project-top-items
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - explode: false
           in: query
           name: kind
@@ -2933,13 +2697,6 @@ paths:
     get:
       operationId: list-web-checks
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径上没有 project_id
-            type: string
         - description: 只看某一台机器的检查；不给就是整个项目的
           explode: false
           in: query
