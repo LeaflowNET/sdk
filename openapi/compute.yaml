@@ -9,6 +9,9 @@ components:
             - stop
             - reboot
           type: string
+        force:
+          description: 仅适用于 reboot。强制重启不等待操作系统正常关闭，未落盘的数据会丢失，用于系统已无响应的情况
+          type: boolean
       required:
         - action
       type: object
@@ -52,6 +55,60 @@ components:
       required:
         - port_id
       type: object
+    BackupListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/BackupResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
+    BackupResource:
+      additionalProperties: false
+      properties:
+        availability_zone:
+          description: 源云硬盘所在的可用区。恢复时可选择本地区的其他可用区
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        region_code:
+          type: string
+        size_gb:
+          description: 创建备份时源云硬盘的容量。恢复出的云硬盘不能小于此容量
+          format: int64
+          type: integer
+        source_disk_id:
+          description: 备份来源。该云硬盘删除后本备份仍然可用
+          format: uuid
+          type: string
+        status:
+          enum:
+            - provisioning
+            - available
+            - restoring
+            - deleting
+            - error
+          type: string
+      required:
+        - id
+        - source_disk_id
+        - name
+        - size_gb
+        - status
+        - region_code
+        - availability_zone
+        - created_at
+      type: object
     BindFloatingIPRequestBody:
       additionalProperties: false
       properties:
@@ -61,19 +118,42 @@ components:
       required:
         - port_id
       type: object
+    ConsoleOutputResponseBody:
+      additionalProperties: false
+      properties:
+        output:
+          description: 串口输出的原始文本，行序与云服务器内一致
+          type: string
+      required:
+        - output
+      type: object
     ConsoleResponseBody:
       additionalProperties: false
       properties:
-        websocket_url:
-          description: VNC 的 WebSocket 地址，一次性使用且很快失效
+        console_url:
+          description: 远程控制台的连接地址，一次性使用且数分钟后失效
           type: string
       required:
-        - websocket_url
+        - console_url
+      type: object
+    CreateBackupRequestBody:
+      additionalProperties: false
+      properties:
+        disk_id:
+          format: uuid
+          type: string
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - disk_id
+        - name
       type: object
     CreateDiskRequestBody:
       additionalProperties: false
       properties:
-        disk_type_sku:
+        disk_type_id:
+          format: uuid
           maxLength: 64
           type: string
         name:
@@ -87,27 +167,9 @@ components:
           description: 从该快照恢复。提供时容量只需不小于快照本身
           type: string
       required:
-        - disk_type_sku
+        - disk_type_id
         - name
         - size_gb
-      type: object
-    CreateInstanceImageRequestBody:
-      additionalProperties: false
-      properties:
-        name:
-          maxLength: 128
-          type: string
-      required:
-        - name
-      type: object
-    CreateInstanceImageResponseBody:
-      additionalProperties: false
-      properties:
-        image_id:
-          description: 新建镜像的 id。该镜像尚未上架为可售镜像
-          type: string
-      required:
-        - image_id
       type: object
     CreatePortRequestBody:
       additionalProperties: false
@@ -133,6 +195,20 @@ components:
       required:
         - subnet_id
         - security_group_ids
+      type: object
+    CreatePrivateImageRequestBody:
+      additionalProperties: false
+      properties:
+        instance_id:
+          description: 制作依据其系统盘，数据盘不包含在内
+          format: uuid
+          type: string
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - instance_id
+        - name
       type: object
     CreatePrivateNetworkRequestBody:
       additionalProperties: false
@@ -203,13 +279,13 @@ components:
             - IPv6
           type: string
         port_range_max:
-          description: ICMP 上这是 code（0–255），不是端口
+          description: ICMP 协议下表示 code（0–255），而非端口
           format: int64
           type:
             - integer
             - "null"
         port_range_min:
-          description: ICMP 上这是 type（0–255），不是端口
+          description: ICMP 协议下表示 type（0–255），而非端口
           format: int64
           type:
             - integer
@@ -273,7 +349,7 @@ components:
             - string
             - "null"
         availability_zone:
-          description: 以存储服务返回的为准。挂载时云服务器必须位于同一可用区
+          description: 云硬盘实际所在的可用区。挂载时云服务器必须位于同一可用区
           type: string
         created_at:
           format: date-time
@@ -283,11 +359,15 @@ components:
           type:
             - string
             - "null"
-        disk_type_sku:
+        disk_type_id:
+          format: uuid
           type: string
         id:
           format: uuid
           type: string
+        is_system:
+          description: 系统盘随云服务器一并释放，不能卸载也不能单独删除
+          type: boolean
         name:
           type: string
         region_code:
@@ -303,6 +383,9 @@ components:
             - in_use
             - detaching
             - resizing
+            - reverting
+            - restoring
+            - releasing
             - deleting
             - error
           type: string
@@ -311,9 +394,10 @@ components:
         - name
         - region_code
         - availability_zone
-        - disk_type_sku
+        - disk_type_id
         - size_gb
         - status
+        - is_system
         - attached_instance_id
         - device
         - created_at
@@ -335,6 +419,9 @@ components:
       properties:
         availability_zone_code:
           type: string
+        id:
+          format: uuid
+          type: string
         iops_display:
           type: string
         max_size_gb:
@@ -353,15 +440,13 @@ components:
           type: string
         region_code:
           type: string
-        sku:
-          type: string
         step_gb:
           format: int64
           type: integer
         throughput_display:
           type: string
       required:
-        - sku
+        - id
         - name
         - media
         - region_code
@@ -433,11 +518,10 @@ components:
         region_code:
           type: string
         status:
+          description: idle 表示尚未绑定到网卡
           enum:
-            - available
-            - associated
-            - blackholed
-            - scrubbing
+            - idle
+            - bound
           type: string
       required:
         - id
@@ -487,6 +571,9 @@ components:
       properties:
         architecture:
           type: string
+        id:
+          format: uuid
+          type: string
         min_disk_gb:
           format: int64
           type: integer
@@ -501,10 +588,11 @@ components:
           type: string
         region_code:
           type: string
-        sku:
-          type: string
+        supports_password_reset:
+          description: false 表示由该镜像创建的云服务器只能通过重装系统设置新密码
+          type: boolean
       required:
-        - sku
+        - id
         - name
         - os_family
         - os_version
@@ -512,6 +600,7 @@ components:
         - region_code
         - min_disk_gb
         - min_ram_mb
+        - supports_password_reset
       type: object
     InstanceListResponseBody:
       additionalProperties: false
@@ -539,12 +628,52 @@ components:
         id:
           format: uuid
           type: string
-        image_sku:
+        image_id:
+          description: 从平台提供的镜像创建时非空
+          format: uuid
+          type:
+            - string
+            - "null"
+        instance_type_id:
+          description: 当前生效的机型，即当前计费依据
+          format: uuid
           type: string
-        instance_type_sku:
-          type: string
+        ipv6_address:
+          description: 云服务器主网卡的 IPv6 地址。私有网络启用 IPv6 后自动下发
+          type:
+            - string
+            - "null"
         name:
           type: string
+        pending_instance_type_id:
+          description: 非空表示存在待确认的变配。确认后该机型生效，回滚则丢弃
+          format: uuid
+          type:
+            - string
+            - "null"
+        private_image_id:
+          description: 从自制的私有镜像创建时非空
+          format: uuid
+          type:
+            - string
+            - "null"
+        private_ip:
+          description: 云服务器的内网地址
+          type:
+            - string
+            - "null"
+        private_network_id:
+          description: 云服务器主网卡所在的私有网络
+          type:
+            - string
+            - "null"
+        public_ips:
+          description: 云服务器主网卡上绑定的公网 IPv4，未绑定时为空数组
+          items:
+            type: string
+          type:
+            - array
+            - "null"
         region_code:
           type: string
         status:
@@ -554,10 +683,16 @@ components:
             - stopped
             - rebooting
             - resizing
+            - resize_verifying
             - error
             - deleting
             - suspended
           type: string
+        subnet_id:
+          description: 云服务器主网卡所在的子网
+          type:
+            - string
+            - "null"
         suspended_at:
           description: 非空表示已被平台停服，需先解除后才能操作
           format: date-time
@@ -573,8 +708,15 @@ components:
         - hostname
         - region_code
         - availability_zone
-        - instance_type_sku
-        - image_sku
+        - private_network_id
+        - subnet_id
+        - private_ip
+        - public_ips
+        - ipv6_address
+        - instance_type_id
+        - pending_instance_type_id
+        - image_id
+        - private_image_id
         - status
         - suspended_at
         - created_at
@@ -598,6 +740,9 @@ components:
         availability_zone_code:
           description: 该机型所属的可用区。云硬盘必须位于同一可用区才能挂载
           type: string
+        id:
+          format: uuid
+          type: string
         max_bandwidth_mbps:
           format: int64
           type: integer
@@ -614,13 +759,11 @@ components:
           type: integer
         region_code:
           type: string
-        sku:
-          type: string
         vcpus:
           format: int64
           type: integer
       required:
-        - sku
+        - id
         - name
         - vcpus
         - ram_mb
@@ -633,13 +776,22 @@ components:
     LaunchInstanceRequestBody:
       additionalProperties: false
       properties:
+        count:
+          description: 一次创建的台数，留空为 1。多台时名称自动编号
+          format: int64
+          maximum: 20
+          minimum: 0
+          type: integer
         generate_password:
           description: 由平台生成随机密码，仅在本次响应中返回
           type: boolean
-        image_sku:
+        image_id:
+          description: 平台提供的镜像。与 private_image_id 二选一
+          format: uuid
           maxLength: 64
           type: string
-        instance_type_sku:
+        instance_type_id:
+          format: uuid
           maxLength: 64
           type: string
         name:
@@ -649,6 +801,16 @@ components:
           description: root 的登录密码。留空时仅使用项目的 SSH 公钥
           maxLength: 128
           type: string
+        private_image_id:
+          description: 自制镜像。与 image_id 二选一
+          format: uuid
+          type: string
+        root_disk_gb:
+          description: 系统盘容量（GB）。留空时按镜像要求与平台下限自动选择
+          format: int64
+          maximum: 32768
+          minimum: 0
+          type: integer
         security_group_ids:
           description: 至少一个。不会自动使用默认安全组，需显式指定
           items:
@@ -662,22 +824,32 @@ components:
           type: string
       required:
         - name
-        - instance_type_sku
-        - image_sku
+        - instance_type_id
         - subnet_id
         - security_group_ids
       type: object
     LaunchInstanceResponseBody:
       additionalProperties: false
       properties:
-        instance:
-          $ref: "#/components/schemas/InstanceResource"
+        failure:
+          description: 非空表示只成功创建了部分云服务器，其余因该原因中止
+          type:
+            - string
+            - "null"
+        instances:
+          description: 按请求顺序返回，单台创建时也是数组
+          items:
+            $ref: "#/components/schemas/InstanceResource"
+          type:
+            - array
+            - "null"
         password:
-          description: 只在创建时返回这一次，请立刻保存
+          description: 仅在本次响应中返回，请及时保存。批量创建时所有云服务器共用它
           type: string
       required:
-        - instance
+        - instances
         - password
+        - failure
       type: object
     NextFreeCidrResponseBody:
       additionalProperties: false
@@ -687,6 +859,75 @@ components:
           type: string
       required:
         - cidr
+      type: object
+    OperationLogListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/OperationLogResource"
+          type:
+            - array
+            - "null"
+        total:
+          format: int64
+          type: integer
+      required:
+        - items
+        - total
+      type: object
+    OperationLogResource:
+      additionalProperties: false
+      properties:
+        action:
+          description: 操作名，与接口的 operation id 一致
+          type: string
+        actor:
+          description: 发起该操作的用户。平台执行时为空
+          type:
+            - string
+            - "null"
+        by_platform:
+          description: true 表示由平台代为执行
+          type: boolean
+        created_at:
+          format: date-time
+          type: string
+        failure:
+          description: 失败时的简要原因
+          type:
+            - string
+            - "null"
+        id:
+          format: uuid
+          type: string
+        payload:
+          additionalProperties: {}
+          description: 该次请求的路径与查询参数。密码一类的字段已被隐去
+          type: object
+        region_code:
+          type:
+            - string
+            - "null"
+        subject_id:
+          description: 创建类操作为空：新资源的 id 在响应中，不在请求路径上
+          type: string
+        subject_type:
+          type: string
+        succeeded:
+          type: boolean
+      required:
+        - id
+        - action
+        - by_platform
+        - actor
+        - subject_type
+        - subject_id
+        - region_code
+        - payload
+        - succeeded
+        - failure
+        - created_at
       type: object
     PortListResponseBody:
       additionalProperties: false
@@ -743,6 +984,88 @@ components:
         - attached_instance_id
         - private_ip
         - ipv6_address
+      type: object
+    PrivateImageListResponseBody:
+      additionalProperties: false
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/PrivateImageResource"
+          type:
+            - array
+            - "null"
+      required:
+        - items
+      type: object
+    PrivateImageResource:
+      additionalProperties: false
+      properties:
+        architecture:
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        failure:
+          description: 制作失败的原因，仅在 status 为 error 时非空
+          type:
+            - string
+            - "null"
+        id:
+          format: uuid
+          type: string
+        min_disk_gb:
+          description: 使用本镜像创建云服务器时，系统盘不能小于此容量
+          format: int64
+          type: integer
+        min_ram_mb:
+          description: 使用本镜像创建云服务器时，机型内存不能小于此容量
+          format: int64
+          type: integer
+        name:
+          type: string
+        os_family:
+          type: string
+        os_version:
+          type: string
+        region_code:
+          description: 镜像只能用于所在地区
+          type: string
+        size_bytes:
+          description: 镜像占用的存储容量，制作完成前为 0
+          format: int64
+          type: integer
+        source_instance_id:
+          description: 制作来源。该云服务器释放后本镜像仍然可用
+          format: uuid
+          type:
+            - string
+            - "null"
+        status:
+          enum:
+            - provisioning
+            - uploading
+            - available
+            - deleting
+            - error
+          type: string
+        supports_password_reset:
+          description: false 表示由该镜像创建的云服务器只能通过重装系统设置新密码
+          type: boolean
+      required:
+        - id
+        - name
+        - source_instance_id
+        - region_code
+        - status
+        - failure
+        - min_disk_gb
+        - min_ram_mb
+        - supports_password_reset
+        - size_bytes
+        - os_family
+        - os_version
+        - architecture
+        - created_at
       type: object
     PrivateNetworkListResponseBody:
       additionalProperties: false
@@ -808,14 +1131,18 @@ components:
       properties:
         generate_password:
           type: boolean
-        image_sku:
+        image_id:
+          description: 平台提供的镜像。与 private_image_id 二选一
+          format: uuid
           maxLength: 64
           type: string
         password:
           maxLength: 128
           type: string
-      required:
-        - image_sku
+        private_image_id:
+          description: 自制镜像。与 image_id 二选一
+          format: uuid
+          type: string
       type: object
     RebuildInstanceResponseBody:
       additionalProperties: false
@@ -823,7 +1150,7 @@ components:
         instance:
           $ref: "#/components/schemas/InstanceResource"
         password:
-          description: 只在这一次返回
+          description: 仅在本次响应中返回，请及时保存
           type: string
       required:
         - instance
@@ -855,6 +1182,15 @@ components:
         - name
         - country_code
       type: object
+    RenameBackupRequestBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - name
+      type: object
     RenameDiskRequestBody:
       additionalProperties: false
       properties:
@@ -873,6 +1209,53 @@ components:
       required:
         - name
       type: object
+    RenamePrivateImageRequestBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - name
+      type: object
+    RenamePrivateNetworkRequestBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - name
+      type: object
+    RenameSnapshotRequestBody:
+      additionalProperties: false
+      properties:
+        name:
+          maxLength: 128
+          type: string
+      required:
+        - name
+      type: object
+    ResetPasswordRequestBody:
+      additionalProperties: false
+      properties:
+        generate_password:
+          description: 由平台生成随机密码，仅在本次响应中返回
+          type: boolean
+        password:
+          description: 新的 root 密码。与 generate_password 二选一
+          maxLength: 128
+          type: string
+      type: object
+    ResetPasswordResponseBody:
+      additionalProperties: false
+      properties:
+        password:
+          description: 平台生成的密码，仅本次返回。自行设置密码时为空
+          type: string
+      required:
+        - password
+      type: object
     ResizeDiskRequestBody:
       additionalProperties: false
       properties:
@@ -887,12 +1270,43 @@ components:
     ResizeInstanceRequestBody:
       additionalProperties: false
       properties:
-        instance_type_sku:
+        instance_type_id:
           description: 必须与当前机型位于同一地区和可用区
+          format: uuid
           maxLength: 64
           type: string
       required:
-        - instance_type_sku
+        - instance_type_id
+      type: object
+    RestoreBackupRequestBody:
+      additionalProperties: false
+      properties:
+        disk_type_id:
+          description: 可选择与源云硬盘不同的可用区，但必须在同一地区
+          format: uuid
+          maxLength: 64
+          type: string
+        name:
+          maxLength: 128
+          type: string
+        size_gb:
+          description: 留空时与备份等大。给出时不能小于备份
+          format: int64
+          minimum: 0
+          type: integer
+      required:
+        - disk_type_id
+        - name
+      type: object
+    RevertDiskRequestBody:
+      additionalProperties: false
+      properties:
+        snapshot_id:
+          description: 必须是该云硬盘最新的一个快照
+          format: uuid
+          type: string
+      required:
+        - snapshot_id
       type: object
     RouteListResponseBody:
       additionalProperties: false
@@ -1035,7 +1449,7 @@ components:
       additionalProperties: false
       properties:
         mbps:
-          description: 出入两个方向都会限到这个值
+          description: 出入方向均限制为该值
           format: int64
           minimum: 1
           type: integer
@@ -1057,6 +1471,9 @@ components:
     SnapshotResource:
       additionalProperties: false
       properties:
+        availability_zone:
+          description: 由该快照恢复的云硬盘必须位于此可用区
+          type: string
         created_at:
           format: date-time
           type: string
@@ -1078,6 +1495,7 @@ components:
           enum:
             - provisioning
             - available
+            - restoring
             - deleting
             - error
           type: string
@@ -1087,6 +1505,7 @@ components:
         - name
         - size_gb
         - status
+        - availability_zone
         - region_code
         - created_at
       type: object
@@ -1158,40 +1577,205 @@ components:
       type: object
 info:
   description: |-
-    用户自己用的接口：云服务器、云硬盘、快照、私有网络、子网、路由、安全组、网卡、公网 IP。
+    Leaflow 计算的用户接口，用于管理云服务器、云硬盘、快照、备份、自制镜像、私有网络、子网、路由、安全组、网卡与公网 IP。
 
-    ## 怎么带身份
+    ## 身份与鉴权
 
-    每个请求都要带 `Authorization: Bearer <项目令牌>`。先在 auth.leaflow.net 登录拿到账号令牌，再用它向 IAM 换取项目令牌（`POST /api/v1/projects/{projectId}/token`）。一张项目令牌同时说明当前用户和当前项目。
+    每个请求需携带 `Authorization: Bearer <项目令牌>`。先在 auth.leaflow.net 登录获取账号令牌，再用它向 IAM 换取项目令牌（`POST /api/v1/projects/{projectId}/token`）。一张项目令牌同时说明当前用户和当前项目。
 
     **路径和请求头上都没有 `project_id`**：当前项目由令牌决定。
 
-    失败时按出路区分：`IDENTITY_EXPIRED` 表示令牌过期，重新换取即可，无需重新登录；`PROJECT_FORBIDDEN` 表示当前账号不是该项目成员；`PROJECT_UNAVAILABLE` 表示项目欠费或正在删除；`PROJECT_NOT_WRITABLE` 表示项目仍可访问但不再接受写入。
-
-    **欠费停服的项目仍然可以删除资源。** 新建和修改会返回 `PROJECT_NOT_WRITABLE`，`DELETE` 照常放行——云硬盘和公网 IP 在停服期间仍然计费，删除是止损手段。
+    鉴权在网关完成，失败的请求不会到达这些接口。按错误码区分处理方式：`PROJECT_TOKEN_MISSING` 表示没带令牌；`PROJECT_TOKEN_EXPIRED` 表示令牌过期，用账号令牌重新换取即可，无需重新登录；`PROJECT_TOKEN_INVALID` 表示令牌验不过；`NOT_A_MEMBER` 表示当前账号不是该项目成员；`USER_SUSPENDED` / `USER_BANNED` 表示账号本身不能操作。
 
     ## 通用约定
 
     - **操作是异步的。** 创建云服务器、创建云硬盘、变更配置在返回时尚未完成，资源处于 `provisioning` 等中间状态，需轮询 GET 确认结果。查询单个资源时会同步一次当前状态。
     - **可用区。** 云硬盘与云服务器必须位于同一可用区才能挂载。机型和硬盘类型各自绑定在一个可用区上，选定类型即选定可用区。
-    - **IPv6 不单独售卖。** IPv6 地址通过 SLAAC 下发到网卡，启用 IPv6 是私有网络上的一个开关，而非一次购买。
+    - **IPv6 不单独售卖。** 在私有网络上启用后，IPv6 地址会自动下发至该网络内的云服务器，无需也无法单独申领。
     - **公网 IP 有冷却期。** 释放后短时间内既不能重新申领，也不会分配给其他用户，以免仍指向该地址的 DNS 记录和访问白名单立即失效。
     - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
   title: Leaflow 计算用户 API
   version: 1.0.0
 openapi: 3.1.0
 paths:
+  /api/v1/backups:
+    get:
+      operationId: list-backups
+      parameters:
+        - description: 只返回该云硬盘的备份
+          explode: false
+          in: query
+          name: disk_id
+          schema:
+            description: 只返回该云硬盘的备份
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackupListResponseBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出备份
+      tags:
+        - Backup
+    post:
+      description: |-
+        备份是云硬盘在独立存储中的一份完整副本：**源云硬盘删除后仍可恢复，且可恢复到本地区的其他可用区。**快照不具备这两项能力，它与源云硬盘位于同一存储，且源云硬盘存在快照时无法删除。
+
+        运行中云服务器上挂载的云硬盘、以及系统盘，均可创建备份。
+
+        备份耗时取决于数据量。接口返回时尚未完成，请轮询查看接口。
+      operationId: create-backup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBackupRequestBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackupResource"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 创建备份
+      tags:
+        - Backup
+  /api/v1/backups/{backupId}:
+    delete:
+      description: 与源云硬盘无关，源云硬盘是否存在都不影响删除。
+      operationId: delete-backup
+      parameters:
+        - in: path
+          name: backupId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 删除备份
+      tags:
+        - Backup
+    get:
+      description: 会实时查询备份的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
+      operationId: get-backup
+      parameters:
+        - in: path
+          name: backupId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackupResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看备份
+      tags:
+        - Backup
+    patch:
+      operationId: rename-backup
+      parameters:
+        - in: path
+          name: backupId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenameBackupRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackupResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 重命名备份
+      tags:
+        - Backup
+  /api/v1/backups/{backupId}/restore:
+    post:
+      description: |-
+        恢复到一块**新建的**云硬盘上，源云硬盘不受影响，也不要求它仍然存在。
+
+        目标硬盘类型可位于本地区的其他可用区，容量不能小于备份。恢复完成前该云硬盘不可挂载，请轮询云硬盘查看接口。
+      operationId: restore-backup
+      parameters:
+        - in: path
+          name: backupId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestoreBackupRequestBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiskResource"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 由备份恢复
+      tags:
+        - Backup
   /api/v1/disk-types:
     get:
       operationId: list-disk-types
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - explode: false
           in: query
           name: region_code
@@ -1220,13 +1804,6 @@ paths:
       description: 同时提供 region_code 与 availability_zone 时，只返回可挂载到该位置云服务器的云硬盘。
       operationId: list-disks
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - explode: false
           in: query
           name: region_code
@@ -1260,14 +1837,6 @@ paths:
     post:
       description: 云硬盘创建在所选硬盘类型所属的可用区，云服务器必须位于同一可用区才能挂载。因此选定硬盘类型即确定了可用区。
       operationId: create-disk
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -1292,16 +1861,9 @@ paths:
         - Disk
   /api/v1/disks/{diskId}:
     delete:
-      description: 云硬盘仍处于挂载状态，或仍存在快照时，删除会被拒绝。
+      description: 云硬盘处于挂载状态，或仍存在基于它创建的快照时，删除会被拒绝。
       operationId: delete-disk
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: diskId
           required: true
@@ -1321,16 +1883,9 @@ paths:
       tags:
         - Disk
     get:
-      description: 会同步一次底层的当前状态，因此比列表接口慢但更准确。
+      description: 会实时查询云硬盘的当前状态，因此比列表接口慢但更准确。
       operationId: get-disk
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: diskId
           required: true
@@ -1357,13 +1912,6 @@ paths:
       description: 仅可修改名称。容量请使用扩容接口，类型与可用区不可修改。
       operationId: rename-disk
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: diskId
           required: true
@@ -1397,13 +1945,6 @@ paths:
       description: 容量只能增加，不支持缩容。扩容完成后需在云服务器内自行扩展文件系统。
       operationId: resize-disk
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: diskId
           required: true
@@ -1432,17 +1973,47 @@ paths:
       summary: 扩容
       tags:
         - Disk
+  /api/v1/disks/{diskId}/revert:
+    post:
+      description: |-
+        将云硬盘的内容恢复到创建该快照的时刻。**该时刻之后写入的数据全部丢失，且无法撤销。**
+
+        三项限制：只能回滚到该云硬盘最新的一个快照；云硬盘必须先从云服务器上卸载；创建快照后扩容过的云硬盘不能回滚。需要回到更早的时刻，或需要保留现有云硬盘时，请改用由快照创建一块新的云硬盘。
+
+        接口返回时回滚尚未完成，请轮询查看接口。
+      operationId: revert-disk
+      parameters:
+        - in: path
+          name: diskId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevertDiskRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiskResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 回滚到快照
+      tags:
+        - Disk
   /api/v1/floating-ips:
     get:
       operationId: list-floating-ips
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       responses:
         "200":
           content:
@@ -1463,16 +2034,8 @@ paths:
       description: |-
         若该私有网络尚未连通外网，会一并为其接入外网。
 
-        IPv6 不通过本接口申请：IPv6 地址由 SLAAC 下发到网卡，启用 IPv6 是私有网络上的一个开关。
+        IPv6 不通过本接口申请。IPv6 地址由私有网络自动下发至云服务器，在私有网络上启用即可。
       operationId: allocate-floating-ip
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -1500,13 +2063,6 @@ paths:
       description: 地址释放后进入冷却期才会重新分配，以免仍指向它的 DNS 记录和访问白名单立即失效。因此释放后的短时间内**无法重新申领同一个地址**，请谨慎操作。
       operationId: release-floating-ip
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: floatingIpId
           required: true
@@ -1528,13 +2084,6 @@ paths:
     get:
       operationId: get-floating-ip
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: floatingIpId
           required: true
@@ -1562,13 +2111,6 @@ paths:
       description: 出入两个方向同时限速。仅限制出方向无法防止入方向流量打满上联带宽。
       operationId: set-floating-ip-bandwidth
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: floatingIpId
           required: true
@@ -1602,13 +2144,6 @@ paths:
       description: 地址仍归本项目持有，只是不再指向任何网卡。
       operationId: unbind-floating-ip
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: floatingIpId
           required: true
@@ -1634,13 +2169,6 @@ paths:
     put:
       operationId: bind-floating-ip
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: floatingIpId
           required: true
@@ -1674,13 +2202,6 @@ paths:
       description: min_ram_mb 超过所选机型内存的镜像无法启动，请据此过滤可选项。
       operationId: list-images
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - explode: false
           in: query
           name: region_code
@@ -1708,13 +2229,6 @@ paths:
     get:
       operationId: list-instance-types
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - explode: false
           in: query
           name: region_code
@@ -1741,14 +2255,6 @@ paths:
   /api/v1/instances:
     get:
       operationId: list-instances
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       responses:
         "200":
           content:
@@ -1767,20 +2273,18 @@ paths:
         - Instance
     post:
       description: |-
-        **必须提供一种登录方式**：项目上已有 SSH 公钥，或在请求中设置密码。两者都没有时请求会被拒绝，否则创建出的云服务器将无法登录。
+        **必须在请求中设置密码**：不设置时请求会被拒绝，否则创建出的云服务器将无法登录。密码可由平台生成，此时仅在本次响应中返回一次。
+
+        `count` 可一次创建多台（最多 20 台），名称自动加 `-1`、`-2` 编号，所有云服务器共用同一个密码。**响应中的 `instances` 始终是数组**，单台创建时也是。
+
+        批量创建按顺序逐台进行。若中途失败（例如配额不足），**已创建的云服务器会保留**，响应中的 `failure` 给出中止原因；第一台就失败时视为整次请求失败，不会创建任何云服务器。
+
+        镜像二选一：`image_id` 使用平台提供的镜像，`private_image_id` 使用自制镜像。两者都给或都不给都会被拒绝。
 
         云服务器创建在机型所属的可用区。后续要挂载的云硬盘必须位于同一可用区。
 
         接口返回时创建尚未完成（status 为 provisioning），请轮询 GET 确认结果。
       operationId: launch-instance
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -1805,16 +2309,12 @@ paths:
         - Instance
   /api/v1/instances/{instanceId}:
     delete:
-      description: 系统盘随云服务器一并删除。数据盘会被卸载并保留。主网卡随云服务器一并释放。
+      description: |-
+        系统盘随云服务器一并删除，**基于系统盘创建的快照也会一并删除**。数据盘会被卸载并保留，其快照与备份不受影响。主网卡随云服务器一并释放。
+
+        正在制作镜像的云服务器无法释放，请等待制作完成或先删除该镜像。
       operationId: delete-instance
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -1834,16 +2334,9 @@ paths:
       tags:
         - Instance
     get:
-      description: 会同步一次底层的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
+      description: 会实时查询云服务器的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
       operationId: get-instance
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -1870,13 +2363,6 @@ paths:
       description: 仅修改显示名称。云服务器内的主机名不变，它等于云服务器 id。
       operationId: rename-instance
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -1907,16 +2393,14 @@ paths:
         - Instance
   /api/v1/instances/{instanceId}/actions:
     post:
-      description: 重启为软重启，由操作系统正常关闭后重新启动。已被平台停服的云服务器需先解除停服。
+      description: |-
+        重启默认为软重启，由操作系统正常关闭后重新启动。
+
+        系统已无响应时软重启不会生效，此时可设置 `force` 强制重启。强制重启不等待操作系统关闭，**未落盘的数据会丢失**。`force` 仅适用于 reboot。
+
+        已被平台停服的云服务器需先解除停服。
       operationId: act-on-instance
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -1947,16 +2431,12 @@ paths:
         - Instance
   /api/v1/instances/{instanceId}/console:
     post:
-      description: 返回的地址一次性使用，数分钟后失效。**请勿缓存**，每次使用前重新获取。
+      description: |-
+        在浏览器中直接操作云服务器，无需网络可达，适用于网络配置失误导致无法登录的情况。
+
+        返回的地址一次性使用，数分钟后失效。**请勿缓存**，每次使用前重新获取。
       operationId: open-instance-console
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -1976,20 +2456,54 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 打开 VNC 控制台
+      summary: 打开远程控制台
+      tags:
+        - Instance
+  /api/v1/instances/{instanceId}/console-output:
+    get:
+      description: |-
+        云服务器启动过程与内核输出的原始文本。无法登录或远程控制台无输出时，应首先查看本接口。其中可查看启动停止于哪一步、系统盘是否正常挂载、初始化过程是否报错。
+
+        处于错误状态或已被平台停服的云服务器同样可以读取。
+      operationId: get-instance-console-output
+      parameters:
+        - in: path
+          name: instanceId
+          required: true
+          schema:
+            format: uuid
+            type: string
+        - description: 返回末尾多少行，0 表示全部
+          explode: false
+          in: query
+          name: lines
+          schema:
+            default: 200
+            description: 返回末尾多少行，0 表示全部
+            format: int64
+            maximum: 10000
+            minimum: 0
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsoleOutputResponseBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 读取串口输出
       tags:
         - Instance
   /api/v1/instances/{instanceId}/disks:
     get:
       operationId: list-instance-disks
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2016,13 +2530,6 @@ paths:
       description: 云硬盘必须与云服务器位于同一地区和可用区。挂载后需在云服务器内自行分区并挂载文件系统。
       operationId: attach-disk
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2056,13 +2563,6 @@ paths:
       description: 请先在云服务器内卸载（umount）该设备再调用本接口，正在写入的文件系统被强制卸载会损坏数据。
       operationId: detach-disk
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2096,13 +2596,6 @@ paths:
       description: 公网 IP 绑定在云服务器的主网卡上。
       operationId: attach-instance-floating-ip
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2135,13 +2628,6 @@ paths:
     delete:
       operationId: detach-instance-floating-ip
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2170,18 +2656,16 @@ paths:
       summary: 解绑云服务器的公网 IP
       tags:
         - Attachment
-  /api/v1/instances/{instanceId}/image:
+  /api/v1/instances/{instanceId}/password:
     post:
-      description: 创建出的镜像不会自动上架，仅归本项目所有。
-      operationId: create-instance-image
+      description: |-
+        在不重启的情况下改掉 root 的密码，云服务器必须处于运行中。
+
+        **并非所有镜像都支持**：镜像列表中 `supports_password_reset` 为 false 的镜像做不到，此时只能通过重装系统设置新密码，而重装会清除系统盘上的全部数据。
+
+        镜像标记为支持、但云服务器内相应组件已被卸载或停止时，本接口同样会被拒绝。
+      operationId: reset-instance-password
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2192,14 +2676,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateInstanceImageRequestBody"
+              $ref: "#/components/schemas/ResetPasswordRequestBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CreateInstanceImageResponseBody"
+                $ref: "#/components/schemas/ResetPasswordResponseBody"
           description: OK
         default:
           content:
@@ -2207,20 +2691,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 将云服务器创建为镜像
+      summary: 重置登录密码
       tags:
         - Instance
   /api/v1/instances/{instanceId}/ports:
     get:
       operationId: list-instance-ports
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2246,13 +2723,6 @@ paths:
     post:
       operationId: attach-port
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2286,13 +2756,6 @@ paths:
       description: 主网卡不可卸载，卸载后云服务器将失去网络地址。
       operationId: detach-port
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2323,16 +2786,9 @@ paths:
         - Attachment
   /api/v1/instances/{instanceId}/rebuild:
     post:
-      description: "**系统盘数据将被清除且无法恢复。** 数据盘不受影响。"
+      description: "**系统盘数据将被清除且无法恢复。** 已挂载的数据盘不受影响。"
       operationId: rebuild-instance
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2366,16 +2822,11 @@ paths:
       description: |-
         只能变更为同一地区、同一可用区的机型，否则已挂载的云硬盘无法随之迁移。
 
-        变配后需调用确认接口才算完成；未确认时原规格占用的资源不会释放。
+        变配分两步：本接口下发后云服务器会在新规格上重新启动，状态变为 `resize_verifying`，此时**必须**调用确认或回滚接口。目标机型在确认前记在 `pending_instance_type_id` 上，`instance_type_id` 仍为当前生效并计费的机型。
+
+        **未确认期间新旧两份规格同时占用资源。** 请在状态变为 `resize_verifying` 后尽快确认。
       operationId: resize-instance
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2406,15 +2857,9 @@ paths:
         - Instance
   /api/v1/instances/{instanceId}/resize/confirm:
     post:
+      description: 释放原规格占用的资源，`pending_instance_type_id` 成为生效机型并从此按它计费。
       operationId: confirm-instance-resize
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2439,15 +2884,9 @@ paths:
         - Instance
   /api/v1/instances/{instanceId}/resize/revert:
     post:
+      description: 云服务器回到原规格，`pending_instance_type_id` 被丢弃，计费不受本次变配影响。
       operationId: revert-instance-resize
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: instanceId
           required: true
@@ -2470,17 +2909,60 @@ paths:
       summary: 回滚变配
       tags:
         - Instance
+  /api/v1/operation-logs:
+    get:
+      description: |-
+        记录本项目内的每一次写操作：谁、在什么时候、对什么做了什么、成功还是失败。读取操作不记录。
+
+        **平台代为执行的操作也在其中，但不显示具体执行人**，`by_platform` 为 true。例如欠费停机、违规封禁：需要知道机器何时被平台停止，但执行人属于平台内部信息。
+
+        密码一类的字段在写入时即被替换为占位符，不会出现在 `payload` 中。
+      operationId: list-operation-logs
+      parameters:
+        - description: 只看某一种操作，取值与接口的 operation id 一致
+          explode: false
+          in: query
+          name: action
+          schema:
+            description: 只看某一种操作，取值与接口的 operation id 一致
+            maxLength: 64
+            type: string
+        - explode: false
+          in: query
+          name: limit
+          schema:
+            default: 50
+            format: int64
+            maximum: 200
+            minimum: 1
+            type: integer
+        - explode: false
+          in: query
+          name: offset
+          schema:
+            default: 0
+            format: int64
+            minimum: 0
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperationLogListResponseBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出本项目的操作记录
+      tags:
+        - OperationLog
   /api/v1/ports:
     get:
       operationId: list-ports
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       responses:
         "200":
           content:
@@ -2500,14 +2982,6 @@ paths:
     post:
       description: 创建出的网卡尚未挂载到任何云服务器。主网卡不由本接口创建，它随云服务器一并创建。
       operationId: create-port
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -2535,13 +3009,6 @@ paths:
       description: 主网卡不可单独删除，它随云服务器一并释放。仍挂载在云服务器上的网卡也无法删除。
       operationId: delete-port
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: portId
           required: true
@@ -2560,17 +3027,158 @@ paths:
       summary: 删除网卡
       tags:
         - Port
+  /api/v1/private-images:
+    get:
+      operationId: list-private-images
+      parameters:
+        - description: 只返回该地区的镜像。镜像只能用于所在地区
+          explode: false
+          in: query
+          name: region_code
+          schema:
+            description: 只返回该地区的镜像。镜像只能用于所在地区
+            maxLength: 32
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateImageListResponseBody"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 列出自制镜像
+      tags:
+        - PrivateImage
+    post:
+      description: |-
+        依据云服务器的系统盘制作，数据盘不包含在内。制作出的镜像可用于创建云服务器或重装系统，并在源云服务器释放后继续可用。
+
+        **镜像内容取自开始制作的那一刻，此后对云服务器的改动不会包含在内。**
+
+        制作分两个阶段，请轮询查看接口：
+
+        - `provisioning` 正在读取系统盘，通常数十秒。此阶段云服务器可以继续使用，但为保证一致性建议先关机。
+        - `uploading` 已与系统盘无关，**此时即可开机，无需等待制作完成**。该阶段耗时与系统盘容量成正比，20 GB 约需 3 分钟。
+
+        运行中的云服务器其文件系统可能处于写入中间状态，制作出的镜像等同于一次断电后的磁盘内容。对一致性有要求时，请在开始制作前关机，并在状态变为 `uploading` 后开机。
+
+        制作期间该云服务器可以正常启停与使用，但无法释放。
+      operationId: create-private-image
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrivateImageRequestBody"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateImageResource"
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 将云服务器制作为镜像
+      tags:
+        - PrivateImage
+  /api/v1/private-images/{privateImageId}:
+    delete:
+      description: |-
+        仍有云服务器由该镜像创建时，删除会被拒绝：这些云服务器需要它才能重装系统。
+
+        制作尚未完成的镜像也可以删除，制作会被终止。
+      operationId: delete-private-image
+      parameters:
+        - in: path
+          name: privateImageId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 删除自制镜像
+      tags:
+        - PrivateImage
+    get:
+      description: 轮询制作进度请使用本接口。status 为 error 时，failure 给出失败原因。
+      operationId: get-private-image
+      parameters:
+        - in: path
+          name: privateImageId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateImageResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 查看自制镜像
+      tags:
+        - PrivateImage
+    patch:
+      operationId: rename-private-image
+      parameters:
+        - in: path
+          name: privateImageId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenamePrivateImageRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateImageResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 重命名自制镜像
+      tags:
+        - PrivateImage
   /api/v1/private-networks:
     get:
       operationId: list-private-networks
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - description: 不传时返回全部地区
           explode: false
           in: query
@@ -2598,14 +3206,6 @@ paths:
     post:
       description: 同时创建一张网络、一台路由器和一个默认安全组。默认安全组拒绝全部入站流量、放行全部出站流量。
       operationId: create-private-network
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -2633,13 +3233,6 @@ paths:
       description: 其中仍有云服务器或网卡时，释放会被拒绝。IPv6、路由器与安全组随之一并释放。
       operationId: delete-private-network
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2661,13 +3254,6 @@ paths:
     get:
       operationId: get-private-network
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2690,24 +3276,22 @@ paths:
       summary: 查看私有网络
       tags:
         - PrivateNetwork
-  /api/v1/private-networks/{privateNetworkId}/internet-gateway:
-    delete:
-      description: 项目中仍有已绑定的公网 IP 时会被拒绝：断开外网接入会使这些地址立即不可达。
-      operationId: detach-internet-gateway
+    patch:
+      description: 仅修改显示名称。网段、路由与外网网关均不可修改。
+      operationId: rename-private-network
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
           schema:
             format: uuid
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenamePrivateNetworkRequestBody"
+        required: true
       responses:
         "200":
           content:
@@ -2721,40 +3305,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Error
-      summary: 断开私有网络的外网接入
-      tags:
-        - PrivateNetwork
-    post:
-      description: 申领公网 IP 时会自动完成此步骤，通常无需单独调用。启用 IPv6 前必须先接入外网。
-      operationId: attach-internet-gateway
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
-        - in: path
-          name: privateNetworkId
-          required: true
-          schema:
-            format: uuid
-            type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PrivateNetworkResource"
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-          description: Error
-      summary: 为私有网络接入外网
+      summary: 重命名私有网络
       tags:
         - PrivateNetwork
   /api/v1/private-networks/{privateNetworkId}/ipv6:
@@ -2762,13 +3313,6 @@ paths:
       description: 释放的前缀不会立即重新分配。
       operationId: disable-private-network-ipv6
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2790,13 +3334,6 @@ paths:
     get:
       operationId: get-private-network-ipv6
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2821,18 +3358,11 @@ paths:
         - PrivateNetwork
     post:
       description: |-
-        为该私有网络分配一个 /64 前缀。IPv6 地址由 SLAAC 下发到网卡，无需也无法单独申领。
+        为该私有网络分配一段 IPv6 地址。地址由私有网络自动下发至云服务器，无需也无法单独申领，也不占用公网 IPv4。
 
-        前提是该私有网络已接入外网。
+        该私有网络尚未接入外网时会自动接入，无需单独操作。
       operationId: enable-private-network-ipv6
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2859,13 +3389,6 @@ paths:
     get:
       operationId: list-routes
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2892,13 +3415,6 @@ paths:
       description: 以下三种会导致网络中断的写法会被拒绝：目的网段为 0.0.0.0/0（覆盖默认路由，所有公网 IP 立即失效）、目的网段为某个子网自身（覆盖直连路由）、下一跳为某个子网的网关（指回路由器自身）。
       operationId: create-route
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2931,13 +3447,6 @@ paths:
     delete:
       operationId: delete-route
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2967,13 +3476,6 @@ paths:
       description: IPv6 子网也在返回结果中，ip_version 为 6。它在启用 IPv6 时自动创建，不可单独删除。
       operationId: list-subnets
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -2999,13 +3501,6 @@ paths:
     post:
       operationId: create-subnet
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -3039,13 +3534,6 @@ paths:
       description: 返回的只是建议值，创建子网时仍会重新校验。用于避免手工计算下一个空闲网段时出错。
       operationId: suggest-subnet-cidr
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -3082,13 +3570,6 @@ paths:
       description: 该子网中仍有网卡，或仍有静态路由的下一跳落在该网段内时，删除会被拒绝。
       operationId: delete-subnet
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: privateNetworkId
           required: true
@@ -3116,14 +3597,6 @@ paths:
   /api/v1/regions:
     get:
       operationId: list-regions
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       responses:
         "200":
           content:
@@ -3145,13 +3618,6 @@ paths:
       description: 云硬盘与云服务器必须位于同一可用区才能挂载，创建前请确认所选可用区。
       operationId: list-availability-zones
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: regionCode
           required: true
@@ -3178,13 +3644,6 @@ paths:
     get:
       operationId: list-security-groups
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - explode: false
           in: query
           name: region_code
@@ -3217,14 +3676,6 @@ paths:
     post:
       description: 新建的安全组带有一条规则：放行 ICMP 需要分片（type 3 code 4）。缺少该规则会导致路径 MTU 发现失败，表现为连接建立后传输大数据包时卡住。
       operationId: create-security-group
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -3252,13 +3703,6 @@ paths:
       description: 默认安全组不可删除，它随私有网络一并释放。仍被网卡引用的安全组也无法删除。
       operationId: delete-security-group
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: securityGroupId
           required: true
@@ -3280,13 +3724,6 @@ paths:
     get:
       operationId: get-security-group
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: securityGroupId
           required: true
@@ -3313,13 +3750,6 @@ paths:
     get:
       operationId: list-security-group-rules
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: securityGroupId
           required: true
@@ -3346,13 +3776,6 @@ paths:
       description: 重复添加同一条规则会被拒绝。判重时 `0.0.0.0/0`、`::/0` 与留空视为等同。
       operationId: create-security-group-rule
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: securityGroupId
           required: true
@@ -3385,13 +3808,6 @@ paths:
     delete:
       operationId: delete-security-group-rule
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: securityGroupId
           required: true
@@ -3420,12 +3836,13 @@ paths:
     get:
       operationId: list-snapshots
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
+        - description: 只返回该云硬盘的快照
+          explode: false
+          in: query
+          name: disk_id
           schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
+            description: 只返回该云硬盘的快照
+            format: uuid
             type: string
       responses:
         "200":
@@ -3444,16 +3861,11 @@ paths:
       tags:
         - Snapshot
     post:
-      description: 运行中云服务器上挂载的云硬盘同样可以创建快照。快照记录的是某一时刻的块设备状态，文件系统层面可能不一致，重要数据建议先在云服务器内执行 sync。
+      description: |-
+        运行中云服务器上挂载的云硬盘同样可以创建快照。快照记录的是某一时刻的块设备状态，文件系统层面可能不一致，重要数据建议先在云服务器内执行 sync。
+
+        **系统盘的快照不能用于回滚该系统盘**：回滚要求先从云服务器上卸载，而系统盘不可卸载。它可用于创建一块新的数据盘。需要保留并恢复整个系统时，请使用自制镜像；需要可跨可用区、且在云硬盘删除后仍可恢复的副本时，请使用备份。
       operationId: create-snapshot
-      parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
       requestBody:
         content:
           application/json:
@@ -3480,13 +3892,6 @@ paths:
     delete:
       operationId: delete-snapshot
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: snapshotId
           required: true
@@ -3508,13 +3913,6 @@ paths:
     get:
       operationId: get-snapshot
       parameters:
-        - description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-          in: header
-          name: Authorization
-          required: true
-          schema:
-            description: IAM 签发的项目令牌，形如 Bearer <token>。当前项目由令牌决定，路径和请求头上都没有 project_id
-            type: string
         - in: path
           name: snapshotId
           required: true
@@ -3535,6 +3933,37 @@ paths:
                 $ref: "#/components/schemas/Error"
           description: Error
       summary: 查看快照
+      tags:
+        - Snapshot
+    patch:
+      operationId: rename-snapshot
+      parameters:
+        - in: path
+          name: snapshotId
+          required: true
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenameSnapshotRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotResource"
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Error
+      summary: 重命名快照
       tags:
         - Snapshot
 
