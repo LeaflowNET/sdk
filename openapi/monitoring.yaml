@@ -1516,7 +1516,7 @@ info:
 
     **路径上没有 `projectId`**：当前项目由令牌决定。
 
-    失败时按出路区分：`IDENTITY_EXPIRED` 表示令牌过期，重新换取即可，无需重新登录；`PROJECT_FORBIDDEN` 表示当前账号不是该项目成员；`PROJECT_UNAVAILABLE` 表示项目欠费或正在删除。
+    鉴权在网关完成，被拒的请求不会到达这些接口。按错误码区分处理方式：`TOKEN_MISSING` 表示没带令牌；`TOKEN_EXPIRED` 表示令牌过期，用账号令牌重新换取即可，无需重新登录；`TOKEN_INVALID` 表示令牌验不过；`NOT_A_MEMBER` 表示当前账号不是该项目成员；`USER_SUSPENDED` / `USER_BANNED` 表示账号本身不能操作。
 
     ## 两组容易混淆的概念
 
