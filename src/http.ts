@@ -14,9 +14,9 @@ export interface ClientOptions {
     /**
      * getToken is called before every request.
      *
-     * Called each time rather than read once at setup: the project token expires,
-     * it is replaced when the active project changes, and in a server it belongs
-     * to whoever is making the current request rather than to the process.
+     * Called each time rather than read once at construction: the project token
+     * expires, it is replaced when the active project changes, and in a server it
+     * belongs to whoever is making the current request rather than to the process.
      */
     getToken?: TokenProvider;
     /** timeout in milliseconds. */
@@ -29,10 +29,11 @@ export interface Client {
 }
 
 /**
- * The second argument every generated operation accepts.
+ * The last argument of every generated operation: which client to go through.
  *
- * `client` is what makes it possible to talk to more than one service, or to more
- * than one caller's credentials, from a single process.
+ * Callers of this package do not construct it. `createIamClient` and its siblings
+ * hand back operations with this parameter already bound and gone from the
+ * signature — see `bindClient`.
  */
 export interface RequestOptions {
     client?: Client;
@@ -41,16 +42,18 @@ export interface RequestOptions {
 /**
  * A connection to one service.
  *
- * # Why this exists rather than only `configure`
+ * # There is no process-wide client, deliberately
  *
- * `configure` sets module-level state, which quietly rules out two things this SDK
- * is otherwise well suited to:
+ * An earlier version of this package had `configure()`, which set a module-level
+ * axios instance and a module-level token provider. That is state an SDK has no
+ * business owning, and it ruled out two things this package is otherwise well
+ * suited to:
  *
  *   - **More than one service.** The documents bundled here are separate
  *     deployments on separate addresses — one host per service through the
  *     gateway (`iam.leaflow.cloud`, `compute.leaflow.cloud`, …) — and their paths
  *     are bare `/api/v1/...` with no service prefix: `iam` and `monitoring` both
- *     own `/api/v1/projects/{id}/...`. One `baseURL` per process therefore means
+ *     own `/api/v1/projects/{id}/...`. One `baseURL` per process therefore meant
  *     one service per process.
  *   - **More than one caller.** A server handles requests concurrently, and a
  *     single module-level `getToken` is read at await points interleaved across
@@ -58,15 +61,11 @@ export interface RequestOptions {
  *     the other's project token — intermittently, under load, which is the worst
  *     possible way to find out.
  *
- * A client is an ordinary value, so both problems become "hold the right one".
- *
- * # Why there is no `getBaseURL` any more
- *
- * There was one, and it existed to let the single module-level instance point
- * somewhere different per call — which is to say, to work around being a
- * singleton. A client per service answers the same question by construction, and
- * a resolver that runs before every request is one more place for the address to
- * be wrong.
+ * So a client is an ordinary value: constructed per service, and — where the
+ * token belongs to a request rather than to the process — per request. This is
+ * the shape the major cloud SDKs converged on: `new InstancesClient({...})` in
+ * Google Cloud, `new EC2Client({...})` in AWS v3, whose predecessor's global
+ * `AWS.config` was removed for these same two reasons.
  */
 export function createClient(options: ClientOptions): Client {
     const instance: AxiosInstance = axios.create({
@@ -92,37 +91,27 @@ export function createClient(options: ClientOptions): Client {
 }
 
 /**
- * The client used when a call does not name one.
- *
- * Kept for single-service consumers — a browser talking to one service, a script
- * — for whom threading a client through every call is ceremony with no payoff. It
- * is a fallback and not the default anyone should reach for in a server: see
- * `createClient` for why.
- */
-let fallback: Client | undefined;
-
-/** configure initialises the process-wide fallback client. Call it once. */
-export function configure(options: ClientOptions): void {
-    fallback = createClient(options);
-}
-
-/**
  * request is the entry point used by the generated code.
  *
  * The `options` argument is orval's mutator hook: every generated operation takes
  * it as its last parameter and passes it straight through, which is what lets a
  * caller say which client a call belongs to without this module holding any
  * per-call state.
+ *
+ * A call with no client throws rather than falling back to something. There used
+ * to be a fallback, and a fallback is worse than an error exactly when it works:
+ * in a process that talks to four services, the call that forgot its client
+ * *succeeds*, against whichever service happened to be configured last.
  */
 export async function request<T>(
     config: AxiosRequestConfig,
     options?: RequestOptions,
 ): Promise<T> {
-    const client = options?.client ?? fallback;
+    const client = options?.client;
 
     if (!client) {
         throw new Error(
-            'SDK not initialised: pass { client } from createClient(), or call configure({ baseURL }) once for a single-service process',
+            'this operation was called without a client: get one from createIamClient / createComputeClient / createMonitoringClient / createAssistantClient',
         );
     }
 
@@ -130,22 +119,36 @@ export async function request<T>(
 }
 
 /**
- * A generated namespace with a client already attached.
+ * One service's operations, with the client bound and no longer in the signature.
  *
- * `compute.listInstances(params, { client })` at every call site is correct and
- * tiring, and the tiring part is what makes somebody eventually forget one — at
- * which point the call silently falls through to the process-wide fallback,
- * which in a multi-service process points at the wrong service.
- *
- *     const compute = withClient(sdk.compute, createClient({ baseURL, getToken }));
- *     await compute.listInstances({});
+ * The mapped type is the point: `getAccount()` on a bound namespace has no
+ * `options` parameter at all, so there is no way to reach the transport by hand,
+ * and no way for one service's client to be handed to another service's
+ * operation. What is left is what the caller of an SDK should see — the operation
+ * and its arguments.
+ */
+export type Bound<T> = {
+    [K in keyof T]: T[K] extends (
+        ...args: [...infer Head, (RequestOptions | undefined)?]
+    ) => infer Result
+        ? (...args: Head) => Result
+        : T[K];
+};
+
+/**
+ * Attach a client to a whole generated namespace.
  *
  * The binding is by position: orval emits `options` as the last declared
  * parameter of every operation, so `fn.length - 1` is the slot. Arguments the
- * caller omitted are filled with `undefined` to reach it, and an options object
- * the caller did pass is merged rather than replaced.
+ * caller omitted are filled with `undefined` to reach it.
+ *
+ * `fn.length` stops counting at the first parameter that has a default, so that
+ * assumption holds only while the generated code has none. It has none today, and
+ * `scripts/check-generated-arity.mjs` fails the build if that changes: a slot
+ * that silently shifts by one would pass the client as somebody's request body,
+ * and no amount of type checking on generated code would catch it.
  */
-export function withClient<T extends object>(api: T, client: Client): T {
+export function bindClient<T extends object>(api: T, client: Client): Bound<T> {
     return new Proxy(api, {
         get(target, property, receiver): unknown {
             const value: unknown = Reflect.get(target, property, receiver);
@@ -166,10 +169,8 @@ export function withClient<T extends object>(api: T, client: Client): T {
                     head.push(undefined);
                 }
 
-                const passed = args[slot] as RequestOptions | undefined;
-
-                return operation(...head, { ...passed, client });
+                return operation(...head, { client });
             };
         },
-    }) as T;
+    }) as Bound<T>;
 }
