@@ -20,163 +20,165 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AcceptConsentsRequestBody, AcceptInvitationByTokenRequestBody, AcceptedInvitationResponseBody, AccountResource, AgreementListResponseBody, ConsentListResponseBody, CreateProjectRequestBody, CreateRoleRequestBody, CreateSSHKeyRequestBody, IdentityVerificationResource, IssueInvitationRequestBody, IssuedInvitationResponseBody, LengthAwarePageInvitationResource, LengthAwarePageMemberResource, LengthAwarePageProjectAccessResource, LengthAwarePageSSHKeyResource, ListMembersParams, ListMyInvitationsParams, ListProjectInvitationsParams, ListProjectsParams, ListSshKeysParams, MemberResource, MembershipResource, OwnershipTransferResponseBody, PermissionListResponseBody, ProjectAccessResource, ProjectTokenResponseBody, RegisterRequestBody, RenameSSHKeyRequestBody, RoleListResponseBody, RoleResource, SSHKeyResource, SetMemberRolesRequestBody, SubmitIdentityVerificationRequestBody, TransferOwnershipRequestBody, UpdateProjectRequestBody, UpdateRoleRequestBody } from './models/index.js';
+import { request } from '../../http.js';
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
 * 注册页显示它，用户同意之后把每一项的 `type` 和 `version` 原样回传给 `POST /api/v1/register`。
 
 不需要令牌。还没有任何文件生效时返回空数组，那时注册不需要提交 `consents`。
 * @summary 列出注册必须同意的文件
 */
-export declare const listAgreements: () => Promise<AgreementListResponseBody>;
+export declare const listAgreements: (options?: SecondParameter<typeof request<AgreementListResponseBody>>) => Promise<AgreementListResponseBody>;
 /**
  * `pending_agreements` 是还没同意的文件，非空就要先引导用户同意，再调 `POST /api/v1/me/consents`。
  * @summary 查看当前账号
  */
-export declare const getAccount: () => Promise<AccountResource>;
+export declare const getAccount: (options?: SecondParameter<typeof request<AccountResource>>) => Promise<AccountResource>;
 /**
  * 全部记录，最新的在前，包括已经不是当前版本的那些。
  * @summary 列出我同意过的文件
  */
-export declare const listConsents: () => Promise<ConsentListResponseBody>;
+export declare const listConsents: (options?: SecondParameter<typeof request<ConsentListResponseBody>>) => Promise<ConsentListResponseBody>;
 /**
  * 条款改版之后用它重新同意，`GET /api/v1/me` 的 `pending_agreements` 非空时就该调。
 
 只收当前生效的版本，签旧版答 409。重复提交同一版不报错，第一次那条记录会留着。
  * @summary 同意条款
  */
-export declare const acceptAgreements: (acceptConsentsRequestBody: AcceptConsentsRequestBody) => Promise<AccountResource>;
+export declare const acceptAgreements: (acceptConsentsRequestBody: AcceptConsentsRequestBody, options?: SecondParameter<typeof request<AccountResource>>) => Promise<AccountResource>;
 /**
  * 没交过材料时答 UNVERIFIED，不是 404。姓名和证件号不会出现在任何响应里。
  * @summary 查看实名核验状态
  */
-export declare const getIdentityVerification: () => Promise<IdentityVerificationResource>;
+export declare const getIdentityVerification: (options?: SecondParameter<typeof request<IdentityVerificationResource>>) => Promise<IdentityVerificationResource>;
 /**
  * 已经在等人审的和已经核过的都会被拒。被驳回之后可以改了再交。
  * @summary 提交实名核验材料
  */
-export declare const submitIdentityVerification: (submitIdentityVerificationRequestBody: SubmitIdentityVerificationRequestBody) => Promise<IdentityVerificationResource>;
+export declare const submitIdentityVerification: (submitIdentityVerificationRequestBody: SubmitIdentityVerificationRequestBody, options?: SecondParameter<typeof request<IdentityVerificationResource>>) => Promise<IdentityVerificationResource>;
 /**
  * 按当前账号的邮箱查，因为要约是寄给一个地址的——被邀请的人当时可能还没注册。
  * @summary 列出寄给我的要约
  */
-export declare const listMyInvitations: (params?: ListMyInvitationsParams) => Promise<LengthAwarePageInvitationResource>;
+export declare const listMyInvitations: (params?: ListMyInvitationsParams, options?: SecondParameter<typeof request<LengthAwarePageInvitationResource>>) => Promise<LengthAwarePageInvitationResource>;
 /**
  * token 对不上和这份要约已经不作数了是同一个回答：持有者对这两种情况能做的事完全一样，分开报会把这个接口变成一个可以拿来试 token 的探针。
  * @summary 顺着邀请链接接受
  */
-export declare const acceptInvitationByToken: (acceptInvitationByTokenRequestBody: AcceptInvitationByTokenRequestBody) => Promise<AcceptedInvitationResponseBody>;
+export declare const acceptInvitationByToken: (acceptInvitationByTokenRequestBody: AcceptInvitationByTokenRequestBody, options?: SecondParameter<typeof request<AcceptedInvitationResponseBody>>) => Promise<AcceptedInvitationResponseBody>;
 /**
  * 不需要 token：token 证明的是「你就是这份要约寄给的那个人」，而当前账号的邮箱对得上这份要约，证明的是同一件事。
  * @summary 接受一份列在我名下的要约
  */
-export declare const acceptInvitation: (invitationId: string) => Promise<AcceptedInvitationResponseBody>;
+export declare const acceptInvitation: (invitationId: string, options?: SecondParameter<typeof request<AcceptedInvitationResponseBody>>) => Promise<AcceptedInvitationResponseBody>;
 /**
  * **只有 IAM 这一份。** 别的服务的操作不在这里——权限目录是各服务各自声明、由 各个服务自己声明的，IAM 认识它们就等于要跟着每个下游一起发版。
  * @summary 列出 IAM 自己声明的权限
  */
-export declare const listPermissions: () => Promise<PermissionListResponseBody>;
+export declare const listPermissions: (options?: SecondParameter<typeof request<PermissionListResponseBody>>) => Promise<PermissionListResponseBody>;
 /**
  * 默认不含已删除的项目——那些是已经不存在了的东西，要看必须明确用 status=DELETED 点名。
  * @summary 列出我参与的项目
  */
-export declare const listProjects: (params?: ListProjectsParams) => Promise<LengthAwarePageProjectAccessResource>;
+export declare const listProjects: (params?: ListProjectsParams, options?: SecondParameter<typeof request<LengthAwarePageProjectAccessResource>>) => Promise<LengthAwarePageProjectAccessResource>;
 /**
  * 建的人就是所有者。项目会连带预置 OWNER、ADMIN 两个内置角色和一个空权限的 member 角色。
  * @summary 建一个项目
  */
-export declare const createProject: (createProjectRequestBody: CreateProjectRequestBody) => Promise<ProjectAccessResource>;
+export declare const createProject: (createProjectRequestBody: CreateProjectRequestBody, options?: SecondParameter<typeof request<ProjectAccessResource>>) => Promise<ProjectAccessResource>;
 /**
  * 只有所有者能做，而且没有回头路：项目进入 DELETING，各服务开始清掉它下面的资源。项目行本身永远留着——查一个删掉的项目查得到，答案是它没了，而不是一个 404。
  * @summary 删除项目
  */
-export declare const deleteProject: (projectId: string) => Promise<ProjectAccessResource>;
+export declare const deleteProject: (projectId: string, options?: SecondParameter<typeof request<ProjectAccessResource>>) => Promise<ProjectAccessResource>;
 /**
  * 在项目里就看得到，不需要额外的读权限。
  * @summary 查看一个项目
  */
-export declare const getProject: (projectId: string) => Promise<ProjectAccessResource>;
+export declare const getProject: (projectId: string, options?: SecondParameter<typeof request<ProjectAccessResource>>) => Promise<ProjectAccessResource>;
 /**
  * @summary 改项目的名称与描述
  */
-export declare const updateProject: (projectId: string, updateProjectRequestBody: UpdateProjectRequestBody) => Promise<ProjectAccessResource>;
+export declare const updateProject: (projectId: string, updateProjectRequestBody: UpdateProjectRequestBody, options?: SecondParameter<typeof request<ProjectAccessResource>>) => Promise<ProjectAccessResource>;
 /**
  * 在项目里就看得到，和成员列表同一条规则：谁被请了也是「这个项目有谁」的一部分。
  * @summary 列出这个项目还在等的要约
  */
-export declare const listProjectInvitations: (projectId: string, params?: ListProjectInvitationsParams) => Promise<LengthAwarePageInvitationResource>;
+export declare const listProjectInvitations: (projectId: string, params?: ListProjectInvitationsParams, options?: SecondParameter<typeof request<LengthAwarePageInvitationResource>>) => Promise<LengthAwarePageInvitationResource>;
 /**
  * 要约站 14 天。有上限是因为里面那些角色是按发出那一刻的项目校验的，一份活得比它所依据的安排还久的要约会授出现在没人打算授的权限。
  * @summary 发出一份邀请
  */
-export declare const issueInvitation: (projectId: string, issueInvitationRequestBody: IssueInvitationRequestBody) => Promise<IssuedInvitationResponseBody>;
+export declare const issueInvitation: (projectId: string, issueInvitationRequestBody: IssueInvitationRequestBody, options?: SecondParameter<typeof request<IssuedInvitationResponseBody>>) => Promise<IssuedInvitationResponseBody>;
 /**
  * @summary 撤回一份还没被兑现的要约
  */
-export declare const revokeInvitation: (projectId: string, invitationId: string) => Promise<void>;
+export declare const revokeInvitation: (projectId: string, invitationId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 列出项目成员
  */
-export declare const listMembers: (projectId: string, params?: ListMembersParams) => Promise<LengthAwarePageMemberResource>;
+export declare const listMembers: (projectId: string, params?: ListMembersParams, options?: SecondParameter<typeof request<LengthAwarePageMemberResource>>) => Promise<LengthAwarePageMemberResource>;
 /**
  * 移除别人要 iam:members.manage；退出只要求自己在这个项目里——任何人都可能被拉进一个项目，那么任何人就得能出去。所有者两条路都不行，先转移所有权。
  * @summary 移除成员，或者自己退出
  */
-export declare const removeMember: (projectId: string, userId: string) => Promise<void>;
+export declare const removeMember: (projectId: string, userId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 整体替换而不是增删：调用方拿到的就是一份完整清单，让它自己算差集只会让「我以为我取消了那个角色」这种事变得可能。所有者身上的 OWNER 不受影响。
  * @summary 设置一个成员持有的角色
  */
-export declare const setMemberRoles: (projectId: string, userId: string, setMemberRolesRequestBody: SetMemberRolesRequestBody) => Promise<MemberResource>;
+export declare const setMemberRoles: (projectId: string, userId: string, setMemberRolesRequestBody: SetMemberRolesRequestBody, options?: SecondParameter<typeof request<MemberResource>>) => Promise<MemberResource>;
 /**
  * 只给事实，不给结论：这里没有 allowed，因为 IAM 不知道你要做的是哪个操作——哪个操作需要哪条权限那份目录属于各个服务，判断在它们那边。
  * @summary 查看我在这个项目里的身份
  */
-export declare const getProjectMembership: (projectId: string) => Promise<MembershipResource>;
+export declare const getProjectMembership: (projectId: string, options?: SecondParameter<typeof request<MembershipResource>>) => Promise<MembershipResource>;
 /**
  * @summary 列出项目里的角色
  */
-export declare const listRoles: (projectId: string) => Promise<RoleListResponseBody>;
+export declare const listRoles: (projectId: string, options?: SecondParameter<typeof request<RoleListResponseBody>>) => Promise<RoleListResponseBody>;
 /**
  * @summary 建一个角色
  */
-export declare const createRole: (projectId: string, createRoleRequestBody: CreateRoleRequestBody) => Promise<RoleResource>;
+export declare const createRole: (projectId: string, createRoleRequestBody: CreateRoleRequestBody, options?: SecondParameter<typeof request<RoleResource>>) => Promise<RoleResource>;
 /**
  * 还有人持有时会被拒。级联摘掉那些绑定等于把每个持有者悄悄降级——请求里没有一个字说了这件事，事后也查不到。
  * @summary 删一个角色
  */
-export declare const deleteRole: (projectId: string, code: string) => Promise<void>;
+export declare const deleteRole: (projectId: string, code: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看一个角色
  */
-export declare const getRole: (projectId: string, code: string) => Promise<RoleResource>;
+export declare const getRole: (projectId: string, code: string, options?: SecondParameter<typeof request<RoleResource>>) => Promise<RoleResource>;
 /**
  * 名称、描述和权限整体替换。改完会在同一个事务里重新编译持有它的每一个成员——角色的权限变了，就是那些人的权限变了，而下一次请求是拿编译结果判定的。
  * @summary 改一个角色
  */
-export declare const updateRole: (projectId: string, code: string, updateRoleRequestBody: UpdateRoleRequestBody) => Promise<RoleResource>;
+export declare const updateRole: (projectId: string, code: string, updateRoleRequestBody: UpdateRoleRequestBody, options?: SecondParameter<typeof request<RoleResource>>) => Promise<RoleResource>;
 /**
  * 归成员的和归项目的都在里面，靠每一条上的 owner_user_id 区分。
  * @summary 列出这个项目的公钥
  */
-export declare const listSshKeys: (projectId: string, params?: ListSshKeysParams) => Promise<LengthAwarePageSSHKeyResource>;
+export declare const listSshKeys: (projectId: string, params?: ListSshKeysParams, options?: SecondParameter<typeof request<LengthAwarePageSSHKeyResource>>) => Promise<LengthAwarePageSSHKeyResource>;
 /**
  * owner=me 是自己的，是成员就能加；owner=project 是项目公用的，要 iam:ssh_keys.manage —— 它会进这个项目之后开出来的每一台机器。
  * @summary 添加一把公钥
  */
-export declare const createSshKey: (projectId: string, createSSHKeyRequestBody: CreateSSHKeyRequestBody) => Promise<SSHKeyResource>;
+export declare const createSshKey: (projectId: string, createSSHKeyRequestBody: CreateSSHKeyRequestBody, options?: SecondParameter<typeof request<SSHKeyResource>>) => Promise<SSHKeyResource>;
 /**
  * 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
  * @summary 吊销一把公钥
  */
-export declare const revokeSshKey: (projectId: string, keyId: string) => Promise<SSHKeyResource>;
+export declare const revokeSshKey: (projectId: string, keyId: string, options?: SecondParameter<typeof request<SSHKeyResource>>) => Promise<SSHKeyResource>;
 /**
  * @summary 查看一把公钥
  */
-export declare const getSshKey: (projectId: string, keyId: string) => Promise<SSHKeyResource>;
+export declare const getSshKey: (projectId: string, keyId: string, options?: SecondParameter<typeof request<SSHKeyResource>>) => Promise<SSHKeyResource>;
 /**
  * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
  * @summary 给公钥改名
  */
-export declare const renameSshKey: (projectId: string, keyId: string, renameSSHKeyRequestBody: RenameSSHKeyRequestBody) => Promise<SSHKeyResource>;
+export declare const renameSshKey: (projectId: string, keyId: string, renameSSHKeyRequestBody: RenameSSHKeyRequestBody, options?: SecondParameter<typeof request<SSHKeyResource>>) => Promise<SSHKeyResource>;
 /**
  * 选定一个项目后，用账号令牌换取该项目的令牌。
 
@@ -189,19 +191,19 @@ export declare const renameSshKey: (projectId: string, keyId: string, renameSSHK
 项目处于停用、封禁或删除中时**仍可换取令牌**：这些状态限制的是写入，不影响查看项目当前状况。
  * @summary 换一张项目令牌
  */
-export declare const exchangeProjectToken: (projectId: string) => Promise<ProjectTokenResponseBody>;
+export declare const exchangeProjectToken: (projectId: string, options?: SecondParameter<typeof request<ProjectTokenResponseBody>>) => Promise<ProjectTokenResponseBody>;
 /**
  * OWNER 唯一的移动方式，只有所有者本人能发起——能像普通角色那样授予的话，任何管理员都可以顺手把自己变成所有者。
  * @summary 转移项目所有权
  */
-export declare const transferProjectOwnership: (projectId: string, transferOwnershipRequestBody: TransferOwnershipRequestBody) => Promise<OwnershipTransferResponseBody>;
+export declare const transferProjectOwnership: (projectId: string, transferOwnershipRequestBody: TransferOwnershipRequestBody, options?: SecondParameter<typeof request<OwnershipTransferResponseBody>>) => Promise<OwnershipTransferResponseBody>;
 /**
  * 在 auth.leaflow.net 登录之后调它，带上账号令牌。姓名和邮箱取自登录信息，不从请求体收。
 
 `consents` 要覆盖 `GET /api/v1/agreements` 返回的每一份，版本号也要一致；漏一份答 400，版本对不上答 409（多半是页面开着的时候条款改版了，重新拉一次清单即可）。已经注册过的答 409。
  * @summary 注册账号
  */
-export declare const register: (registerRequestBody: RegisterRequestBody) => Promise<AccountResource>;
+export declare const register: (registerRequestBody: RegisterRequestBody, options?: SecondParameter<typeof request<AccountResource>>) => Promise<AccountResource>;
 export type ListAgreementsResult = NonNullable<Awaited<ReturnType<typeof listAgreements>>>;
 export type GetAccountResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>;
 export type ListConsentsResult = NonNullable<Awaited<ReturnType<typeof listConsents>>>;
@@ -237,3 +239,4 @@ export type RenameSshKeyResult = NonNullable<Awaited<ReturnType<typeof renameSsh
 export type ExchangeProjectTokenResult = NonNullable<Awaited<ReturnType<typeof exchangeProjectToken>>>;
 export type TransferProjectOwnershipResult = NonNullable<Awaited<ReturnType<typeof transferProjectOwnership>>>;
 export type RegisterResult = NonNullable<Awaited<ReturnType<typeof register>>>;
+export {};

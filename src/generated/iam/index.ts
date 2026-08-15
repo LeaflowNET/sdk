@@ -62,6 +62,8 @@ import type {
 import { request } from '../../http.js';
 
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 
   /**
  * 注册页显示它，用户同意之后把每一项的 `type` 和 `version` 原样回传给 `POST /api/v1/register`。
@@ -71,11 +73,11 @@ import { request } from '../../http.js';
  */
 export const listAgreements = (
     
- ) => {
+ options?: SecondParameter<typeof request<AgreementListResponseBody>>,) => {
       return request<AgreementListResponseBody>(
       {url: `/api/v1/agreements`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -84,11 +86,11 @@ export const listAgreements = (
  */
 export const getAccount = (
     
- ) => {
+ options?: SecondParameter<typeof request<AccountResource>>,) => {
       return request<AccountResource>(
       {url: `/api/v1/me`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -97,11 +99,11 @@ export const getAccount = (
  */
 export const listConsents = (
     
- ) => {
+ options?: SecondParameter<typeof request<ConsentListResponseBody>>,) => {
       return request<ConsentListResponseBody>(
       {url: `/api/v1/me/consents`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -112,13 +114,13 @@ export const listConsents = (
  */
 export const acceptAgreements = (
     acceptConsentsRequestBody: AcceptConsentsRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<AccountResource>>,) => {
       return request<AccountResource>(
       {url: `/api/v1/me/consents`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: acceptConsentsRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -127,11 +129,11 @@ export const acceptAgreements = (
  */
 export const getIdentityVerification = (
     
- ) => {
+ options?: SecondParameter<typeof request<IdentityVerificationResource>>,) => {
       return request<IdentityVerificationResource>(
       {url: `/api/v1/me/identity-verification`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -140,13 +142,13 @@ export const getIdentityVerification = (
  */
 export const submitIdentityVerification = (
     submitIdentityVerificationRequestBody: SubmitIdentityVerificationRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<IdentityVerificationResource>>,) => {
       return request<IdentityVerificationResource>(
       {url: `/api/v1/me/identity-verification`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: submitIdentityVerificationRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -155,12 +157,12 @@ export const submitIdentityVerification = (
  */
 export const listMyInvitations = (
     params?: ListMyInvitationsParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageInvitationResource>>,) => {
       return request<LengthAwarePageInvitationResource>(
       {url: `/api/v1/me/invitations`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -169,13 +171,13 @@ export const listMyInvitations = (
  */
 export const acceptInvitationByToken = (
     acceptInvitationByTokenRequestBody: AcceptInvitationByTokenRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<AcceptedInvitationResponseBody>>,) => {
       return request<AcceptedInvitationResponseBody>(
       {url: `/api/v1/me/invitations/accept`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: acceptInvitationByTokenRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -184,11 +186,11 @@ export const acceptInvitationByToken = (
  */
 export const acceptInvitation = (
     invitationId: string,
- ) => {
+ options?: SecondParameter<typeof request<AcceptedInvitationResponseBody>>,) => {
       return request<AcceptedInvitationResponseBody>(
       {url: `/api/v1/me/invitations/${invitationId}/accept`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -197,11 +199,11 @@ export const acceptInvitation = (
  */
 export const listPermissions = (
     
- ) => {
+ options?: SecondParameter<typeof request<PermissionListResponseBody>>,) => {
       return request<PermissionListResponseBody>(
       {url: `/api/v1/permissions`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -210,12 +212,12 @@ export const listPermissions = (
  */
 export const listProjects = (
     params?: ListProjectsParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageProjectAccessResource>>,) => {
       return request<LengthAwarePageProjectAccessResource>(
       {url: `/api/v1/projects`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -224,13 +226,13 @@ export const listProjects = (
  */
 export const createProject = (
     createProjectRequestBody: CreateProjectRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ProjectAccessResource>>,) => {
       return request<ProjectAccessResource>(
       {url: `/api/v1/projects`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createProjectRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -239,11 +241,11 @@ export const createProject = (
  */
 export const deleteProject = (
     projectId: string,
- ) => {
+ options?: SecondParameter<typeof request<ProjectAccessResource>>,) => {
       return request<ProjectAccessResource>(
       {url: `/api/v1/projects/${projectId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -252,11 +254,11 @@ export const deleteProject = (
  */
 export const getProject = (
     projectId: string,
- ) => {
+ options?: SecondParameter<typeof request<ProjectAccessResource>>,) => {
       return request<ProjectAccessResource>(
       {url: `/api/v1/projects/${projectId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -265,13 +267,13 @@ export const getProject = (
 export const updateProject = (
     projectId: string,
     updateProjectRequestBody: UpdateProjectRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ProjectAccessResource>>,) => {
       return request<ProjectAccessResource>(
       {url: `/api/v1/projects/${projectId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateProjectRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -281,12 +283,12 @@ export const updateProject = (
 export const listProjectInvitations = (
     projectId: string,
     params?: ListProjectInvitationsParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageInvitationResource>>,) => {
       return request<LengthAwarePageInvitationResource>(
       {url: `/api/v1/projects/${projectId}/invitations`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -296,13 +298,13 @@ export const listProjectInvitations = (
 export const issueInvitation = (
     projectId: string,
     issueInvitationRequestBody: IssueInvitationRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<IssuedInvitationResponseBody>>,) => {
       return request<IssuedInvitationResponseBody>(
       {url: `/api/v1/projects/${projectId}/invitations`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: issueInvitationRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -311,11 +313,11 @@ export const issueInvitation = (
 export const revokeInvitation = (
     projectId: string,
     invitationId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/projects/${projectId}/invitations/${invitationId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -324,12 +326,12 @@ export const revokeInvitation = (
 export const listMembers = (
     projectId: string,
     params?: ListMembersParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageMemberResource>>,) => {
       return request<LengthAwarePageMemberResource>(
       {url: `/api/v1/projects/${projectId}/members`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -339,11 +341,11 @@ export const listMembers = (
 export const removeMember = (
     projectId: string,
     userId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/projects/${projectId}/members/${userId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -354,13 +356,13 @@ export const setMemberRoles = (
     projectId: string,
     userId: string,
     setMemberRolesRequestBody: SetMemberRolesRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<MemberResource>>,) => {
       return request<MemberResource>(
       {url: `/api/v1/projects/${projectId}/members/${userId}/roles`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: setMemberRolesRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -369,11 +371,11 @@ export const setMemberRoles = (
  */
 export const getProjectMembership = (
     projectId: string,
- ) => {
+ options?: SecondParameter<typeof request<MembershipResource>>,) => {
       return request<MembershipResource>(
       {url: `/api/v1/projects/${projectId}/membership`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -381,11 +383,11 @@ export const getProjectMembership = (
  */
 export const listRoles = (
     projectId: string,
- ) => {
+ options?: SecondParameter<typeof request<RoleListResponseBody>>,) => {
       return request<RoleListResponseBody>(
       {url: `/api/v1/projects/${projectId}/roles`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -394,13 +396,13 @@ export const listRoles = (
 export const createRole = (
     projectId: string,
     createRoleRequestBody: CreateRoleRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<RoleResource>>,) => {
       return request<RoleResource>(
       {url: `/api/v1/projects/${projectId}/roles`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createRoleRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -410,11 +412,11 @@ export const createRole = (
 export const deleteRole = (
     projectId: string,
     code: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/projects/${projectId}/roles/${code}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -423,11 +425,11 @@ export const deleteRole = (
 export const getRole = (
     projectId: string,
     code: string,
- ) => {
+ options?: SecondParameter<typeof request<RoleResource>>,) => {
       return request<RoleResource>(
       {url: `/api/v1/projects/${projectId}/roles/${code}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -438,13 +440,13 @@ export const updateRole = (
     projectId: string,
     code: string,
     updateRoleRequestBody: UpdateRoleRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<RoleResource>>,) => {
       return request<RoleResource>(
       {url: `/api/v1/projects/${projectId}/roles/${code}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: updateRoleRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -454,12 +456,12 @@ export const updateRole = (
 export const listSshKeys = (
     projectId: string,
     params?: ListSshKeysParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageSSHKeyResource>>,) => {
       return request<LengthAwarePageSSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -469,13 +471,13 @@ export const listSshKeys = (
 export const createSshKey = (
     projectId: string,
     createSSHKeyRequestBody: CreateSSHKeyRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SSHKeyResource>>,) => {
       return request<SSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSSHKeyRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -485,11 +487,11 @@ export const createSshKey = (
 export const revokeSshKey = (
     projectId: string,
     keyId: string,
- ) => {
+ options?: SecondParameter<typeof request<SSHKeyResource>>,) => {
       return request<SSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -498,11 +500,11 @@ export const revokeSshKey = (
 export const getSshKey = (
     projectId: string,
     keyId: string,
- ) => {
+ options?: SecondParameter<typeof request<SSHKeyResource>>,) => {
       return request<SSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -513,13 +515,13 @@ export const renameSshKey = (
     projectId: string,
     keyId: string,
     renameSSHKeyRequestBody: RenameSSHKeyRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SSHKeyResource>>,) => {
       return request<SSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renameSSHKeyRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -536,11 +538,11 @@ export const renameSshKey = (
  */
 export const exchangeProjectToken = (
     projectId: string,
- ) => {
+ options?: SecondParameter<typeof request<ProjectTokenResponseBody>>,) => {
       return request<ProjectTokenResponseBody>(
       {url: `/api/v1/projects/${projectId}/token`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -550,13 +552,13 @@ export const exchangeProjectToken = (
 export const transferProjectOwnership = (
     projectId: string,
     transferOwnershipRequestBody: TransferOwnershipRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<OwnershipTransferResponseBody>>,) => {
       return request<OwnershipTransferResponseBody>(
       {url: `/api/v1/projects/${projectId}/transfer-ownership`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: transferOwnershipRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -567,13 +569,13 @@ export const transferProjectOwnership = (
  */
 export const register = (
     registerRequestBody: RegisterRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<AccountResource>>,) => {
       return request<AccountResource>(
       {url: `/api/v1/register`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: registerRequestBody
     },
-      );
+      options);
     }
   
 export type ListAgreementsResult = NonNullable<Awaited<ReturnType<typeof listAgreements>>>

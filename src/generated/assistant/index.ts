@@ -68,6 +68,8 @@ import type {
 import { request } from '../../http.js';
 
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 
   /**
  * 请求体直接是文件字节，不使用 multipart 封装，一次上传一个文件。类型由内容判定，与 Content-Type 无关。返回的 id 在发送消息时放进 attachmentIds；从未被任何消息引用的附件会被定期清除。
@@ -75,13 +77,13 @@ import { request } from '../../http.js';
  */
 export const uploadAttachment = (
     uploadAttachmentBody: Blob,
- ) => {
+ options?: SecondParameter<typeof request<UploadedResource>>,) => {
       return request<UploadedResource>(
       {url: `/v1/attachments`, method: 'POST',
       headers: {'Content-Type': 'application/octet-stream', },
       data: uploadAttachmentBody
     },
-      );
+      options);
     }
   
 /**
@@ -90,11 +92,11 @@ export const uploadAttachment = (
  */
 export const downloadAttachment = (
     attachment: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/v1/attachments/${attachment}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -103,12 +105,12 @@ export const downloadAttachment = (
  */
 export const listBindings = (
     params?: ListBindingsParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageBindingResource>>,) => {
       return request<LengthAwarePageBindingResource>(
       {url: `/v1/bindings`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -116,11 +118,11 @@ export const listBindings = (
  */
 export const deleteBinding = (
     binding: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/v1/bindings/${binding}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -128,11 +130,11 @@ export const deleteBinding = (
  */
 export const getBinding = (
     binding: string,
- ) => {
+ options?: SecondParameter<typeof request<BindingResource>>,) => {
       return request<BindingResource>(
       {url: `/v1/bindings/${binding}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -140,12 +142,12 @@ export const getBinding = (
  */
 export const listChannels = (
     params?: ListChannelsParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageChannelResource>>,) => {
       return request<LengthAwarePageChannelResource>(
       {url: `/v1/channels`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -153,13 +155,13 @@ export const listChannels = (
  */
 export const createChannel = (
     createChannelRequestBody: CreateChannelRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ChannelResource>>,) => {
       return request<ChannelResource>(
       {url: `/v1/channels`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createChannelRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -168,11 +170,11 @@ export const createChannel = (
  */
 export const deleteChannel = (
     channel: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/v1/channels/${channel}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -180,11 +182,11 @@ export const deleteChannel = (
  */
 export const getChannel = (
     channel: string,
- ) => {
+ options?: SecondParameter<typeof request<ChannelResource>>,) => {
       return request<ChannelResource>(
       {url: `/v1/channels/${channel}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -194,13 +196,13 @@ export const getChannel = (
 export const updateChannel = (
     channel: string,
     updateChannelRequestBody: UpdateChannelRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ChannelResource>>,) => {
       return request<ChannelResource>(
       {url: `/v1/channels/${channel}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateChannelRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -209,11 +211,11 @@ export const updateChannel = (
  */
 export const createClaimCode = (
     channel: string,
- ) => {
+ options?: SecondParameter<typeof request<ClaimCodeResponseBody>>,) => {
       return request<ClaimCodeResponseBody>(
       {url: `/v1/channels/${channel}/claim-codes`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -223,12 +225,12 @@ export const createClaimCode = (
 export const listChannelRejections = (
     channel: string,
     params?: ListChannelRejectionsParams,
- ) => {
+ options?: SecondParameter<typeof request<RejectionListResponseBody>>,) => {
       return request<RejectionListResponseBody>(
       {url: `/v1/channels/${channel}/rejections`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -238,13 +240,13 @@ export const listChannelRejections = (
 export const rotateChannelSecret = (
     channel: string,
     rotateSecretRequestBody: RotateSecretRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<WebhookSecretResponseBody>>,) => {
       return request<WebhookSecretResponseBody>(
       {url: `/v1/channels/${channel}/secret`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: rotateSecretRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -254,12 +256,12 @@ export const rotateChannelSecret = (
 export const checkSender = (
     channel: string,
     params: CheckSenderParams,
- ) => {
+ options?: SecondParameter<typeof request<SenderCheckResource>>,) => {
       return request<SenderCheckResource>(
       {url: `/v1/channels/${channel}/sender-check`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -268,11 +270,11 @@ export const checkSender = (
  */
 export const beginWeixinLogin = (
     channel: string,
- ) => {
+ options?: SecondParameter<typeof request<LoginResource>>,) => {
       return request<LoginResource>(
       {url: `/v1/channels/${channel}/weixin-logins`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -281,11 +283,11 @@ export const beginWeixinLogin = (
  */
 export const listModels = (
     
- ) => {
+ options?: SecondParameter<typeof request<ModelListResponseBody>>,) => {
       return request<ModelListResponseBody>(
       {url: `/v1/models`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -294,11 +296,11 @@ export const listModels = (
  */
 export const listPlatforms = (
     
- ) => {
+ options?: SecondParameter<typeof request<PlatformListResponseBody>>,) => {
       return request<PlatformListResponseBody>(
       {url: `/v1/platforms`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -307,12 +309,12 @@ export const listPlatforms = (
  */
 export const listThreads = (
     params?: ListThreadsParams,
- ) => {
+ options?: SecondParameter<typeof request<ThreadListResponseBody>>,) => {
       return request<ThreadListResponseBody>(
       {url: `/v1/threads`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -320,13 +322,13 @@ export const listThreads = (
  */
 export const createThread = (
     createThreadRequestBody: CreateThreadRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ThreadSummaryResource>>,) => {
       return request<ThreadSummaryResource>(
       {url: `/v1/threads`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createThreadRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -335,11 +337,11 @@ export const createThread = (
  */
 export const getThread = (
     thread: string,
- ) => {
+ options?: SecondParameter<typeof request<DocumentResource>>,) => {
       return request<DocumentResource>(
       {url: `/v1/threads/${thread}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -349,13 +351,13 @@ export const getThread = (
 export const updateThread = (
     thread: string,
     updateThreadRequestBody: UpdateThreadRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ThreadSummaryResource>>,) => {
       return request<ThreadSummaryResource>(
       {url: `/v1/threads/${thread}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateThreadRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -366,13 +368,13 @@ export const decideApproval = (
     thread: string,
     batch: string,
     decideRequestBody: DecideRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/v1/threads/${thread}/approvals/${batch}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: decideRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -382,12 +384,12 @@ export const decideApproval = (
 export const listEarlierItems = (
     thread: string,
     params: ListEarlierItemsParams,
- ) => {
+ options?: SecondParameter<typeof request<EarlierResponseBody>>,) => {
       return request<EarlierResponseBody>(
       {url: `/v1/threads/${thread}/earlier`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -396,11 +398,11 @@ export const listEarlierItems = (
  */
 export const interruptThread = (
     thread: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/v1/threads/${thread}/interrupt`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -410,13 +412,13 @@ export const interruptThread = (
 export const sendMessage = (
     thread: string,
     sendMessageRequestBody: SendMessageRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<TurnIDResponseBody>>,) => {
       return request<TurnIDResponseBody>(
       {url: `/v1/threads/${thread}/messages`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: sendMessageRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -427,13 +429,13 @@ export const answerQuestion = (
     thread: string,
     item: string,
     answerRequestBody: AnswerRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/v1/threads/${thread}/questions/${item}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: answerRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -441,11 +443,11 @@ export const answerQuestion = (
  */
 export const markThreadRead = (
     thread: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/v1/threads/${thread}/read`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -455,13 +457,13 @@ export const markThreadRead = (
 export const revertThread = (
     thread: string,
     revertRequestBody: RevertRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<RevertedCountResponseBody>>,) => {
       return request<RevertedCountResponseBody>(
       {url: `/v1/threads/${thread}/revert`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: revertRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -470,11 +472,11 @@ export const revertThread = (
  */
 export const getWeixinLogin = (
     login: string,
- ) => {
+ options?: SecondParameter<typeof request<LoginResource>>,) => {
       return request<LoginResource>(
       {url: `/v1/weixin-logins/${login}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -484,13 +486,13 @@ export const getWeixinLogin = (
 export const submitWeixinVerifyCode = (
     login: string,
     verifyCodeRequestBody: VerifyCodeRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<LoginResource>>,) => {
       return request<LoginResource>(
       {url: `/v1/weixin-logins/${login}/verify-code`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: verifyCodeRequestBody
     },
-      );
+      options);
     }
   
 export type UploadAttachmentResult = NonNullable<Awaited<ReturnType<typeof uploadAttachment>>>

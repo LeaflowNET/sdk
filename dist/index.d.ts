@@ -1,5 +1,5 @@
-export { configure, request } from './http.js';
-export type { ClientOptions, TokenProvider } from './http.js';
+export { configure, createClient, request, withClient } from './http.js';
+export type { Client, ClientOptions, RequestOptions, TokenProvider } from './http.js';
 export * as assistant from './generated/assistant/index.js';
 export * as compute from './generated/compute/index.js';
 export * as iam from './generated/iam/index.js';

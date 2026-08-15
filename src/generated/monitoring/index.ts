@@ -66,6 +66,8 @@ import type {
 import { request } from '../../http.js';
 
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 
   /**
  * `incident_status` 表示监控系统是否判定已恢复，`closed` 表示是否有人完成了处理。两者相互独立，可分别筛选。
@@ -73,12 +75,12 @@ import { request } from '../../http.js';
  */
 export const listIncidents = (
     params?: ListIncidentsParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageIncidentResource>>,) => {
       return request<LengthAwarePageIncidentResource>(
       {url: `/api/v1/incidents`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -86,11 +88,11 @@ export const listIncidents = (
  */
 export const getIncident = (
     incidentId: string,
- ) => {
+ options?: SecondParameter<typeof request<IncidentResource>>,) => {
       return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -100,13 +102,13 @@ export const getIncident = (
 export const acknowledgeIncident = (
     incidentId: string,
     acknowledgeIncidentRequestBody: AcknowledgeIncidentRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<IncidentResource>>,) => {
       return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/acknowledge`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: acknowledgeIncidentRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -118,13 +120,13 @@ export const acknowledgeIncident = (
 export const assignIncident = (
     incidentId: string,
     assignIncidentRequestBody: AssignIncidentRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<IncidentResource>>,) => {
       return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/assignee`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: assignIncidentRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -134,13 +136,13 @@ export const assignIncident = (
 export const closeIncident = (
     incidentId: string,
     closeIncidentRequestBody: CloseIncidentRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<IncidentResource>>,) => {
       return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/close`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: closeIncidentRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -149,13 +151,13 @@ export const closeIncident = (
 export const addIncidentComment = (
     incidentId: string,
     addCommentRequestBody: AddCommentRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<IncidentActivityResource>>,) => {
       return request<IncidentActivityResource>(
       {url: `/api/v1/incidents/${incidentId}/comments`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: addCommentRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -165,13 +167,13 @@ export const addIncidentComment = (
 export const setIncidentFollowing = (
     incidentId: string,
     setFollowingRequestBody: SetFollowingRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<IncidentResource>>,) => {
       return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/following`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: setFollowingRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -179,11 +181,11 @@ export const setIncidentFollowing = (
  */
 export const reopenIncident = (
     incidentId: string,
- ) => {
+ options?: SecondParameter<typeof request<IncidentResource>>,) => {
       return request<IncidentResource>(
       {url: `/api/v1/incidents/${incidentId}/reopen`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -193,12 +195,12 @@ export const reopenIncident = (
 export const listIncidentTimeline = (
     incidentId: string,
     params?: ListIncidentTimelineParams,
- ) => {
+ options?: SecondParameter<typeof request<CursorPageIncidentActivityResource>>,) => {
       return request<CursorPageIncidentActivityResource>(
       {url: `/api/v1/incidents/${incidentId}/timeline`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -206,11 +208,11 @@ export const listIncidentTimeline = (
  */
 export const listMaintenanceWindows = (
     
- ) => {
+ options?: SecondParameter<typeof request<MaintenanceWindowListResponseBody>>,) => {
       return request<MaintenanceWindowListResponseBody>(
       {url: `/api/v1/maintenance-windows`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -219,11 +221,11 @@ export const listMaintenanceWindows = (
  */
 export const deleteMaintenanceWindow = (
     windowId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/maintenance-windows/${windowId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -231,11 +233,11 @@ export const deleteMaintenanceWindow = (
  */
 export const getMaintenanceWindow = (
     windowId: string,
- ) => {
+ options?: SecondParameter<typeof request<MaintenanceWindowResource>>,) => {
       return request<MaintenanceWindowResource>(
       {url: `/api/v1/maintenance-windows/${windowId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -247,13 +249,13 @@ export const getMaintenanceWindow = (
 export const putMaintenanceWindow = (
     windowId: string,
     putMaintenanceWindowRequestBody: PutMaintenanceWindowRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<MaintenanceWindowResource>>,) => {
       return request<MaintenanceWindowResource>(
       {url: `/api/v1/maintenance-windows/${windowId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: putMaintenanceWindowRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -262,11 +264,11 @@ export const putMaintenanceWindow = (
  */
 export const getProjectOverview = (
     
- ) => {
+ options?: SecondParameter<typeof request<ProjectOverviewResource>>,) => {
       return request<ProjectOverviewResource>(
       {url: `/api/v1/overview`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -274,12 +276,12 @@ export const getProjectOverview = (
  */
 export const listServers = (
     params?: ListServersParams,
- ) => {
+ options?: SecondParameter<typeof request<LengthAwarePageServerResource>>,) => {
       return request<LengthAwarePageServerResource>(
       {url: `/api/v1/servers`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -288,11 +290,11 @@ export const listServers = (
  */
 export const deleteServer = (
     serverId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/servers/${serverId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -300,11 +302,11 @@ export const deleteServer = (
  */
 export const getServer = (
     serverId: string,
- ) => {
+ options?: SecondParameter<typeof request<ServerResource>>,) => {
       return request<ServerResource>(
       {url: `/api/v1/servers/${serverId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -314,13 +316,13 @@ export const getServer = (
 export const updateServer = (
     serverId: string,
     updateServerRequestBody: UpdateServerRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ServerResource>>,) => {
       return request<ServerResource>(
       {url: `/api/v1/servers/${serverId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateServerRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -334,13 +336,13 @@ export const updateServer = (
 export const enableServerMonitoring = (
     serverId: string,
     enableMonitoringRequestBody: EnableMonitoringRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ServerEnrollmentResponseBody>>,) => {
       return request<ServerEnrollmentResponseBody>(
       {url: `/api/v1/servers/${serverId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: enableMonitoringRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -349,11 +351,11 @@ export const enableServerMonitoring = (
  */
 export const disableServerMonitoring = (
     serverId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/servers/${serverId}/disable`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -363,12 +365,12 @@ export const disableServerMonitoring = (
 export const listServerItems = (
     serverId: string,
     params?: ListServerItemsParams,
- ) => {
+ options?: SecondParameter<typeof request<ItemListResponseBody>>,) => {
       return request<ItemListResponseBody>(
       {url: `/api/v1/servers/${serverId}/items`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -378,12 +380,12 @@ export const listServerItems = (
 export const getServerMetric = (
     serverId: string,
     params?: GetServerMetricParams,
- ) => {
+ options?: SecondParameter<typeof request<MetricResponseBody>>,) => {
       return request<MetricResponseBody>(
       {url: `/api/v1/servers/${serverId}/metrics`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -392,11 +394,11 @@ export const getServerMetric = (
  */
 export const rotateAgentPsk = (
     serverId: string,
- ) => {
+ options?: SecondParameter<typeof request<EnrollmentResource>>,) => {
       return request<EnrollmentResource>(
       {url: `/api/v1/servers/${serverId}/psk`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -404,11 +406,11 @@ export const rotateAgentPsk = (
  */
 export const getServerResources = (
     serverId: string,
- ) => {
+ options?: SecondParameter<typeof request<ServerResourcesResource>>,) => {
       return request<ServerResourcesResource>(
       {url: `/api/v1/servers/${serverId}/resources`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -416,11 +418,11 @@ export const getServerResources = (
  */
 export const getServerSnapshot = (
     serverId: string,
- ) => {
+ options?: SecondParameter<typeof request<SnapshotResource>>,) => {
       return request<SnapshotResource>(
       {url: `/api/v1/servers/${serverId}/snapshot`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -430,11 +432,11 @@ export const getServerSnapshot = (
 export const deleteWebCheck = (
     serverId: string,
     checkId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -443,11 +445,11 @@ export const deleteWebCheck = (
 export const getWebCheck = (
     serverId: string,
     checkId: string,
- ) => {
+ options?: SecondParameter<typeof request<WebCheckResource>>,) => {
       return request<WebCheckResource>(
       {url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -458,13 +460,13 @@ export const putWebCheck = (
     serverId: string,
     checkId: string,
     putWebCheckRequestBody: PutWebCheckRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<WebCheckResource>>,) => {
       return request<WebCheckResource>(
       {url: `/api/v1/servers/${serverId}/web-checks/${checkId}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: putWebCheckRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -475,12 +477,12 @@ export const putWebCheck = (
  */
 export const getSliReport = (
     params?: GetSliReportParams,
- ) => {
+ options?: SecondParameter<typeof request<SLIReportResponseBody>>,) => {
       return request<SLIReportResponseBody>(
       {url: `/api/v1/sli-report`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -489,11 +491,11 @@ export const getSliReport = (
  */
 export const deleteSlo = (
     
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/slo`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -502,11 +504,11 @@ export const deleteSlo = (
  */
 export const getSlo = (
     
- ) => {
+ options?: SecondParameter<typeof request<SLOResource>>,) => {
       return request<SLOResource>(
       {url: `/api/v1/slo`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -517,13 +519,13 @@ export const getSlo = (
  */
 export const putSlo = (
     putSLORequestBody: PutSLORequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SLOResource>>,) => {
       return request<SLOResource>(
       {url: `/api/v1/slo`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: putSLORequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -531,12 +533,12 @@ export const putSlo = (
  */
 export const listProjectTopItems = (
     params: ListProjectTopItemsParams,
- ) => {
+ options?: SecondParameter<typeof request<TopItemListResponseBody>>,) => {
       return request<TopItemListResponseBody>(
       {url: `/api/v1/top-items`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -544,12 +546,12 @@ export const listProjectTopItems = (
  */
 export const listWebChecks = (
     params?: ListWebChecksParams,
- ) => {
+ options?: SecondParameter<typeof request<WebCheckListResponseBody>>,) => {
       return request<WebCheckListResponseBody>(
       {url: `/api/v1/web-checks`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 export type ListIncidentsResult = NonNullable<Awaited<ReturnType<typeof listIncidents>>>

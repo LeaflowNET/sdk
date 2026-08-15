@@ -22,10 +22,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ActOnInstanceRequestBody, AllocateFloatingIPRequestBody, AttachDiskRequestBody, AttachFloatingIPRequestBody, AttachPortRequestBody, BackupListResponseBody, BackupResource, BindFloatingIPRequestBody, ConsoleOutputResponseBody, ConsoleResponseBody, CreateBackupRequestBody, CreateDiskRequestBody, CreatePortRequestBody, CreatePrivateImageRequestBody, CreatePrivateNetworkRequestBody, CreateRouteRequestBody, CreateSecurityGroupRequestBody, CreateSecurityRuleRequestBody, CreateSnapshotRequestBody, CreateSubnetRequestBody, DiskListResponseBody, DiskResource, DiskTypeListResponseBody, FloatingIPListResponseBody, FloatingIPResource, GetInstanceConsoleOutputParams, IPv6ResponseBody, ImageListResponseBody, InstanceListResponseBody, InstanceResource, InstanceTypeListResponseBody, LaunchInstanceRequestBody, LaunchInstanceResponseBody, ListBackupsParams, ListDiskTypesParams, ListDisksParams, ListImagesParams, ListInstanceTypesParams, ListOperationLogsParams, ListPrivateImagesParams, ListPrivateNetworksParams, ListSecurityGroupsParams, ListSnapshotsParams, NextFreeCidrResponseBody, OperationLogListResponseBody, PortListResponseBody, PortResource, PrivateImageListResponseBody, PrivateImageResource, PrivateNetworkListResponseBody, PrivateNetworkResource, RebuildInstanceRequestBody, RebuildInstanceResponseBody, RegionListResponseBody, RenameBackupRequestBody, RenameDiskRequestBody, RenameInstanceRequestBody, RenamePrivateImageRequestBody, RenamePrivateNetworkRequestBody, RenameSnapshotRequestBody, ResetPasswordRequestBody, ResetPasswordResponseBody, ResizeDiskRequestBody, ResizeInstanceRequestBody, RestoreBackupRequestBody, RevertDiskRequestBody, RouteListResponseBody, RouteResource, SecurityGroupListResponseBody, SecurityGroupResource, SecurityRuleListResponseBody, SecurityRuleResource, SetBandwidthRequestBody, SnapshotListResponseBody, SnapshotResource, SubnetListResponseBody, SubnetResource, SuggestSubnetCidrParams, ZoneListResponseBody } from './models/index.js';
+import { request } from '../../http.js';
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
 * @summary 列出备份
 */
-export declare const listBackups: (params?: ListBackupsParams) => Promise<BackupListResponseBody>;
+export declare const listBackups: (params?: ListBackupsParams, options?: SecondParameter<typeof request<BackupListResponseBody>>) => Promise<BackupListResponseBody>;
 /**
  * 备份是云硬盘在独立存储中的一份完整副本：**源云硬盘删除后仍可恢复，且可恢复到本地区的其他可用区。**快照不具备这两项能力，它与源云硬盘位于同一存储，且源云硬盘存在快照时无法删除。
 
@@ -34,62 +36,62 @@ export declare const listBackups: (params?: ListBackupsParams) => Promise<Backup
 备份耗时取决于数据量。接口返回时尚未完成，请轮询查看接口。
  * @summary 创建备份
  */
-export declare const createBackup: (createBackupRequestBody: CreateBackupRequestBody) => Promise<BackupResource>;
+export declare const createBackup: (createBackupRequestBody: CreateBackupRequestBody, options?: SecondParameter<typeof request<BackupResource>>) => Promise<BackupResource>;
 /**
  * 与源云硬盘无关，源云硬盘是否存在都不影响删除。
  * @summary 删除备份
  */
-export declare const deleteBackup: (backupId: string) => Promise<void>;
+export declare const deleteBackup: (backupId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 会实时查询备份的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
  * @summary 查看备份
  */
-export declare const getBackup: (backupId: string) => Promise<BackupResource>;
+export declare const getBackup: (backupId: string, options?: SecondParameter<typeof request<BackupResource>>) => Promise<BackupResource>;
 /**
  * @summary 重命名备份
  */
-export declare const renameBackup: (backupId: string, renameBackupRequestBody: RenameBackupRequestBody) => Promise<BackupResource>;
+export declare const renameBackup: (backupId: string, renameBackupRequestBody: RenameBackupRequestBody, options?: SecondParameter<typeof request<BackupResource>>) => Promise<BackupResource>;
 /**
  * 恢复到一块**新建的**云硬盘上，源云硬盘不受影响，也不要求它仍然存在。
 
 目标硬盘类型可位于本地区的其他可用区，容量不能小于备份。恢复完成前该云硬盘不可挂载，请轮询云硬盘查看接口。
  * @summary 由备份恢复
  */
-export declare const restoreBackup: (backupId: string, restoreBackupRequestBody: RestoreBackupRequestBody) => Promise<DiskResource>;
+export declare const restoreBackup: (backupId: string, restoreBackupRequestBody: RestoreBackupRequestBody, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * @summary 列出在售硬盘类型
  */
-export declare const listDiskTypes: (params: ListDiskTypesParams) => Promise<DiskTypeListResponseBody>;
+export declare const listDiskTypes: (params: ListDiskTypesParams, options?: SecondParameter<typeof request<DiskTypeListResponseBody>>) => Promise<DiskTypeListResponseBody>;
 /**
  * 同时提供 region_code 与 availability_zone 时，只返回可挂载到该位置云服务器的云硬盘。
  * @summary 列出云硬盘
  */
-export declare const listDisks: (params?: ListDisksParams) => Promise<DiskListResponseBody>;
+export declare const listDisks: (params?: ListDisksParams, options?: SecondParameter<typeof request<DiskListResponseBody>>) => Promise<DiskListResponseBody>;
 /**
  * 云硬盘创建在所选硬盘类型所属的可用区，云服务器必须位于同一可用区才能挂载。因此选定硬盘类型即确定了可用区。
  * @summary 创建云硬盘
  */
-export declare const createDisk: (createDiskRequestBody: CreateDiskRequestBody) => Promise<DiskResource>;
+export declare const createDisk: (createDiskRequestBody: CreateDiskRequestBody, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * 云硬盘处于挂载状态，或仍存在基于它创建的快照时，删除会被拒绝。
  * @summary 删除云硬盘
  */
-export declare const deleteDisk: (diskId: string) => Promise<void>;
+export declare const deleteDisk: (diskId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 会实时查询云硬盘的当前状态，因此比列表接口慢但更准确。
  * @summary 查看云硬盘
  */
-export declare const getDisk: (diskId: string) => Promise<DiskResource>;
+export declare const getDisk: (diskId: string, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * 仅可修改名称。容量请使用扩容接口，类型与可用区不可修改。
  * @summary 重命名云硬盘
  */
-export declare const renameDisk: (diskId: string, renameDiskRequestBody: RenameDiskRequestBody) => Promise<DiskResource>;
+export declare const renameDisk: (diskId: string, renameDiskRequestBody: RenameDiskRequestBody, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * 容量只能增加，不支持缩容。扩容完成后需在云服务器内自行扩展文件系统。
  * @summary 扩容
  */
-export declare const resizeDisk: (diskId: string, resizeDiskRequestBody: ResizeDiskRequestBody) => Promise<DiskResource>;
+export declare const resizeDisk: (diskId: string, resizeDiskRequestBody: ResizeDiskRequestBody, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * 将云硬盘的内容恢复到创建该快照的时刻。**该时刻之后写入的数据全部丢失，且无法撤销。**
 
@@ -98,54 +100,54 @@ export declare const resizeDisk: (diskId: string, resizeDiskRequestBody: ResizeD
 接口返回时回滚尚未完成，请轮询查看接口。
  * @summary 回滚到快照
  */
-export declare const revertDisk: (diskId: string, revertDiskRequestBody: RevertDiskRequestBody) => Promise<DiskResource>;
+export declare const revertDisk: (diskId: string, revertDiskRequestBody: RevertDiskRequestBody, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * @summary 列出公网 IP
  */
-export declare const listFloatingIps: () => Promise<FloatingIPListResponseBody>;
+export declare const listFloatingIps: (options?: SecondParameter<typeof request<FloatingIPListResponseBody>>) => Promise<FloatingIPListResponseBody>;
 /**
  * 若该私有网络尚未连通外网，会一并为其接入外网。
 
 IPv6 不通过本接口申请。IPv6 地址由私有网络自动下发至云服务器，在私有网络上启用即可。
  * @summary 申领公网 IP
  */
-export declare const allocateFloatingIp: (allocateFloatingIPRequestBody: AllocateFloatingIPRequestBody) => Promise<FloatingIPResource>;
+export declare const allocateFloatingIp: (allocateFloatingIPRequestBody: AllocateFloatingIPRequestBody, options?: SecondParameter<typeof request<FloatingIPResource>>) => Promise<FloatingIPResource>;
 /**
  * 地址释放后进入冷却期才会重新分配，以免仍指向它的 DNS 记录和访问白名单立即失效。因此释放后的短时间内**无法重新申领同一个地址**，请谨慎操作。
  * @summary 释放公网 IP
  */
-export declare const releaseFloatingIp: (floatingIpId: string) => Promise<void>;
+export declare const releaseFloatingIp: (floatingIpId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看公网 IP
  */
-export declare const getFloatingIp: (floatingIpId: string) => Promise<FloatingIPResource>;
+export declare const getFloatingIp: (floatingIpId: string, options?: SecondParameter<typeof request<FloatingIPResource>>) => Promise<FloatingIPResource>;
 /**
  * 出入两个方向同时限速。仅限制出方向无法防止入方向流量打满上联带宽。
  * @summary 设带宽上限
  */
-export declare const setFloatingIpBandwidth: (floatingIpId: string, setBandwidthRequestBody: SetBandwidthRequestBody) => Promise<FloatingIPResource>;
+export declare const setFloatingIpBandwidth: (floatingIpId: string, setBandwidthRequestBody: SetBandwidthRequestBody, options?: SecondParameter<typeof request<FloatingIPResource>>) => Promise<FloatingIPResource>;
 /**
  * 地址仍归本项目持有，只是不再指向任何网卡。
  * @summary 解绑公网 IP
  */
-export declare const unbindFloatingIp: (floatingIpId: string) => Promise<FloatingIPResource>;
+export declare const unbindFloatingIp: (floatingIpId: string, options?: SecondParameter<typeof request<FloatingIPResource>>) => Promise<FloatingIPResource>;
 /**
  * @summary 将公网 IP 绑定到网卡
  */
-export declare const bindFloatingIp: (floatingIpId: string, bindFloatingIPRequestBody: BindFloatingIPRequestBody) => Promise<FloatingIPResource>;
+export declare const bindFloatingIp: (floatingIpId: string, bindFloatingIPRequestBody: BindFloatingIPRequestBody, options?: SecondParameter<typeof request<FloatingIPResource>>) => Promise<FloatingIPResource>;
 /**
  * min_ram_mb 超过所选机型内存的镜像无法启动，请据此过滤可选项。
  * @summary 列出在售镜像
  */
-export declare const listImages: (params: ListImagesParams) => Promise<ImageListResponseBody>;
+export declare const listImages: (params: ListImagesParams, options?: SecondParameter<typeof request<ImageListResponseBody>>) => Promise<ImageListResponseBody>;
 /**
  * @summary 列出在售机型
  */
-export declare const listInstanceTypes: (params: ListInstanceTypesParams) => Promise<InstanceTypeListResponseBody>;
+export declare const listInstanceTypes: (params: ListInstanceTypesParams, options?: SecondParameter<typeof request<InstanceTypeListResponseBody>>) => Promise<InstanceTypeListResponseBody>;
 /**
  * @summary 列出云服务器
  */
-export declare const listInstances: () => Promise<InstanceListResponseBody>;
+export declare const listInstances: (options?: SecondParameter<typeof request<InstanceListResponseBody>>) => Promise<InstanceListResponseBody>;
 /**
  * **必须在请求中设置密码**：不设置时请求会被拒绝，否则创建出的云服务器将无法登录。密码可由平台生成，此时仅在本次响应中返回一次。
 
@@ -160,24 +162,24 @@ export declare const listInstances: () => Promise<InstanceListResponseBody>;
 接口返回时创建尚未完成（status 为 provisioning），请轮询 GET 确认结果。
  * @summary 创建云服务器
  */
-export declare const launchInstance: (launchInstanceRequestBody: LaunchInstanceRequestBody) => Promise<LaunchInstanceResponseBody>;
+export declare const launchInstance: (launchInstanceRequestBody: LaunchInstanceRequestBody, options?: SecondParameter<typeof request<LaunchInstanceResponseBody>>) => Promise<LaunchInstanceResponseBody>;
 /**
  * 系统盘随云服务器一并删除，**基于系统盘创建的快照也会一并删除**。数据盘会被卸载并保留，其快照与备份不受影响。主网卡随云服务器一并释放。
 
 正在制作镜像的云服务器无法释放，请等待制作完成或先删除该镜像。
  * @summary 释放云服务器
  */
-export declare const deleteInstance: (instanceId: string) => Promise<void>;
+export declare const deleteInstance: (instanceId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 会实时查询云服务器的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
  * @summary 查看云服务器
  */
-export declare const getInstance: (instanceId: string) => Promise<InstanceResource>;
+export declare const getInstance: (instanceId: string, options?: SecondParameter<typeof request<InstanceResource>>) => Promise<InstanceResource>;
 /**
  * 仅修改显示名称。云服务器内的主机名不变，它等于云服务器 id。
  * @summary 重命名云服务器
  */
-export declare const renameInstance: (instanceId: string, renameInstanceRequestBody: RenameInstanceRequestBody) => Promise<InstanceResource>;
+export declare const renameInstance: (instanceId: string, renameInstanceRequestBody: RenameInstanceRequestBody, options?: SecondParameter<typeof request<InstanceResource>>) => Promise<InstanceResource>;
 /**
  * 重启默认为软重启，由操作系统正常关闭后重新启动。
 
@@ -186,44 +188,44 @@ export declare const renameInstance: (instanceId: string, renameInstanceRequestB
 已被平台停服的云服务器需先解除停服。
  * @summary 开机、关机、重启
  */
-export declare const actOnInstance: (instanceId: string, actOnInstanceRequestBody: ActOnInstanceRequestBody) => Promise<InstanceResource>;
+export declare const actOnInstance: (instanceId: string, actOnInstanceRequestBody: ActOnInstanceRequestBody, options?: SecondParameter<typeof request<InstanceResource>>) => Promise<InstanceResource>;
 /**
  * 在浏览器中直接操作云服务器，无需网络可达，适用于网络配置失误导致无法登录的情况。
 
 返回的地址一次性使用，数分钟后失效。**请勿缓存**，每次使用前重新获取。
  * @summary 打开远程控制台
  */
-export declare const openInstanceConsole: (instanceId: string) => Promise<ConsoleResponseBody>;
+export declare const openInstanceConsole: (instanceId: string, options?: SecondParameter<typeof request<ConsoleResponseBody>>) => Promise<ConsoleResponseBody>;
 /**
  * 云服务器启动过程与内核输出的原始文本。无法登录或远程控制台无输出时，应首先查看本接口。其中可查看启动停止于哪一步、系统盘是否正常挂载、初始化过程是否报错。
 
 处于错误状态或已被平台停服的云服务器同样可以读取。
  * @summary 读取串口输出
  */
-export declare const getInstanceConsoleOutput: (instanceId: string, params?: GetInstanceConsoleOutputParams) => Promise<ConsoleOutputResponseBody>;
+export declare const getInstanceConsoleOutput: (instanceId: string, params?: GetInstanceConsoleOutputParams, options?: SecondParameter<typeof request<ConsoleOutputResponseBody>>) => Promise<ConsoleOutputResponseBody>;
 /**
  * @summary 列出云服务器已挂载的云硬盘
  */
-export declare const listInstanceDisks: (instanceId: string) => Promise<DiskListResponseBody>;
+export declare const listInstanceDisks: (instanceId: string, options?: SecondParameter<typeof request<DiskListResponseBody>>) => Promise<DiskListResponseBody>;
 /**
  * 云硬盘必须与云服务器位于同一地区和可用区。挂载后需在云服务器内自行分区并挂载文件系统。
  * @summary 挂载云硬盘
  */
-export declare const attachDisk: (instanceId: string, attachDiskRequestBody: AttachDiskRequestBody) => Promise<DiskResource>;
+export declare const attachDisk: (instanceId: string, attachDiskRequestBody: AttachDiskRequestBody, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * 请先在云服务器内卸载（umount）该设备再调用本接口，正在写入的文件系统被强制卸载会损坏数据。
  * @summary 卸载云硬盘
  */
-export declare const detachDisk: (instanceId: string, diskId: string) => Promise<DiskResource>;
+export declare const detachDisk: (instanceId: string, diskId: string, options?: SecondParameter<typeof request<DiskResource>>) => Promise<DiskResource>;
 /**
  * 公网 IP 绑定在云服务器的主网卡上。
  * @summary 为云服务器绑定公网 IP
  */
-export declare const attachInstanceFloatingIp: (instanceId: string, attachFloatingIPRequestBody: AttachFloatingIPRequestBody) => Promise<FloatingIPResource>;
+export declare const attachInstanceFloatingIp: (instanceId: string, attachFloatingIPRequestBody: AttachFloatingIPRequestBody, options?: SecondParameter<typeof request<FloatingIPResource>>) => Promise<FloatingIPResource>;
 /**
  * @summary 解绑云服务器的公网 IP
  */
-export declare const detachInstanceFloatingIp: (instanceId: string, floatingIpId: string) => Promise<FloatingIPResource>;
+export declare const detachInstanceFloatingIp: (instanceId: string, floatingIpId: string, options?: SecondParameter<typeof request<FloatingIPResource>>) => Promise<FloatingIPResource>;
 /**
  * 在不重启的情况下改掉 root 的密码，云服务器必须处于运行中。
 
@@ -232,25 +234,25 @@ export declare const detachInstanceFloatingIp: (instanceId: string, floatingIpId
 镜像标记为支持、但云服务器内相应组件已被卸载或停止时，本接口同样会被拒绝。
  * @summary 重置登录密码
  */
-export declare const resetInstancePassword: (instanceId: string, resetPasswordRequestBody: ResetPasswordRequestBody) => Promise<ResetPasswordResponseBody>;
+export declare const resetInstancePassword: (instanceId: string, resetPasswordRequestBody: ResetPasswordRequestBody, options?: SecondParameter<typeof request<ResetPasswordResponseBody>>) => Promise<ResetPasswordResponseBody>;
 /**
  * @summary 列出云服务器的网卡
  */
-export declare const listInstancePorts: (instanceId: string) => Promise<PortListResponseBody>;
+export declare const listInstancePorts: (instanceId: string, options?: SecondParameter<typeof request<PortListResponseBody>>) => Promise<PortListResponseBody>;
 /**
  * @summary 挂载网卡
  */
-export declare const attachPort: (instanceId: string, attachPortRequestBody: AttachPortRequestBody) => Promise<PortResource>;
+export declare const attachPort: (instanceId: string, attachPortRequestBody: AttachPortRequestBody, options?: SecondParameter<typeof request<PortResource>>) => Promise<PortResource>;
 /**
  * 主网卡不可卸载，卸载后云服务器将失去网络地址。
  * @summary 卸载网卡
  */
-export declare const detachPort: (instanceId: string, portId: string) => Promise<PortResource>;
+export declare const detachPort: (instanceId: string, portId: string, options?: SecondParameter<typeof request<PortResource>>) => Promise<PortResource>;
 /**
  * **系统盘数据将被清除且无法恢复。** 已挂载的数据盘不受影响。
  * @summary 重装系统
  */
-export declare const rebuildInstance: (instanceId: string, rebuildInstanceRequestBody: RebuildInstanceRequestBody) => Promise<RebuildInstanceResponseBody>;
+export declare const rebuildInstance: (instanceId: string, rebuildInstanceRequestBody: RebuildInstanceRequestBody, options?: SecondParameter<typeof request<RebuildInstanceResponseBody>>) => Promise<RebuildInstanceResponseBody>;
 /**
  * 只能变更为同一地区、同一可用区的机型，否则已挂载的云硬盘无法随之迁移。
 
@@ -259,17 +261,17 @@ export declare const rebuildInstance: (instanceId: string, rebuildInstanceReques
 **未确认期间新旧两份规格同时占用资源。** 请在状态变为 `resize_verifying` 后尽快确认。
  * @summary 变配
  */
-export declare const resizeInstance: (instanceId: string, resizeInstanceRequestBody: ResizeInstanceRequestBody) => Promise<InstanceResource>;
+export declare const resizeInstance: (instanceId: string, resizeInstanceRequestBody: ResizeInstanceRequestBody, options?: SecondParameter<typeof request<InstanceResource>>) => Promise<InstanceResource>;
 /**
  * 释放原规格占用的资源，`pending_instance_type_id` 成为生效机型并从此按它计费。
  * @summary 确认变配
  */
-export declare const confirmInstanceResize: (instanceId: string) => Promise<InstanceResource>;
+export declare const confirmInstanceResize: (instanceId: string, options?: SecondParameter<typeof request<InstanceResource>>) => Promise<InstanceResource>;
 /**
  * 云服务器回到原规格，`pending_instance_type_id` 被丢弃，计费不受本次变配影响。
  * @summary 回滚变配
  */
-export declare const revertInstanceResize: (instanceId: string) => Promise<InstanceResource>;
+export declare const revertInstanceResize: (instanceId: string, options?: SecondParameter<typeof request<InstanceResource>>) => Promise<InstanceResource>;
 /**
  * 记录本项目内的每一次写操作：谁、在什么时候、对什么做了什么、成功还是失败。读取操作不记录。
 
@@ -278,25 +280,25 @@ export declare const revertInstanceResize: (instanceId: string) => Promise<Insta
 密码一类的字段在写入时即被替换为占位符，不会出现在 `payload` 中。
  * @summary 列出本项目的操作记录
  */
-export declare const listOperationLogs: (params?: ListOperationLogsParams) => Promise<OperationLogListResponseBody>;
+export declare const listOperationLogs: (params?: ListOperationLogsParams, options?: SecondParameter<typeof request<OperationLogListResponseBody>>) => Promise<OperationLogListResponseBody>;
 /**
  * @summary 列出网卡
  */
-export declare const listPorts: () => Promise<PortListResponseBody>;
+export declare const listPorts: (options?: SecondParameter<typeof request<PortListResponseBody>>) => Promise<PortListResponseBody>;
 /**
  * 创建出的网卡尚未挂载到任何云服务器。主网卡不由本接口创建，它随云服务器一并创建。
  * @summary 创建网卡
  */
-export declare const createPort: (createPortRequestBody: CreatePortRequestBody) => Promise<PortResource>;
+export declare const createPort: (createPortRequestBody: CreatePortRequestBody, options?: SecondParameter<typeof request<PortResource>>) => Promise<PortResource>;
 /**
  * 主网卡不可单独删除，它随云服务器一并释放。仍挂载在云服务器上的网卡也无法删除。
  * @summary 删除网卡
  */
-export declare const deletePort: (portId: string) => Promise<void>;
+export declare const deletePort: (portId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 列出自制镜像
  */
-export declare const listPrivateImages: (params?: ListPrivateImagesParams) => Promise<PrivateImageListResponseBody>;
+export declare const listPrivateImages: (params?: ListPrivateImagesParams, options?: SecondParameter<typeof request<PrivateImageListResponseBody>>) => Promise<PrivateImageListResponseBody>;
 /**
  * 依据云服务器的系统盘制作，数据盘不包含在内。制作出的镜像可用于创建云服务器或重装系统，并在源云服务器释放后继续可用。
 
@@ -312,157 +314,157 @@ export declare const listPrivateImages: (params?: ListPrivateImagesParams) => Pr
 制作期间该云服务器可以正常启停与使用，但无法释放。
  * @summary 将云服务器制作为镜像
  */
-export declare const createPrivateImage: (createPrivateImageRequestBody: CreatePrivateImageRequestBody) => Promise<PrivateImageResource>;
+export declare const createPrivateImage: (createPrivateImageRequestBody: CreatePrivateImageRequestBody, options?: SecondParameter<typeof request<PrivateImageResource>>) => Promise<PrivateImageResource>;
 /**
  * 仍有云服务器由该镜像创建时，删除会被拒绝：这些云服务器需要它才能重装系统。
 
 制作尚未完成的镜像也可以删除，制作会被终止。
  * @summary 删除自制镜像
  */
-export declare const deletePrivateImage: (privateImageId: string) => Promise<void>;
+export declare const deletePrivateImage: (privateImageId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 轮询制作进度请使用本接口。status 为 error 时，failure 给出失败原因。
  * @summary 查看自制镜像
  */
-export declare const getPrivateImage: (privateImageId: string) => Promise<PrivateImageResource>;
+export declare const getPrivateImage: (privateImageId: string, options?: SecondParameter<typeof request<PrivateImageResource>>) => Promise<PrivateImageResource>;
 /**
  * @summary 重命名自制镜像
  */
-export declare const renamePrivateImage: (privateImageId: string, renamePrivateImageRequestBody: RenamePrivateImageRequestBody) => Promise<PrivateImageResource>;
+export declare const renamePrivateImage: (privateImageId: string, renamePrivateImageRequestBody: RenamePrivateImageRequestBody, options?: SecondParameter<typeof request<PrivateImageResource>>) => Promise<PrivateImageResource>;
 /**
  * @summary 列出私有网络
  */
-export declare const listPrivateNetworks: (params?: ListPrivateNetworksParams) => Promise<PrivateNetworkListResponseBody>;
+export declare const listPrivateNetworks: (params?: ListPrivateNetworksParams, options?: SecondParameter<typeof request<PrivateNetworkListResponseBody>>) => Promise<PrivateNetworkListResponseBody>;
 /**
  * 同时创建一张网络、一台路由器和一个默认安全组。默认安全组拒绝全部入站流量、放行全部出站流量。
  * @summary 创建私有网络
  */
-export declare const createPrivateNetwork: (createPrivateNetworkRequestBody: CreatePrivateNetworkRequestBody) => Promise<PrivateNetworkResource>;
+export declare const createPrivateNetwork: (createPrivateNetworkRequestBody: CreatePrivateNetworkRequestBody, options?: SecondParameter<typeof request<PrivateNetworkResource>>) => Promise<PrivateNetworkResource>;
 /**
  * 其中仍有云服务器或网卡时，释放会被拒绝。IPv6、路由器与安全组随之一并释放。
  * @summary 释放私有网络
  */
-export declare const deletePrivateNetwork: (privateNetworkId: string) => Promise<void>;
+export declare const deletePrivateNetwork: (privateNetworkId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看私有网络
  */
-export declare const getPrivateNetwork: (privateNetworkId: string) => Promise<PrivateNetworkResource>;
+export declare const getPrivateNetwork: (privateNetworkId: string, options?: SecondParameter<typeof request<PrivateNetworkResource>>) => Promise<PrivateNetworkResource>;
 /**
  * 仅修改显示名称。网段、路由与外网网关均不可修改。
  * @summary 重命名私有网络
  */
-export declare const renamePrivateNetwork: (privateNetworkId: string, renamePrivateNetworkRequestBody: RenamePrivateNetworkRequestBody) => Promise<PrivateNetworkResource>;
+export declare const renamePrivateNetwork: (privateNetworkId: string, renamePrivateNetworkRequestBody: RenamePrivateNetworkRequestBody, options?: SecondParameter<typeof request<PrivateNetworkResource>>) => Promise<PrivateNetworkResource>;
 /**
  * 释放的前缀不会立即重新分配。
  * @summary 关闭私有网络的 IPv6
  */
-export declare const disablePrivateNetworkIpv6: (privateNetworkId: string) => Promise<void>;
+export declare const disablePrivateNetworkIpv6: (privateNetworkId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看私有网络的 IPv6
  */
-export declare const getPrivateNetworkIpv6: (privateNetworkId: string) => Promise<IPv6ResponseBody>;
+export declare const getPrivateNetworkIpv6: (privateNetworkId: string, options?: SecondParameter<typeof request<IPv6ResponseBody>>) => Promise<IPv6ResponseBody>;
 /**
  * 为该私有网络分配一段 IPv6 地址。地址由私有网络自动下发至云服务器，无需也无法单独申领，也不占用公网 IPv4。
 
 该私有网络尚未接入外网时会自动接入，无需单独操作。
  * @summary 为私有网络启用 IPv6
  */
-export declare const enablePrivateNetworkIpv6: (privateNetworkId: string) => Promise<IPv6ResponseBody>;
+export declare const enablePrivateNetworkIpv6: (privateNetworkId: string, options?: SecondParameter<typeof request<IPv6ResponseBody>>) => Promise<IPv6ResponseBody>;
 /**
  * @summary 列出静态路由
  */
-export declare const listRoutes: (privateNetworkId: string) => Promise<RouteListResponseBody>;
+export declare const listRoutes: (privateNetworkId: string, options?: SecondParameter<typeof request<RouteListResponseBody>>) => Promise<RouteListResponseBody>;
 /**
  * 以下三种会导致网络中断的写法会被拒绝：目的网段为 0.0.0.0/0（覆盖默认路由，所有公网 IP 立即失效）、目的网段为某个子网自身（覆盖直连路由）、下一跳为某个子网的网关（指回路由器自身）。
  * @summary 创建静态路由
  */
-export declare const createRoute: (privateNetworkId: string, createRouteRequestBody: CreateRouteRequestBody) => Promise<RouteResource>;
+export declare const createRoute: (privateNetworkId: string, createRouteRequestBody: CreateRouteRequestBody, options?: SecondParameter<typeof request<RouteResource>>) => Promise<RouteResource>;
 /**
  * @summary 删除静态路由
  */
-export declare const deleteRoute: (privateNetworkId: string, routeId: string) => Promise<void>;
+export declare const deleteRoute: (privateNetworkId: string, routeId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * IPv6 子网也在返回结果中，ip_version 为 6。它在启用 IPv6 时自动创建，不可单独删除。
  * @summary 列出子网
  */
-export declare const listSubnets: (privateNetworkId: string) => Promise<SubnetListResponseBody>;
+export declare const listSubnets: (privateNetworkId: string, options?: SecondParameter<typeof request<SubnetListResponseBody>>) => Promise<SubnetListResponseBody>;
 /**
  * @summary 创建子网
  */
-export declare const createSubnet: (privateNetworkId: string, createSubnetRequestBody: CreateSubnetRequestBody) => Promise<SubnetResource>;
+export declare const createSubnet: (privateNetworkId: string, createSubnetRequestBody: CreateSubnetRequestBody, options?: SecondParameter<typeof request<SubnetResource>>) => Promise<SubnetResource>;
 /**
  * 返回的只是建议值，创建子网时仍会重新校验。用于避免手工计算下一个空闲网段时出错。
  * @summary 推荐下一个空闲网段
  */
-export declare const suggestSubnetCidr: (privateNetworkId: string, params?: SuggestSubnetCidrParams) => Promise<NextFreeCidrResponseBody>;
+export declare const suggestSubnetCidr: (privateNetworkId: string, params?: SuggestSubnetCidrParams, options?: SecondParameter<typeof request<NextFreeCidrResponseBody>>) => Promise<NextFreeCidrResponseBody>;
 /**
  * 该子网中仍有网卡，或仍有静态路由的下一跳落在该网段内时，删除会被拒绝。
  * @summary 删除子网
  */
-export declare const deleteSubnet: (privateNetworkId: string, subnetId: string) => Promise<void>;
+export declare const deleteSubnet: (privateNetworkId: string, subnetId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 列出可用的地区
  */
-export declare const listRegions: () => Promise<RegionListResponseBody>;
+export declare const listRegions: (options?: SecondParameter<typeof request<RegionListResponseBody>>) => Promise<RegionListResponseBody>;
 /**
  * 云硬盘与云服务器必须位于同一可用区才能挂载，创建前请确认所选可用区。
  * @summary 列出一个地区的可用区
  */
-export declare const listAvailabilityZones: (regionCode: string) => Promise<ZoneListResponseBody>;
+export declare const listAvailabilityZones: (regionCode: string, options?: SecondParameter<typeof request<ZoneListResponseBody>>) => Promise<ZoneListResponseBody>;
 /**
  * @summary 列出安全组
  */
-export declare const listSecurityGroups: (params?: ListSecurityGroupsParams) => Promise<SecurityGroupListResponseBody>;
+export declare const listSecurityGroups: (params?: ListSecurityGroupsParams, options?: SecondParameter<typeof request<SecurityGroupListResponseBody>>) => Promise<SecurityGroupListResponseBody>;
 /**
  * 新建的安全组带有一条规则：放行 ICMP 需要分片（type 3 code 4）。缺少该规则会导致路径 MTU 发现失败，表现为连接建立后传输大数据包时卡住。
  * @summary 创建安全组
  */
-export declare const createSecurityGroup: (createSecurityGroupRequestBody: CreateSecurityGroupRequestBody) => Promise<SecurityGroupResource>;
+export declare const createSecurityGroup: (createSecurityGroupRequestBody: CreateSecurityGroupRequestBody, options?: SecondParameter<typeof request<SecurityGroupResource>>) => Promise<SecurityGroupResource>;
 /**
  * 默认安全组不可删除，它随私有网络一并释放。仍被网卡引用的安全组也无法删除。
  * @summary 删除安全组
  */
-export declare const deleteSecurityGroup: (securityGroupId: string) => Promise<void>;
+export declare const deleteSecurityGroup: (securityGroupId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看安全组
  */
-export declare const getSecurityGroup: (securityGroupId: string) => Promise<SecurityGroupResource>;
+export declare const getSecurityGroup: (securityGroupId: string, options?: SecondParameter<typeof request<SecurityGroupResource>>) => Promise<SecurityGroupResource>;
 /**
  * @summary 列出安全组规则
  */
-export declare const listSecurityGroupRules: (securityGroupId: string) => Promise<SecurityRuleListResponseBody>;
+export declare const listSecurityGroupRules: (securityGroupId: string, options?: SecondParameter<typeof request<SecurityRuleListResponseBody>>) => Promise<SecurityRuleListResponseBody>;
 /**
  * 重复添加同一条规则会被拒绝。判重时 `0.0.0.0/0`、`::/0` 与留空视为等同。
  * @summary 创建安全组规则
  */
-export declare const createSecurityGroupRule: (securityGroupId: string, createSecurityRuleRequestBody: CreateSecurityRuleRequestBody) => Promise<SecurityRuleResource>;
+export declare const createSecurityGroupRule: (securityGroupId: string, createSecurityRuleRequestBody: CreateSecurityRuleRequestBody, options?: SecondParameter<typeof request<SecurityRuleResource>>) => Promise<SecurityRuleResource>;
 /**
  * @summary 删除安全组规则
  */
-export declare const deleteSecurityGroupRule: (securityGroupId: string, ruleId: string) => Promise<void>;
+export declare const deleteSecurityGroupRule: (securityGroupId: string, ruleId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 列出快照
  */
-export declare const listSnapshots: (params?: ListSnapshotsParams) => Promise<SnapshotListResponseBody>;
+export declare const listSnapshots: (params?: ListSnapshotsParams, options?: SecondParameter<typeof request<SnapshotListResponseBody>>) => Promise<SnapshotListResponseBody>;
 /**
  * 运行中云服务器上挂载的云硬盘同样可以创建快照。快照记录的是某一时刻的块设备状态，文件系统层面可能不一致，重要数据建议先在云服务器内执行 sync。
 
 **系统盘的快照不能用于回滚该系统盘**：回滚要求先从云服务器上卸载，而系统盘不可卸载。它可用于创建一块新的数据盘。需要保留并恢复整个系统时，请使用自制镜像；需要可跨可用区、且在云硬盘删除后仍可恢复的副本时，请使用备份。
  * @summary 创建快照
  */
-export declare const createSnapshot: (createSnapshotRequestBody: CreateSnapshotRequestBody) => Promise<SnapshotResource>;
+export declare const createSnapshot: (createSnapshotRequestBody: CreateSnapshotRequestBody, options?: SecondParameter<typeof request<SnapshotResource>>) => Promise<SnapshotResource>;
 /**
  * @summary 删除快照
  */
-export declare const deleteSnapshot: (snapshotId: string) => Promise<void>;
+export declare const deleteSnapshot: (snapshotId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看快照
  */
-export declare const getSnapshot: (snapshotId: string) => Promise<SnapshotResource>;
+export declare const getSnapshot: (snapshotId: string, options?: SecondParameter<typeof request<SnapshotResource>>) => Promise<SnapshotResource>;
 /**
  * @summary 重命名快照
  */
-export declare const renameSnapshot: (snapshotId: string, renameSnapshotRequestBody: RenameSnapshotRequestBody) => Promise<SnapshotResource>;
+export declare const renameSnapshot: (snapshotId: string, renameSnapshotRequestBody: RenameSnapshotRequestBody, options?: SecondParameter<typeof request<SnapshotResource>>) => Promise<SnapshotResource>;
 export type ListBackupsResult = NonNullable<Awaited<ReturnType<typeof listBackups>>>;
 export type CreateBackupResult = NonNullable<Awaited<ReturnType<typeof createBackup>>>;
 export type DeleteBackupResult = NonNullable<Awaited<ReturnType<typeof deleteBackup>>>;
@@ -545,3 +547,4 @@ export type CreateSnapshotResult = NonNullable<Awaited<ReturnType<typeof createS
 export type DeleteSnapshotResult = NonNullable<Awaited<ReturnType<typeof deleteSnapshot>>>;
 export type GetSnapshotResult = NonNullable<Awaited<ReturnType<typeof getSnapshot>>>;
 export type RenameSnapshotResult = NonNullable<Awaited<ReturnType<typeof renameSnapshot>>>;
+export {};

@@ -106,18 +106,20 @@ import type {
 import { request } from '../../http.js';
 
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 
   /**
  * @summary 列出备份
  */
 export const listBackups = (
     params?: ListBackupsParams,
- ) => {
+ options?: SecondParameter<typeof request<BackupListResponseBody>>,) => {
       return request<BackupListResponseBody>(
       {url: `/api/v1/backups`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -130,13 +132,13 @@ export const listBackups = (
  */
 export const createBackup = (
     createBackupRequestBody: CreateBackupRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<BackupResource>>,) => {
       return request<BackupResource>(
       {url: `/api/v1/backups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createBackupRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -145,11 +147,11 @@ export const createBackup = (
  */
 export const deleteBackup = (
     backupId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/backups/${backupId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -158,11 +160,11 @@ export const deleteBackup = (
  */
 export const getBackup = (
     backupId: string,
- ) => {
+ options?: SecondParameter<typeof request<BackupResource>>,) => {
       return request<BackupResource>(
       {url: `/api/v1/backups/${backupId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -171,13 +173,13 @@ export const getBackup = (
 export const renameBackup = (
     backupId: string,
     renameBackupRequestBody: RenameBackupRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<BackupResource>>,) => {
       return request<BackupResource>(
       {url: `/api/v1/backups/${backupId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renameBackupRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -189,13 +191,13 @@ export const renameBackup = (
 export const restoreBackup = (
     backupId: string,
     restoreBackupRequestBody: RestoreBackupRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/backups/${backupId}/restore`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: restoreBackupRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -203,12 +205,12 @@ export const restoreBackup = (
  */
 export const listDiskTypes = (
     params: ListDiskTypesParams,
- ) => {
+ options?: SecondParameter<typeof request<DiskTypeListResponseBody>>,) => {
       return request<DiskTypeListResponseBody>(
       {url: `/api/v1/disk-types`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -217,12 +219,12 @@ export const listDiskTypes = (
  */
 export const listDisks = (
     params?: ListDisksParams,
- ) => {
+ options?: SecondParameter<typeof request<DiskListResponseBody>>,) => {
       return request<DiskListResponseBody>(
       {url: `/api/v1/disks`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -231,13 +233,13 @@ export const listDisks = (
  */
 export const createDisk = (
     createDiskRequestBody: CreateDiskRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/disks`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createDiskRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -246,11 +248,11 @@ export const createDisk = (
  */
 export const deleteDisk = (
     diskId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/disks/${diskId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -259,11 +261,11 @@ export const deleteDisk = (
  */
 export const getDisk = (
     diskId: string,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/disks/${diskId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -273,13 +275,13 @@ export const getDisk = (
 export const renameDisk = (
     diskId: string,
     renameDiskRequestBody: RenameDiskRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/disks/${diskId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renameDiskRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -289,13 +291,13 @@ export const renameDisk = (
 export const resizeDisk = (
     diskId: string,
     resizeDiskRequestBody: ResizeDiskRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/disks/${diskId}/resize`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: resizeDiskRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -309,13 +311,13 @@ export const resizeDisk = (
 export const revertDisk = (
     diskId: string,
     revertDiskRequestBody: RevertDiskRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/disks/${diskId}/revert`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: revertDiskRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -323,11 +325,11 @@ export const revertDisk = (
  */
 export const listFloatingIps = (
     
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPListResponseBody>>,) => {
       return request<FloatingIPListResponseBody>(
       {url: `/api/v1/floating-ips`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -338,13 +340,13 @@ IPv6 不通过本接口申请。IPv6 地址由私有网络自动下发至云服�
  */
 export const allocateFloatingIp = (
     allocateFloatingIPRequestBody: AllocateFloatingIPRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPResource>>,) => {
       return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: allocateFloatingIPRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -353,11 +355,11 @@ export const allocateFloatingIp = (
  */
 export const releaseFloatingIp = (
     floatingIpId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/floating-ips/${floatingIpId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -365,11 +367,11 @@ export const releaseFloatingIp = (
  */
 export const getFloatingIp = (
     floatingIpId: string,
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPResource>>,) => {
       return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -379,13 +381,13 @@ export const getFloatingIp = (
 export const setFloatingIpBandwidth = (
     floatingIpId: string,
     setBandwidthRequestBody: SetBandwidthRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPResource>>,) => {
       return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}/bandwidth`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: setBandwidthRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -394,11 +396,11 @@ export const setFloatingIpBandwidth = (
  */
 export const unbindFloatingIp = (
     floatingIpId: string,
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPResource>>,) => {
       return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}/binding`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -407,13 +409,13 @@ export const unbindFloatingIp = (
 export const bindFloatingIp = (
     floatingIpId: string,
     bindFloatingIPRequestBody: BindFloatingIPRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPResource>>,) => {
       return request<FloatingIPResource>(
       {url: `/api/v1/floating-ips/${floatingIpId}/binding`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: bindFloatingIPRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -422,12 +424,12 @@ export const bindFloatingIp = (
  */
 export const listImages = (
     params: ListImagesParams,
- ) => {
+ options?: SecondParameter<typeof request<ImageListResponseBody>>,) => {
       return request<ImageListResponseBody>(
       {url: `/api/v1/images`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -435,12 +437,12 @@ export const listImages = (
  */
 export const listInstanceTypes = (
     params: ListInstanceTypesParams,
- ) => {
+ options?: SecondParameter<typeof request<InstanceTypeListResponseBody>>,) => {
       return request<InstanceTypeListResponseBody>(
       {url: `/api/v1/instance-types`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -448,11 +450,11 @@ export const listInstanceTypes = (
  */
 export const listInstances = (
     
- ) => {
+ options?: SecondParameter<typeof request<InstanceListResponseBody>>,) => {
       return request<InstanceListResponseBody>(
       {url: `/api/v1/instances`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -471,13 +473,13 @@ export const listInstances = (
  */
 export const launchInstance = (
     launchInstanceRequestBody: LaunchInstanceRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<LaunchInstanceResponseBody>>,) => {
       return request<LaunchInstanceResponseBody>(
       {url: `/api/v1/instances`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: launchInstanceRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -488,11 +490,11 @@ export const launchInstance = (
  */
 export const deleteInstance = (
     instanceId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/instances/${instanceId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -501,11 +503,11 @@ export const deleteInstance = (
  */
 export const getInstance = (
     instanceId: string,
- ) => {
+ options?: SecondParameter<typeof request<InstanceResource>>,) => {
       return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -515,13 +517,13 @@ export const getInstance = (
 export const renameInstance = (
     instanceId: string,
     renameInstanceRequestBody: RenameInstanceRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<InstanceResource>>,) => {
       return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renameInstanceRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -535,13 +537,13 @@ export const renameInstance = (
 export const actOnInstance = (
     instanceId: string,
     actOnInstanceRequestBody: ActOnInstanceRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<InstanceResource>>,) => {
       return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/actions`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: actOnInstanceRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -552,11 +554,11 @@ export const actOnInstance = (
  */
 export const openInstanceConsole = (
     instanceId: string,
- ) => {
+ options?: SecondParameter<typeof request<ConsoleResponseBody>>,) => {
       return request<ConsoleResponseBody>(
       {url: `/api/v1/instances/${instanceId}/console`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -568,12 +570,12 @@ export const openInstanceConsole = (
 export const getInstanceConsoleOutput = (
     instanceId: string,
     params?: GetInstanceConsoleOutputParams,
- ) => {
+ options?: SecondParameter<typeof request<ConsoleOutputResponseBody>>,) => {
       return request<ConsoleOutputResponseBody>(
       {url: `/api/v1/instances/${instanceId}/console-output`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -581,11 +583,11 @@ export const getInstanceConsoleOutput = (
  */
 export const listInstanceDisks = (
     instanceId: string,
- ) => {
+ options?: SecondParameter<typeof request<DiskListResponseBody>>,) => {
       return request<DiskListResponseBody>(
       {url: `/api/v1/instances/${instanceId}/disks`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -595,13 +597,13 @@ export const listInstanceDisks = (
 export const attachDisk = (
     instanceId: string,
     attachDiskRequestBody: AttachDiskRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/instances/${instanceId}/disks`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: attachDiskRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -611,11 +613,11 @@ export const attachDisk = (
 export const detachDisk = (
     instanceId: string,
     diskId: string,
- ) => {
+ options?: SecondParameter<typeof request<DiskResource>>,) => {
       return request<DiskResource>(
       {url: `/api/v1/instances/${instanceId}/disks/${diskId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -625,13 +627,13 @@ export const detachDisk = (
 export const attachInstanceFloatingIp = (
     instanceId: string,
     attachFloatingIPRequestBody: AttachFloatingIPRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPResource>>,) => {
       return request<FloatingIPResource>(
       {url: `/api/v1/instances/${instanceId}/floating-ips`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: attachFloatingIPRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -640,11 +642,11 @@ export const attachInstanceFloatingIp = (
 export const detachInstanceFloatingIp = (
     instanceId: string,
     floatingIpId: string,
- ) => {
+ options?: SecondParameter<typeof request<FloatingIPResource>>,) => {
       return request<FloatingIPResource>(
       {url: `/api/v1/instances/${instanceId}/floating-ips/${floatingIpId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -658,13 +660,13 @@ export const detachInstanceFloatingIp = (
 export const resetInstancePassword = (
     instanceId: string,
     resetPasswordRequestBody: ResetPasswordRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<ResetPasswordResponseBody>>,) => {
       return request<ResetPasswordResponseBody>(
       {url: `/api/v1/instances/${instanceId}/password`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: resetPasswordRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -672,11 +674,11 @@ export const resetInstancePassword = (
  */
 export const listInstancePorts = (
     instanceId: string,
- ) => {
+ options?: SecondParameter<typeof request<PortListResponseBody>>,) => {
       return request<PortListResponseBody>(
       {url: `/api/v1/instances/${instanceId}/ports`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -685,13 +687,13 @@ export const listInstancePorts = (
 export const attachPort = (
     instanceId: string,
     attachPortRequestBody: AttachPortRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<PortResource>>,) => {
       return request<PortResource>(
       {url: `/api/v1/instances/${instanceId}/ports`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: attachPortRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -701,11 +703,11 @@ export const attachPort = (
 export const detachPort = (
     instanceId: string,
     portId: string,
- ) => {
+ options?: SecondParameter<typeof request<PortResource>>,) => {
       return request<PortResource>(
       {url: `/api/v1/instances/${instanceId}/ports/${portId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -715,13 +717,13 @@ export const detachPort = (
 export const rebuildInstance = (
     instanceId: string,
     rebuildInstanceRequestBody: RebuildInstanceRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<RebuildInstanceResponseBody>>,) => {
       return request<RebuildInstanceResponseBody>(
       {url: `/api/v1/instances/${instanceId}/rebuild`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: rebuildInstanceRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -735,13 +737,13 @@ export const rebuildInstance = (
 export const resizeInstance = (
     instanceId: string,
     resizeInstanceRequestBody: ResizeInstanceRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<InstanceResource>>,) => {
       return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/resize`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: resizeInstanceRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -750,11 +752,11 @@ export const resizeInstance = (
  */
 export const confirmInstanceResize = (
     instanceId: string,
- ) => {
+ options?: SecondParameter<typeof request<InstanceResource>>,) => {
       return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/resize/confirm`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -763,11 +765,11 @@ export const confirmInstanceResize = (
  */
 export const revertInstanceResize = (
     instanceId: string,
- ) => {
+ options?: SecondParameter<typeof request<InstanceResource>>,) => {
       return request<InstanceResource>(
       {url: `/api/v1/instances/${instanceId}/resize/revert`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -780,12 +782,12 @@ export const revertInstanceResize = (
  */
 export const listOperationLogs = (
     params?: ListOperationLogsParams,
- ) => {
+ options?: SecondParameter<typeof request<OperationLogListResponseBody>>,) => {
       return request<OperationLogListResponseBody>(
       {url: `/api/v1/operation-logs`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -793,11 +795,11 @@ export const listOperationLogs = (
  */
 export const listPorts = (
     
- ) => {
+ options?: SecondParameter<typeof request<PortListResponseBody>>,) => {
       return request<PortListResponseBody>(
       {url: `/api/v1/ports`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -806,13 +808,13 @@ export const listPorts = (
  */
 export const createPort = (
     createPortRequestBody: CreatePortRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<PortResource>>,) => {
       return request<PortResource>(
       {url: `/api/v1/ports`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createPortRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -821,11 +823,11 @@ export const createPort = (
  */
 export const deletePort = (
     portId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/ports/${portId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -833,12 +835,12 @@ export const deletePort = (
  */
 export const listPrivateImages = (
     params?: ListPrivateImagesParams,
- ) => {
+ options?: SecondParameter<typeof request<PrivateImageListResponseBody>>,) => {
       return request<PrivateImageListResponseBody>(
       {url: `/api/v1/private-images`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -858,13 +860,13 @@ export const listPrivateImages = (
  */
 export const createPrivateImage = (
     createPrivateImageRequestBody: CreatePrivateImageRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<PrivateImageResource>>,) => {
       return request<PrivateImageResource>(
       {url: `/api/v1/private-images`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createPrivateImageRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -875,11 +877,11 @@ export const createPrivateImage = (
  */
 export const deletePrivateImage = (
     privateImageId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/private-images/${privateImageId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -888,11 +890,11 @@ export const deletePrivateImage = (
  */
 export const getPrivateImage = (
     privateImageId: string,
- ) => {
+ options?: SecondParameter<typeof request<PrivateImageResource>>,) => {
       return request<PrivateImageResource>(
       {url: `/api/v1/private-images/${privateImageId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -901,13 +903,13 @@ export const getPrivateImage = (
 export const renamePrivateImage = (
     privateImageId: string,
     renamePrivateImageRequestBody: RenamePrivateImageRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<PrivateImageResource>>,) => {
       return request<PrivateImageResource>(
       {url: `/api/v1/private-images/${privateImageId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renamePrivateImageRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -915,12 +917,12 @@ export const renamePrivateImage = (
  */
 export const listPrivateNetworks = (
     params?: ListPrivateNetworksParams,
- ) => {
+ options?: SecondParameter<typeof request<PrivateNetworkListResponseBody>>,) => {
       return request<PrivateNetworkListResponseBody>(
       {url: `/api/v1/private-networks`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -929,13 +931,13 @@ export const listPrivateNetworks = (
  */
 export const createPrivateNetwork = (
     createPrivateNetworkRequestBody: CreatePrivateNetworkRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<PrivateNetworkResource>>,) => {
       return request<PrivateNetworkResource>(
       {url: `/api/v1/private-networks`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createPrivateNetworkRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -944,11 +946,11 @@ export const createPrivateNetwork = (
  */
 export const deletePrivateNetwork = (
     privateNetworkId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/private-networks/${privateNetworkId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -956,11 +958,11 @@ export const deletePrivateNetwork = (
  */
 export const getPrivateNetwork = (
     privateNetworkId: string,
- ) => {
+ options?: SecondParameter<typeof request<PrivateNetworkResource>>,) => {
       return request<PrivateNetworkResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -970,13 +972,13 @@ export const getPrivateNetwork = (
 export const renamePrivateNetwork = (
     privateNetworkId: string,
     renamePrivateNetworkRequestBody: RenamePrivateNetworkRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<PrivateNetworkResource>>,) => {
       return request<PrivateNetworkResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renamePrivateNetworkRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -985,11 +987,11 @@ export const renamePrivateNetwork = (
  */
 export const disablePrivateNetworkIpv6 = (
     privateNetworkId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/private-networks/${privateNetworkId}/ipv6`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -997,11 +999,11 @@ export const disablePrivateNetworkIpv6 = (
  */
 export const getPrivateNetworkIpv6 = (
     privateNetworkId: string,
- ) => {
+ options?: SecondParameter<typeof request<IPv6ResponseBody>>,) => {
       return request<IPv6ResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/ipv6`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1012,11 +1014,11 @@ export const getPrivateNetworkIpv6 = (
  */
 export const enablePrivateNetworkIpv6 = (
     privateNetworkId: string,
- ) => {
+ options?: SecondParameter<typeof request<IPv6ResponseBody>>,) => {
       return request<IPv6ResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/ipv6`, method: 'POST'
     },
-      );
+      options);
     }
   
 /**
@@ -1024,11 +1026,11 @@ export const enablePrivateNetworkIpv6 = (
  */
 export const listRoutes = (
     privateNetworkId: string,
- ) => {
+ options?: SecondParameter<typeof request<RouteListResponseBody>>,) => {
       return request<RouteListResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/routes`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1038,13 +1040,13 @@ export const listRoutes = (
 export const createRoute = (
     privateNetworkId: string,
     createRouteRequestBody: CreateRouteRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<RouteResource>>,) => {
       return request<RouteResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}/routes`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createRouteRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -1053,11 +1055,11 @@ export const createRoute = (
 export const deleteRoute = (
     privateNetworkId: string,
     routeId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/private-networks/${privateNetworkId}/routes/${routeId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -1066,11 +1068,11 @@ export const deleteRoute = (
  */
 export const listSubnets = (
     privateNetworkId: string,
- ) => {
+ options?: SecondParameter<typeof request<SubnetListResponseBody>>,) => {
       return request<SubnetListResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1079,13 +1081,13 @@ export const listSubnets = (
 export const createSubnet = (
     privateNetworkId: string,
     createSubnetRequestBody: CreateSubnetRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SubnetResource>>,) => {
       return request<SubnetResource>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSubnetRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -1095,12 +1097,12 @@ export const createSubnet = (
 export const suggestSubnetCidr = (
     privateNetworkId: string,
     params?: SuggestSubnetCidrParams,
- ) => {
+ options?: SecondParameter<typeof request<NextFreeCidrResponseBody>>,) => {
       return request<NextFreeCidrResponseBody>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets/next-free-cidr`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -1110,11 +1112,11 @@ export const suggestSubnetCidr = (
 export const deleteSubnet = (
     privateNetworkId: string,
     subnetId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/private-networks/${privateNetworkId}/subnets/${subnetId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -1122,11 +1124,11 @@ export const deleteSubnet = (
  */
 export const listRegions = (
     
- ) => {
+ options?: SecondParameter<typeof request<RegionListResponseBody>>,) => {
       return request<RegionListResponseBody>(
       {url: `/api/v1/regions`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1135,11 +1137,11 @@ export const listRegions = (
  */
 export const listAvailabilityZones = (
     regionCode: string,
- ) => {
+ options?: SecondParameter<typeof request<ZoneListResponseBody>>,) => {
       return request<ZoneListResponseBody>(
       {url: `/api/v1/regions/${regionCode}/availability-zones`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1147,12 +1149,12 @@ export const listAvailabilityZones = (
  */
 export const listSecurityGroups = (
     params?: ListSecurityGroupsParams,
- ) => {
+ options?: SecondParameter<typeof request<SecurityGroupListResponseBody>>,) => {
       return request<SecurityGroupListResponseBody>(
       {url: `/api/v1/security-groups`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -1161,13 +1163,13 @@ export const listSecurityGroups = (
  */
 export const createSecurityGroup = (
     createSecurityGroupRequestBody: CreateSecurityGroupRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SecurityGroupResource>>,) => {
       return request<SecurityGroupResource>(
       {url: `/api/v1/security-groups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSecurityGroupRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -1176,11 +1178,11 @@ export const createSecurityGroup = (
  */
 export const deleteSecurityGroup = (
     securityGroupId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/security-groups/${securityGroupId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -1188,11 +1190,11 @@ export const deleteSecurityGroup = (
  */
 export const getSecurityGroup = (
     securityGroupId: string,
- ) => {
+ options?: SecondParameter<typeof request<SecurityGroupResource>>,) => {
       return request<SecurityGroupResource>(
       {url: `/api/v1/security-groups/${securityGroupId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1200,11 +1202,11 @@ export const getSecurityGroup = (
  */
 export const listSecurityGroupRules = (
     securityGroupId: string,
- ) => {
+ options?: SecondParameter<typeof request<SecurityRuleListResponseBody>>,) => {
       return request<SecurityRuleListResponseBody>(
       {url: `/api/v1/security-groups/${securityGroupId}/rules`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1214,13 +1216,13 @@ export const listSecurityGroupRules = (
 export const createSecurityGroupRule = (
     securityGroupId: string,
     createSecurityRuleRequestBody: CreateSecurityRuleRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SecurityRuleResource>>,) => {
       return request<SecurityRuleResource>(
       {url: `/api/v1/security-groups/${securityGroupId}/rules`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSecurityRuleRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -1229,11 +1231,11 @@ export const createSecurityGroupRule = (
 export const deleteSecurityGroupRule = (
     securityGroupId: string,
     ruleId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/security-groups/${securityGroupId}/rules/${ruleId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -1241,12 +1243,12 @@ export const deleteSecurityGroupRule = (
  */
 export const listSnapshots = (
     params?: ListSnapshotsParams,
- ) => {
+ options?: SecondParameter<typeof request<SnapshotListResponseBody>>,) => {
       return request<SnapshotListResponseBody>(
       {url: `/api/v1/snapshots`, method: 'GET',
         params
     },
-      );
+      options);
     }
   
 /**
@@ -1257,13 +1259,13 @@ export const listSnapshots = (
  */
 export const createSnapshot = (
     createSnapshotRequestBody: CreateSnapshotRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SnapshotResource>>,) => {
       return request<SnapshotResource>(
       {url: `/api/v1/snapshots`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createSnapshotRequestBody
     },
-      );
+      options);
     }
   
 /**
@@ -1271,11 +1273,11 @@ export const createSnapshot = (
  */
 export const deleteSnapshot = (
     snapshotId: string,
- ) => {
+ options?: SecondParameter<typeof request<void>>,) => {
       return request<void>(
       {url: `/api/v1/snapshots/${snapshotId}`, method: 'DELETE'
     },
-      );
+      options);
     }
   
 /**
@@ -1283,11 +1285,11 @@ export const deleteSnapshot = (
  */
 export const getSnapshot = (
     snapshotId: string,
- ) => {
+ options?: SecondParameter<typeof request<SnapshotResource>>,) => {
       return request<SnapshotResource>(
       {url: `/api/v1/snapshots/${snapshotId}`, method: 'GET'
     },
-      );
+      options);
     }
   
 /**
@@ -1296,13 +1298,13 @@ export const getSnapshot = (
 export const renameSnapshot = (
     snapshotId: string,
     renameSnapshotRequestBody: RenameSnapshotRequestBody,
- ) => {
+ options?: SecondParameter<typeof request<SnapshotResource>>,) => {
       return request<SnapshotResource>(
       {url: `/api/v1/snapshots/${snapshotId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: renameSnapshotRequestBody
     },
-      );
+      options);
     }
   
 export type ListBackupsResult = NonNullable<Awaited<ReturnType<typeof listBackups>>>

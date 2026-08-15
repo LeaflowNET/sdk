@@ -29,149 +29,151 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
  * OpenAPI spec version: 1.0.0
  */
 import type { AnswerRequestBody, BindingResource, ChannelResource, CheckSenderParams, ClaimCodeResponseBody, CreateChannelRequestBody, CreateThreadRequestBody, DecideRequestBody, DocumentResource, EarlierResponseBody, LengthAwarePageBindingResource, LengthAwarePageChannelResource, ListBindingsParams, ListChannelRejectionsParams, ListChannelsParams, ListEarlierItemsParams, ListThreadsParams, LoginResource, ModelListResponseBody, PlatformListResponseBody, RejectionListResponseBody, RevertRequestBody, RevertedCountResponseBody, RotateSecretRequestBody, SendMessageRequestBody, SenderCheckResource, ThreadListResponseBody, ThreadSummaryResource, TurnIDResponseBody, UpdateChannelRequestBody, UpdateThreadRequestBody, UploadedResource, VerifyCodeRequestBody, WebhookSecretResponseBody } from './models/index.js';
+import { request } from '../../http.js';
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
 * 请求体直接是文件字节，不使用 multipart 封装，一次上传一个文件。类型由内容判定，与 Content-Type 无关。返回的 id 在发送消息时放进 attachmentIds；从未被任何消息引用的附件会被定期清除。
 * @summary 上传图片
 */
-export declare const uploadAttachment: (uploadAttachmentBody: Blob) => Promise<UploadedResource>;
+export declare const uploadAttachment: (uploadAttachmentBody: Blob, options?: SecondParameter<typeof request<UploadedResource>>) => Promise<UploadedResource>;
 /**
  * 按附件 id 取回原始字节，可直接作为 <img> 的地址使用。响应带长期缓存头，附件内容不会变化。附件不存在或不属于当前用户时返回 404。
  * @summary 取回图片
  */
-export declare const downloadAttachment: (attachment: string) => Promise<void>;
+export declare const downloadAttachment: (attachment: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 接入面那张表按通道列出各自绑了谁时用 channelId 过滤。
  * @summary 列出绑定
  */
-export declare const listBindings: (params?: ListBindingsParams) => Promise<LengthAwarePageBindingResource>;
+export declare const listBindings: (params?: ListBindingsParams, options?: SecondParameter<typeof request<LengthAwarePageBindingResource>>) => Promise<LengthAwarePageBindingResource>;
 /**
  * @summary 解除绑定
  */
-export declare const deleteBinding: (binding: string) => Promise<void>;
+export declare const deleteBinding: (binding: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看绑定
  */
-export declare const getBinding: (binding: string) => Promise<BindingResource>;
+export declare const getBinding: (binding: string, options?: SecondParameter<typeof request<BindingResource>>) => Promise<BindingResource>;
 /**
  * @summary 列出通道
  */
-export declare const listChannels: (params?: ListChannelsParams) => Promise<LengthAwarePageChannelResource>;
+export declare const listChannels: (params?: ListChannelsParams, options?: SecondParameter<typeof request<LengthAwarePageChannelResource>>) => Promise<LengthAwarePageChannelResource>;
 /**
  * @summary 创建通道
  */
-export declare const createChannel: (createChannelRequestBody: CreateChannelRequestBody) => Promise<ChannelResource>;
+export declare const createChannel: (createChannelRequestBody: CreateChannelRequestBody, options?: SecondParameter<typeof request<ChannelResource>>) => Promise<ChannelResource>;
 /**
  * 删除后该通道不再接收入站消息，其上的绑定一并失效。项目处于停服或清理状态时本接口仍然可用。
  * @summary 删除通道
  */
-export declare const deleteChannel: (channel: string) => Promise<void>;
+export declare const deleteChannel: (channel: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查看通道
  */
-export declare const getChannel: (channel: string) => Promise<ChannelResource>;
+export declare const getChannel: (channel: string, options?: SecondParameter<typeof request<ChannelResource>>) => Promise<ChannelResource>;
 /**
  * 只修改传了的字段。senderPolicy 与 allowFrom 是一对，由 senderPolicy 决定是否替换；改动对常驻连接要等连接重建后才生效，回调型平台立即生效。
  * @summary 修改通道
  */
-export declare const updateChannel: (channel: string, updateChannelRequestBody: UpdateChannelRequestBody) => Promise<ChannelResource>;
+export declare const updateChannel: (channel: string, updateChannelRequestBody: UpdateChannelRequestBody, options?: SecondParameter<typeof request<ChannelResource>>) => Promise<ChannelResource>;
 /**
  * 生成一个一次性认领码交给待绑定的人，他在该平台上用自己的账号把这个码发给助手即完成绑定。绑定只能由本人以这种方式建立，不能直接指定平台账号。认领码有有效期，过期后需重新签发。
  * @summary 签发认领码
  */
-export declare const createClaimCode: (channel: string) => Promise<ClaimCodeResponseBody>;
+export declare const createClaimCode: (channel: string, options?: SecondParameter<typeof request<ClaimCodeResponseBody>>) => Promise<ClaimCodeResponseBody>;
 /**
  * 排查「发了消息但助手没有响应」时使用。按时间倒序返回最近被这条通道拒绝的入站消息及其拒绝原因，最常见的原因是发送方尚未绑定。
  * @summary 查看最近被拒绝的入站消息
  */
-export declare const listChannelRejections: (channel: string, params?: ListChannelRejectionsParams) => Promise<RejectionListResponseBody>;
+export declare const listChannelRejections: (channel: string, params?: ListChannelRejectionsParams, options?: SecondParameter<typeof request<RejectionListResponseBody>>) => Promise<RejectionListResponseBody>;
 /**
  * 换一把新的回调密钥，旧的立即失效，通道降回待平台确认状态。密钥归谁定由平台决定，见 list-platforms 的 secretSource：generated 的平台不要传请求体，新密钥仅在本次响应中返回、之后无法再次取回；supplied 的平台必须把平台后台那把新密钥传进来。
  * @summary 轮换回调密钥
  */
-export declare const rotateChannelSecret: (channel: string, rotateSecretRequestBody: RotateSecretRequestBody) => Promise<WebhookSecretResponseBody>;
+export declare const rotateChannelSecret: (channel: string, rotateSecretRequestBody: RotateSecretRequestBody, options?: SecondParameter<typeof request<WebhookSecretResponseBody>>) => Promise<WebhookSecretResponseBody>;
 /**
  * 改完发件人策略之后用来自查，不发送任何消息、也不改变任何状态：它走的是和真实入站完全相同的那份判定，并说明结论由哪一条规则得出。无法推演认领码那一条——是否是认领码取决于对方发来的内容。
  * @summary 推演一个发件人会不会被放行
  */
-export declare const checkSender: (channel: string, params: CheckSenderParams) => Promise<SenderCheckResource>;
+export declare const checkSender: (channel: string, params: CheckSenderParams, options?: SecondParameter<typeof request<SenderCheckResource>>) => Promise<SenderCheckResource>;
 /**
  * 微信个人号通道需要本人扫码登录后才能收发消息。本接口返回二维码，之后轮询 `GET /v1/weixin-logins/{login}` 获取进度；状态提示需要验证码时，调用 `POST /v1/weixin-logins/{login}/verify-code` 补交。
  * @summary 发起微信扫码登录
  */
-export declare const beginWeixinLogin: (channel: string) => Promise<LoginResource>;
+export declare const beginWeixinLogin: (channel: string, options?: SecondParameter<typeof request<LoginResource>>) => Promise<LoginResource>;
 /**
  * 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。
  * @summary 列出可用模型
  */
-export declare const listModels: () => Promise<ModelListResponseBody>;
+export declare const listModels: (options?: SecondParameter<typeof request<ModelListResponseBody>>) => Promise<ModelListResponseBody>;
 /**
  * 返回本平台当前支持接入的即时通讯平台，以及各自建通道时要走的流程和要填的凭据字段。新建通道表单完全由这份响应驱动：setupMethod 决定展示录入表单还是扫码流程，credentialFields 是要填的字段，secretSource 决定要不要有回调密钥那一栏。
  * @summary 列出可接入的平台
  */
-export declare const listPlatforms: () => Promise<PlatformListResponseBody>;
+export declare const listPlatforms: (options?: SecondParameter<typeof request<PlatformListResponseBody>>) => Promise<PlatformListResponseBody>;
 /**
  * 按最近活动排序，只返回当前账号在当前项目里的对话。archived 是一个二选一的开关而不是「包含归档」：归档的对话不出现在默认列表里，要看它们就把这个参数打开。
  * @summary 列出对话
  */
-export declare const listThreads: (params?: ListThreadsParams) => Promise<ThreadListResponseBody>;
+export declare const listThreads: (params?: ListThreadsParams, options?: SecondParameter<typeof request<ThreadListResponseBody>>) => Promise<ThreadListResponseBody>;
 /**
  * @summary 创建对话
  */
-export declare const createThread: (createThreadRequestBody: CreateThreadRequestBody) => Promise<ThreadSummaryResource>;
+export declare const createThread: (createThreadRequestBody: CreateThreadRequestBody, options?: SecondParameter<typeof request<ThreadSummaryResource>>) => Promise<ThreadSummaryResource>;
 /**
  * 对话的完整当前状态，用于首屏渲染。文档中的 stream 给出实时输出地址和入场票据，流推送的是对这份文档的增量编辑，可直接套用同一套渲染逻辑。
  * @summary 取回对话文档
  */
-export declare const getThread: (thread: string) => Promise<DocumentResource>;
+export declare const getThread: (thread: string, options?: SecondParameter<typeof request<DocumentResource>>) => Promise<DocumentResource>;
 /**
  * 可修改模型、推理档位、审批模式和归档状态。改动从下一次 turn 起生效，正在执行的 turn 沿用它启动时的设置。reasoningEffort 仅在同时提供 model 时生效。
  * @summary 修改对话设置
  */
-export declare const updateThread: (thread: string, updateThreadRequestBody: UpdateThreadRequestBody) => Promise<ThreadSummaryResource>;
+export declare const updateThread: (thread: string, updateThreadRequestBody: UpdateThreadRequestBody, options?: SecondParameter<typeof request<ThreadSummaryResource>>) => Promise<ThreadSummaryResource>;
 /**
  * 批次 id 来自对话文档的 wait 字段。本接口是幂等的：重复提交同一批次不会改变已经生效的决定，也不会报错。批次不属于该对话时返回 404。
  * @summary 批准或拒绝一批工具调用
  */
-export declare const decideApproval: (thread: string, batch: string, decideRequestBody: DecideRequestBody) => Promise<void>;
+export declare const decideApproval: (thread: string, batch: string, decideRequestBody: DecideRequestBody, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 首屏只给对话最新的那一段，再往上的内容用本接口按需取回，一次一段。before 用文档里的 earlier.before，响应里的 earlier 是再往上那一段的游标，为 null 表示已经到顶。返回的条目和文档里的 items 是同一种形状，顺序也一样（由旧到新），直接接在现有内容前面即可。
  * @summary 取回更早的对话内容
  */
-export declare const listEarlierItems: (thread: string, params: ListEarlierItemsParams) => Promise<EarlierResponseBody>;
+export declare const listEarlierItems: (thread: string, params: ListEarlierItemsParams, options?: SecondParameter<typeof request<EarlierResponseBody>>) => Promise<EarlierResponseBody>;
 /**
  * 对没有正在执行的 turn 的对话调用同样返回 204，不视为错误——用户点击停止与 turn 自然结束之间存在竞争，两种结果一致。项目处于停服或清理状态时本接口仍然可用。
  * @summary 中断正在执行的 turn
  */
-export declare const interruptThread: (thread: string) => Promise<void>;
+export declare const interruptThread: (thread: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 立即返回 turnId，不等待执行完成——一次 turn 可能持续数十分钟。执行进度通过对话文档中 stream 指向的实时流获取，不在本响应里。
  * @summary 发送消息并触发一次 turn
  */
-export declare const sendMessage: (thread: string, sendMessageRequestBody: SendMessageRequestBody) => Promise<TurnIDResponseBody>;
+export declare const sendMessage: (thread: string, sendMessageRequestBody: SendMessageRequestBody, options?: SecondParameter<typeof request<TurnIDResponseBody>>) => Promise<TurnIDResponseBody>;
 /**
  * 问题 id 来自对话文档的 wait 字段。已被回答过的问题同样返回 204——可能是另一个页面提交在先，也可能是自动应答窗口已到期，两种情况下 turn 都已带着答案继续执行。
  * @summary 回答助手提出的问题
  */
-export declare const answerQuestion: (thread: string, item: string, answerRequestBody: AnswerRequestBody) => Promise<void>;
+export declare const answerQuestion: (thread: string, item: string, answerRequestBody: AnswerRequestBody, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 标记对话已读
  */
-export declare const markThreadRead: (thread: string) => Promise<void>;
+export declare const markThreadRead: (thread: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 撤回 ordinal 及其之后的全部条目。被撤回的条目仍留在逐字稿中并标记 reverted，序号不会重排。返回实际撤回的条目数。
  * @summary 从指定位置起撤回
  */
-export declare const revertThread: (thread: string, revertRequestBody: RevertRequestBody) => Promise<RevertedCountResponseBody>;
+export declare const revertThread: (thread: string, revertRequestBody: RevertRequestBody, options?: SecondParameter<typeof request<RevertedCountResponseBody>>) => Promise<RevertedCountResponseBody>;
 /**
  * 轮询本接口直到状态变为成功或失败。状态提示需要验证码时，调用补交验证码接口。
  * @summary 查询扫码登录状态
  */
-export declare const getWeixinLogin: (login: string) => Promise<LoginResource>;
+export declare const getWeixinLogin: (login: string, options?: SecondParameter<typeof request<LoginResource>>) => Promise<LoginResource>;
 /**
  * 微信在扫码后要求短信或设备验证码时使用。验证码由登录发起人在自己手机上获取。
  * @summary 补交登录验证码
  */
-export declare const submitWeixinVerifyCode: (login: string, verifyCodeRequestBody: VerifyCodeRequestBody) => Promise<LoginResource>;
+export declare const submitWeixinVerifyCode: (login: string, verifyCodeRequestBody: VerifyCodeRequestBody, options?: SecondParameter<typeof request<LoginResource>>) => Promise<LoginResource>;
 export type UploadAttachmentResult = NonNullable<Awaited<ReturnType<typeof uploadAttachment>>>;
 export type DownloadAttachmentResult = NonNullable<Awaited<ReturnType<typeof downloadAttachment>>>;
 export type ListBindingsResult = NonNullable<Awaited<ReturnType<typeof listBindings>>>;
@@ -202,3 +204,4 @@ export type MarkThreadReadResult = NonNullable<Awaited<ReturnType<typeof markThr
 export type RevertThreadResult = NonNullable<Awaited<ReturnType<typeof revertThread>>>;
 export type GetWeixinLoginResult = NonNullable<Awaited<ReturnType<typeof getWeixinLogin>>>;
 export type SubmitWeixinVerifyCodeResult = NonNullable<Awaited<ReturnType<typeof submitWeixinVerifyCode>>>;
+export {};

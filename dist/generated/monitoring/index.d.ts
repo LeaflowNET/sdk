@@ -23,93 +23,95 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AcknowledgeIncidentRequestBody, AddCommentRequestBody, AssignIncidentRequestBody, CloseIncidentRequestBody, CursorPageIncidentActivityResource, EnableMonitoringRequestBody, EnrollmentResource, GetServerMetricParams, GetSliReportParams, IncidentActivityResource, IncidentResource, ItemListResponseBody, LengthAwarePageIncidentResource, LengthAwarePageServerResource, ListIncidentTimelineParams, ListIncidentsParams, ListProjectTopItemsParams, ListServerItemsParams, ListServersParams, ListWebChecksParams, MaintenanceWindowListResponseBody, MaintenanceWindowResource, MetricResponseBody, ProjectOverviewResource, PutMaintenanceWindowRequestBody, PutSLORequestBody, PutWebCheckRequestBody, SLIReportResponseBody, SLOResource, ServerEnrollmentResponseBody, ServerResource, ServerResourcesResource, SetFollowingRequestBody, SnapshotResource, TopItemListResponseBody, UpdateServerRequestBody, WebCheckListResponseBody, WebCheckResource } from './models/index.js';
+import { request } from '../../http.js';
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 /**
 * `incident_status` 表示监控系统是否判定已恢复，`closed` 表示是否有人完成了处理。两者相互独立，可分别筛选。
 * @summary 列出告警
 */
-export declare const listIncidents: (params?: ListIncidentsParams) => Promise<LengthAwarePageIncidentResource>;
+export declare const listIncidents: (params?: ListIncidentsParams, options?: SecondParameter<typeof request<LengthAwarePageIncidentResource>>) => Promise<LengthAwarePageIncidentResource>;
 /**
  * @summary 查一条告警
  */
-export declare const getIncident: (incidentId: string) => Promise<IncidentResource>;
+export declare const getIncident: (incidentId: string, options?: SecondParameter<typeof request<IncidentResource>>) => Promise<IncidentResource>;
 /**
  * 同时会在监控系统中标记为已确认，便于其他渠道也能看到该告警已有人处理。
  * @summary 确认这条告警
  */
-export declare const acknowledgeIncident: (incidentId: string, acknowledgeIncidentRequestBody: AcknowledgeIncidentRequestBody) => Promise<IncidentResource>;
+export declare const acknowledgeIncident: (incidentId: string, acknowledgeIncidentRequestBody: AcknowledgeIncidentRequestBody, options?: SecondParameter<typeof request<IncidentResource>>) => Promise<IncidentResource>;
 /**
  * `assignee_user_id` 留空即取消指派。
 
 **这里不校验被指派的人在不在这个项目里**——那要问 IAM，而这个服务的准入还没接。
  * @summary 把这条告警交给谁，或者收回来
  */
-export declare const assignIncident: (incidentId: string, assignIncidentRequestBody: AssignIncidentRequestBody) => Promise<IncidentResource>;
+export declare const assignIncident: (incidentId: string, assignIncidentRequestBody: AssignIncidentRequestBody, options?: SecondParameter<typeof request<IncidentResource>>) => Promise<IncidentResource>;
 /**
  * 了结的是**平台上的处理流程**，不是告警本身的状态：尚未恢复的告警也可以按「已接受的风险」了结，它在监控系统中仍为未恢复。
  * @summary 了结这条告警
  */
-export declare const closeIncident: (incidentId: string, closeIncidentRequestBody: CloseIncidentRequestBody) => Promise<IncidentResource>;
+export declare const closeIncident: (incidentId: string, closeIncidentRequestBody: CloseIncidentRequestBody, options?: SecondParameter<typeof request<IncidentResource>>) => Promise<IncidentResource>;
 /**
  * @summary 在时间线上写一条备注
  */
-export declare const addIncidentComment: (incidentId: string, addCommentRequestBody: AddCommentRequestBody) => Promise<IncidentActivityResource>;
+export declare const addIncidentComment: (incidentId: string, addCommentRequestBody: AddCommentRequestBody, options?: SecondParameter<typeof request<IncidentActivityResource>>) => Promise<IncidentActivityResource>;
 /**
  * 关注的是**自己**：操作者就是被加进关注列表的那个人。
  * @summary 关注这条告警，或者取消关注
  */
-export declare const setIncidentFollowing: (incidentId: string, setFollowingRequestBody: SetFollowingRequestBody) => Promise<IncidentResource>;
+export declare const setIncidentFollowing: (incidentId: string, setFollowingRequestBody: SetFollowingRequestBody, options?: SecondParameter<typeof request<IncidentResource>>) => Promise<IncidentResource>;
 /**
  * @summary 重新打开一条已经了结的告警
  */
-export declare const reopenIncident: (incidentId: string) => Promise<IncidentResource>;
+export declare const reopenIncident: (incidentId: string, options?: SecondParameter<typeof request<IncidentResource>>) => Promise<IncidentResource>;
 /**
  * 游标翻页而不是偏移量：时间线是只增的，用偏移量翻页会在新记录写入时漏行和重行。
  * @summary 列出这条告警的时间线
  */
-export declare const listIncidentTimeline: (incidentId: string, params?: ListIncidentTimelineParams) => Promise<CursorPageIncidentActivityResource>;
+export declare const listIncidentTimeline: (incidentId: string, params?: ListIncidentTimelineParams, options?: SecondParameter<typeof request<CursorPageIncidentActivityResource>>) => Promise<CursorPageIncidentActivityResource>;
 /**
  * @summary 列出维护窗口
  */
-export declare const listMaintenanceWindows: () => Promise<MaintenanceWindowListResponseBody>;
+export declare const listMaintenanceWindows: (options?: SecondParameter<typeof request<MaintenanceWindowListResponseBody>>) => Promise<MaintenanceWindowListResponseBody>;
 /**
  * 立刻恢复告警，哪怕窗口还没到期。
  * @summary 撤掉一个维护窗口
  */
-export declare const deleteMaintenanceWindow: (windowId: string) => Promise<void>;
+export declare const deleteMaintenanceWindow: (windowId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查一个维护窗口
  */
-export declare const getMaintenanceWindow: (windowId: string) => Promise<MaintenanceWindowResource>;
+export declare const getMaintenanceWindow: (windowId: string, options?: SecondParameter<typeof request<MaintenanceWindowResource>>) => Promise<MaintenanceWindowResource>;
 /**
  * **创建即覆盖**：延长一个正在进行的窗口就是用同一个 id 再调一次。
 
 窗口期内这些机器的问题不告警，也不扣 SLA 的可用率。`server_ids` 留空表示整个项目，包括窗口开着的时候新接进来的机器。
  * @summary 开一个维护窗口，或者按同一个 id 覆盖它
  */
-export declare const putMaintenanceWindow: (windowId: string, putMaintenanceWindowRequestBody: PutMaintenanceWindowRequestBody) => Promise<MaintenanceWindowResource>;
+export declare const putMaintenanceWindow: (windowId: string, putMaintenanceWindowRequestBody: PutMaintenanceWindowRequestBody, options?: SecondParameter<typeof request<MaintenanceWindowResource>>) => Promise<MaintenanceWindowResource>;
 /**
  * 项目下还没有任何机器时返回各项均为零的总览，而不是 404——空项目是一个正常状态。
  * @summary 项目总览
  */
-export declare const getProjectOverview: () => Promise<ProjectOverviewResource>;
+export declare const getProjectOverview: (options?: SecondParameter<typeof request<ProjectOverviewResource>>) => Promise<ProjectOverviewResource>;
 /**
  * @summary 列出项目里的机器
  */
-export declare const listServers: (params?: ListServersParams) => Promise<LengthAwarePageServerResource>;
+export declare const listServers: (params?: ListServersParams, options?: SecondParameter<typeof request<LengthAwarePageServerResource>>) => Promise<LengthAwarePageServerResource>;
 /**
  * **不可逆**：监控主机、历史数据和这台机器名下的告警会一并删除。若只是想暂时停止采集，改用 /disable。
  * @summary 删掉这台机器
  */
-export declare const deleteServer: (serverId: string) => Promise<void>;
+export declare const deleteServer: (serverId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查一台机器的接入情况
  */
-export declare const getServer: (serverId: string) => Promise<ServerResource>;
+export declare const getServer: (serverId: string, options?: SecondParameter<typeof request<ServerResource>>) => Promise<ServerResource>;
 /**
  * 只更新请求体中出现的字段。`address` 与 `address_kind` 必须一并提供：只改其中一个会得到互相矛盾的接入配置，该错误不会被报出，表现为 agent 连不上。
  * @summary 改一台机器的接入参数
  */
-export declare const updateServer: (serverId: string, updateServerRequestBody: UpdateServerRequestBody) => Promise<ServerResource>;
+export declare const updateServer: (serverId: string, updateServerRequestBody: UpdateServerRequestBody, options?: SecondParameter<typeof request<ServerResource>>) => Promise<ServerResource>;
 /**
  * **同一个 server id 重复调用是幂等的**：参数一致时返回已接入的那台，不会重复创建监控主机，因此接入失败可以安全重试。
 
@@ -118,81 +120,81 @@ export declare const updateServer: (serverId: string, updateServerRequestBody: U
 响应中的 `tls_psk` **只返回这一次**，请及时保存；遗失后需要轮换。
  * @summary 把一台机器接入监控
  */
-export declare const enableServerMonitoring: (serverId: string, enableMonitoringRequestBody: EnableMonitoringRequestBody) => Promise<ServerEnrollmentResponseBody>;
+export declare const enableServerMonitoring: (serverId: string, enableMonitoringRequestBody: EnableMonitoringRequestBody, options?: SecondParameter<typeof request<ServerEnrollmentResponseBody>>) => Promise<ServerEnrollmentResponseBody>;
 /**
  * 可逆操作：监控主机保留，仅停止采集，历史数据不受影响。重新接入即可恢复采集。如需连同历史数据一并删除，改用 DELETE。
  * @summary 停止监控这台机器
  */
-export declare const disableServerMonitoring: (serverId: string) => Promise<void>;
+export declare const disableServerMonitoring: (serverId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 原样返回采集到的监控项，不做筛选或重命名。哪些属于重要指标，由调用方依据监控项自带的标签自行判断。
  * @summary 列出一台机器的监控项
  */
-export declare const listServerItems: (serverId: string, params?: ListServerItemsParams) => Promise<ItemListResponseBody>;
+export declare const listServerItems: (serverId: string, params?: ListServerItemsParams, options?: SecondParameter<typeof request<ItemListResponseBody>>) => Promise<ItemListResponseBody>;
 /**
  * `item_key` 是**前缀匹配**：按分区、按网卡发现出来的监控项 key 带参数（`vfs.fs.size[/var,pused]`），所以 `vfs.fs.size` 这一个请求就能画出每个挂载点一条线。
  * @summary 取一个监控项的时间序列
  */
-export declare const getServerMetric: (serverId: string, params?: GetServerMetricParams) => Promise<MetricResponseBody>;
+export declare const getServerMetric: (serverId: string, params?: GetServerMetricParams, options?: SecondParameter<typeof request<MetricResponseBody>>) => Promise<MetricResponseBody>;
 /**
  * 换完要同步改 agent 侧的配置，否则那台机器立刻失联。新密钥同样**只在这个响应里明文出现一次**。
  * @summary 换一把 agent 的 PSK
  */
-export declare const rotateAgentPsk: (serverId: string) => Promise<EnrollmentResource>;
+export declare const rotateAgentPsk: (serverId: string, options?: SecondParameter<typeof request<EnrollmentResource>>) => Promise<EnrollmentResource>;
 /**
  * @summary 一台机器的硬件与接口
  */
-export declare const getServerResources: (serverId: string) => Promise<ServerResourcesResource>;
+export declare const getServerResources: (serverId: string, options?: SecondParameter<typeof request<ServerResourcesResource>>) => Promise<ServerResourcesResource>;
 /**
  * @summary 一台机器此刻的状态
  */
-export declare const getServerSnapshot: (serverId: string) => Promise<SnapshotResource>;
+export declare const getServerSnapshot: (serverId: string, options?: SecondParameter<typeof request<SnapshotResource>>) => Promise<SnapshotResource>;
 /**
  * 同时删除监控系统中对应的检查任务和触发器，不会遗留永远无法恢复的告警。
  * @summary 删掉一个网页检查
  */
-export declare const deleteWebCheck: (serverId: string, checkId: string) => Promise<void>;
+export declare const deleteWebCheck: (serverId: string, checkId: string, options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * @summary 查一个网页检查
  */
-export declare const getWebCheck: (serverId: string, checkId: string) => Promise<WebCheckResource>;
+export declare const getWebCheck: (serverId: string, checkId: string, options?: SecondParameter<typeof request<WebCheckResource>>) => Promise<WebCheckResource>;
 /**
  * **创建即覆盖**：修改一个检查即用同一个 id 再次调用本接口，无需先判断它是否已存在。
  * @summary 建一个网页检查，或者按同一个 id 覆盖它
  */
-export declare const putWebCheck: (serverId: string, checkId: string, putWebCheckRequestBody: PutWebCheckRequestBody) => Promise<WebCheckResource>;
+export declare const putWebCheck: (serverId: string, checkId: string, putWebCheckRequestBody: PutWebCheckRequestBody, options?: SecondParameter<typeof request<WebCheckResource>>) => Promise<WebCheckResource>;
 /**
  * SLI 是测出来的数，SLO 是定下来的目标——这里返回的是前者。
 
 `server_id` 为空的那一行是项目整体。
  * @summary 查实测的达成情况
  */
-export declare const getSliReport: (params?: GetSliReportParams) => Promise<SLIReportResponseBody>;
+export declare const getSliReport: (params?: GetSliReportParams, options?: SecondParameter<typeof request<SLIReportResponseBody>>) => Promise<SLIReportResponseBody>;
 /**
  * 同时移除监控系统中对应的服务树，此后不再统计可用率。
  * @summary 撤掉这个项目的可用率目标
  */
-export declare const deleteSlo: () => Promise<void>;
+export declare const deleteSlo: (options?: SecondParameter<typeof request<void>>) => Promise<void>;
 /**
  * 没定过就是 404，而不是一份默认目标：没承诺过和承诺了 99.9% 是两回事。
  * @summary 查这个项目的可用率目标
  */
-export declare const getSlo: () => Promise<SLOResource>;
+export declare const getSlo: (options?: SecondParameter<typeof request<SLOResource>>) => Promise<SLOResource>;
 /**
  * 一个项目一条 SLO，**创建即覆盖**。
 
 `min_severity` 必须显式选：它决定什么算「不可用」，是这条承诺的一半内容。
  * @summary 定下这个项目的可用率目标，或者改它
  */
-export declare const putSlo: (putSLORequestBody: PutSLORequestBody) => Promise<SLOResource>;
+export declare const putSlo: (putSLORequestBody: PutSLORequestBody, options?: SecondParameter<typeof request<SLOResource>>) => Promise<SLOResource>;
 /**
  * @summary 某个指标最高的前几台
  */
-export declare const listProjectTopItems: (params: ListProjectTopItemsParams) => Promise<TopItemListResponseBody>;
+export declare const listProjectTopItems: (params: ListProjectTopItemsParams, options?: SecondParameter<typeof request<TopItemListResponseBody>>) => Promise<TopItemListResponseBody>;
 /**
  * @summary 列出网页检查
  */
-export declare const listWebChecks: (params?: ListWebChecksParams) => Promise<WebCheckListResponseBody>;
+export declare const listWebChecks: (params?: ListWebChecksParams, options?: SecondParameter<typeof request<WebCheckListResponseBody>>) => Promise<WebCheckListResponseBody>;
 export type ListIncidentsResult = NonNullable<Awaited<ReturnType<typeof listIncidents>>>;
 export type GetIncidentResult = NonNullable<Awaited<ReturnType<typeof getIncident>>>;
 export type AcknowledgeIncidentResult = NonNullable<Awaited<ReturnType<typeof acknowledgeIncident>>>;
@@ -227,3 +229,4 @@ export type GetSloResult = NonNullable<Awaited<ReturnType<typeof getSlo>>>;
 export type PutSloResult = NonNullable<Awaited<ReturnType<typeof putSlo>>>;
 export type ListProjectTopItemsResult = NonNullable<Awaited<ReturnType<typeof listProjectTopItems>>>;
 export type ListWebChecksResult = NonNullable<Awaited<ReturnType<typeof listWebChecks>>>;
+export {};
