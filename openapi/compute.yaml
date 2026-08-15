@@ -1591,7 +1591,7 @@ info:
 
     **路径和请求头上都没有 `project_id`**：当前项目由令牌决定。
 
-    鉴权在网关完成，失败的请求不会到达这些接口。按错误码区分处理方式：`PROJECT_TOKEN_MISSING` 表示没带令牌；`PROJECT_TOKEN_EXPIRED` 表示令牌过期，用账号令牌重新换取即可，无需重新登录；`PROJECT_TOKEN_INVALID` 表示令牌验不过；`NOT_A_MEMBER` 表示当前账号不是该项目成员；`USER_SUSPENDED` / `USER_BANNED` 表示账号本身不能操作。
+    鉴权在网关完成，失败的请求不会到达这些接口。按错误码区分处理方式：`TOKEN_MISSING` 表示没带令牌；`TOKEN_EXPIRED` 表示令牌过期，用账号令牌重新换取即可，无需重新登录；`TOKEN_INVALID` 表示令牌验不过；`NOT_A_MEMBER` 表示当前账号不是该项目成员；`USER_SUSPENDED` / `USER_BANNED` 表示账号本身不能操作。
 
     ## 通用约定
 
