@@ -220,6 +220,14 @@ components:
           description: OpenSSH 格式的公钥。类型和指纹从它算出来，都不可改
           maxLength: 16384
           type: string
+        purposes:
+          description: 用途标签，比如 ci、bastion
+          items:
+            type: string
+          maxItems: 16
+          type:
+            - array
+            - "null"
       required:
         - name
         - public_key
@@ -724,6 +732,9 @@ components:
           type: string
         fingerprint:
           type: string
+        has_private_key:
+          description: 平台生成并保管的那把。它的私钥不对外提供
+          type: boolean
         id:
           format: uuid
           type: string
@@ -736,6 +747,13 @@ components:
           type: string
         public_key:
           type: string
+        purposes:
+          description: 用途标签。平台自己生成的那把是 platform
+          items:
+            type: string
+          type:
+            - array
+            - "null"
         status:
           enum:
             - ACTIVE
@@ -749,6 +767,8 @@ components:
         - key_type
         - status
         - created_at
+        - purposes
+        - has_private_key
       type: object
     SetMemberRolesRequestBody:
       additionalProperties: false
@@ -1910,6 +1930,14 @@ paths:
             enum:
               - ACTIVE
               - REVOKED
+            type: string
+        - description: 只列挂着这个用途的钥匙。平台自己生成的那把是 platform
+          explode: false
+          in: query
+          name: purpose
+          schema:
+            description: 只列挂着这个用途的钥匙。平台自己生成的那把是 platform
+            maxLength: 64
             type: string
       responses:
         "200":
