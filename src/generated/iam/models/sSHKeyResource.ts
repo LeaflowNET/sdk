@@ -19,14 +19,21 @@
 `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
  * OpenAPI spec version: 1.0.0
  */
+import type { SSHKeyResourcePurposes } from './sSHKeyResourcePurposes.js';
 import type { SSHKeyResourceStatus } from './sSHKeyResourceStatus.js';
 
 export interface SSHKeyResource {
   created_at: string;
   fingerprint: string;
+  /** 平台生成并保管的那把。它的私钥不对外提供 */
+  has_private_key: boolean;
   id: string;
   key_type: string;
   name: string;
+  /** 归属人；不给表示这把钥匙归项目本身 */
+  owner_user_id?: string;
   public_key: string;
+  /** 用途标签。平台自己生成的那把是 platform */
+  purposes: SSHKeyResourcePurposes;
   status: SSHKeyResourceStatus;
 }

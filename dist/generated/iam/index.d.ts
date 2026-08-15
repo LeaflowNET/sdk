@@ -19,7 +19,7 @@
 `GET /projects/{projectId}/membership` 返回的是这个人在项目里持有哪些角色和权限，不返回「能否执行某个操作」的结论——那需要一份「哪个操作要哪条权限」的对照表，而它由各个服务分别声明。
  * OpenAPI spec version: 1.0.0
  */
-import type { AcceptConsentsRequestBody, AcceptInvitationByTokenRequestBody, AcceptedInvitationResponseBody, AccountResource, AgreementListResponseBody, ConsentListResponseBody, CreateProjectRequestBody, CreateProjectSSHKeyRequestBody, CreateRoleRequestBody, CreateUserSSHKeyRequestBody, IdentityVerificationResource, InvitationListResponseBody, IssueInvitationRequestBody, IssuedInvitationResponseBody, ListMembersParams, ListMyInvitationsParams, ListMySshKeysParams, ListProjectInvitationsParams, ListProjectSshKeysParams, ListProjectsParams, MemberListResponseBody, MemberResource, MembershipResource, OwnershipTransferResponseBody, PermissionListResponseBody, ProjectAccessListResponseBody, ProjectAccessResource, ProjectTokenResponseBody, RegisterRequestBody, RenameProjectSSHKeyRequestBody, RenameUserSSHKeyRequestBody, RoleListResponseBody, RoleResource, SSHKeyListResponseBody, SSHKeyResource, SetMemberRolesRequestBody, SubmitIdentityVerificationRequestBody, TransferOwnershipRequestBody, UpdateProjectRequestBody, UpdateRoleRequestBody } from './models/index.js';
+import type { AcceptConsentsRequestBody, AcceptInvitationByTokenRequestBody, AcceptedInvitationResponseBody, AccountResource, AgreementListResponseBody, ConsentListResponseBody, CreateProjectRequestBody, CreateRoleRequestBody, CreateSSHKeyRequestBody, IdentityVerificationResource, IssueInvitationRequestBody, IssuedInvitationResponseBody, LengthAwarePageInvitationResource, LengthAwarePageMemberResource, LengthAwarePageProjectAccessResource, LengthAwarePageSSHKeyResource, ListMembersParams, ListMyInvitationsParams, ListProjectInvitationsParams, ListProjectsParams, ListSshKeysParams, MemberResource, MembershipResource, OwnershipTransferResponseBody, PermissionListResponseBody, ProjectAccessResource, ProjectTokenResponseBody, RegisterRequestBody, RenameSSHKeyRequestBody, RoleListResponseBody, RoleResource, SSHKeyResource, SetMemberRolesRequestBody, SubmitIdentityVerificationRequestBody, TransferOwnershipRequestBody, UpdateProjectRequestBody, UpdateRoleRequestBody } from './models/index.js';
 /**
 * 注册页显示它，用户同意之后把每一项的 `type` 和 `version` 原样回传给 `POST /api/v1/register`。
 
@@ -58,7 +58,7 @@ export declare const submitIdentityVerification: (submitIdentityVerificationRequ
  * 按当前账号的邮箱查，因为要约是寄给一个地址的——被邀请的人当时可能还没注册。
  * @summary 列出寄给我的要约
  */
-export declare const listMyInvitations: (params?: ListMyInvitationsParams) => Promise<InvitationListResponseBody>;
+export declare const listMyInvitations: (params?: ListMyInvitationsParams) => Promise<LengthAwarePageInvitationResource>;
 /**
  * token 对不上和这份要约已经不作数了是同一个回答：持有者对这两种情况能做的事完全一样，分开报会把这个接口变成一个可以拿来试 token 的探针。
  * @summary 顺着邀请链接接受
@@ -70,28 +70,6 @@ export declare const acceptInvitationByToken: (acceptInvitationByTokenRequestBod
  */
 export declare const acceptInvitation: (invitationId: string) => Promise<AcceptedInvitationResponseBody>;
 /**
- * @summary 列出我的公钥
- */
-export declare const listMySshKeys: (params?: ListMySshKeysParams) => Promise<SSHKeyListResponseBody>;
-/**
- * @summary 添加一把我的公钥
- */
-export declare const createMySshKey: (createUserSSHKeyRequestBody: CreateUserSSHKeyRequestBody) => Promise<SSHKeyResource>;
-/**
- * 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
- * @summary 吊销我的一把公钥
- */
-export declare const revokeMySshKey: (keyId: string) => Promise<SSHKeyResource>;
-/**
- * @summary 查看我的一把公钥
- */
-export declare const getMySshKey: (keyId: string) => Promise<SSHKeyResource>;
-/**
- * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
- * @summary 给我的公钥改名
- */
-export declare const renameMySshKey: (keyId: string, renameUserSSHKeyRequestBody: RenameUserSSHKeyRequestBody) => Promise<SSHKeyResource>;
-/**
  * **只有 IAM 这一份。** 别的服务的操作不在这里——权限目录是各服务各自声明、由 各个服务自己声明的，IAM 认识它们就等于要跟着每个下游一起发版。
  * @summary 列出 IAM 自己声明的权限
  */
@@ -100,7 +78,7 @@ export declare const listPermissions: () => Promise<PermissionListResponseBody>;
  * 默认不含已删除的项目——那些是已经不存在了的东西，要看必须明确用 status=DELETED 点名。
  * @summary 列出我参与的项目
  */
-export declare const listProjects: (params?: ListProjectsParams) => Promise<ProjectAccessListResponseBody>;
+export declare const listProjects: (params?: ListProjectsParams) => Promise<LengthAwarePageProjectAccessResource>;
 /**
  * 建的人就是所有者。项目会连带预置 OWNER、ADMIN 两个内置角色和一个空权限的 member 角色。
  * @summary 建一个项目
@@ -124,7 +102,7 @@ export declare const updateProject: (projectId: string, updateProjectRequestBody
  * 在项目里就看得到，和成员列表同一条规则：谁被请了也是「这个项目有谁」的一部分。
  * @summary 列出这个项目还在等的要约
  */
-export declare const listProjectInvitations: (projectId: string, params?: ListProjectInvitationsParams) => Promise<InvitationListResponseBody>;
+export declare const listProjectInvitations: (projectId: string, params?: ListProjectInvitationsParams) => Promise<LengthAwarePageInvitationResource>;
 /**
  * 要约站 14 天。有上限是因为里面那些角色是按发出那一刻的项目校验的，一份活得比它所依据的安排还久的要约会授出现在没人打算授的权限。
  * @summary 发出一份邀请
@@ -137,7 +115,7 @@ export declare const revokeInvitation: (projectId: string, invitationId: string)
 /**
  * @summary 列出项目成员
  */
-export declare const listMembers: (projectId: string, params?: ListMembersParams) => Promise<MemberListResponseBody>;
+export declare const listMembers: (projectId: string, params?: ListMembersParams) => Promise<LengthAwarePageMemberResource>;
 /**
  * 移除别人要 iam:members.manage；退出只要求自己在这个项目里——任何人都可能被拉进一个项目，那么任何人就得能出去。所有者两条路都不行，先转移所有权。
  * @summary 移除成员，或者自己退出
@@ -176,25 +154,29 @@ export declare const getRole: (projectId: string, code: string) => Promise<RoleR
  */
 export declare const updateRole: (projectId: string, code: string, updateRoleRequestBody: UpdateRoleRequestBody) => Promise<RoleResource>;
 /**
- * @summary 列出项目的公钥
+ * 归成员的和归项目的都在里面，靠每一条上的 owner_user_id 区分。
+ * @summary 列出这个项目的公钥
  */
-export declare const listProjectSshKeys: (projectId: string, params?: ListProjectSshKeysParams) => Promise<SSHKeyListResponseBody>;
+export declare const listSshKeys: (projectId: string, params?: ListSshKeysParams) => Promise<LengthAwarePageSSHKeyResource>;
 /**
- * @summary 给项目添加一把公钥
+ * owner=me 是自己的，是成员就能加；owner=project 是项目公用的，要 iam:ssh_keys.manage —— 它会进这个项目之后开出来的每一台机器。
+ * @summary 添加一把公钥
  */
-export declare const createProjectSshKey: (projectId: string, createProjectSSHKeyRequestBody: CreateProjectSSHKeyRequestBody) => Promise<SSHKeyResource>;
+export declare const createSshKey: (projectId: string, createSSHKeyRequestBody: CreateSSHKeyRequestBody) => Promise<SSHKeyResource>;
 /**
- * @summary 吊销项目的一把公钥
+ * 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
+ * @summary 吊销一把公钥
  */
-export declare const revokeProjectSshKey: (projectId: string, keyId: string) => Promise<SSHKeyResource>;
+export declare const revokeSshKey: (projectId: string, keyId: string) => Promise<SSHKeyResource>;
 /**
- * @summary 查看项目的一把公钥
+ * @summary 查看一把公钥
  */
-export declare const getProjectSshKey: (projectId: string, keyId: string) => Promise<SSHKeyResource>;
+export declare const getSshKey: (projectId: string, keyId: string) => Promise<SSHKeyResource>;
 /**
- * @summary 给项目的公钥改名
+ * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
+ * @summary 给公钥改名
  */
-export declare const renameProjectSshKey: (projectId: string, keyId: string, renameProjectSSHKeyRequestBody: RenameProjectSSHKeyRequestBody) => Promise<SSHKeyResource>;
+export declare const renameSshKey: (projectId: string, keyId: string, renameSSHKeyRequestBody: RenameSSHKeyRequestBody) => Promise<SSHKeyResource>;
 /**
  * 选定一个项目后，用账号令牌换取该项目的令牌。
 
@@ -229,11 +211,6 @@ export type SubmitIdentityVerificationResult = NonNullable<Awaited<ReturnType<ty
 export type ListMyInvitationsResult = NonNullable<Awaited<ReturnType<typeof listMyInvitations>>>;
 export type AcceptInvitationByTokenResult = NonNullable<Awaited<ReturnType<typeof acceptInvitationByToken>>>;
 export type AcceptInvitationResult = NonNullable<Awaited<ReturnType<typeof acceptInvitation>>>;
-export type ListMySshKeysResult = NonNullable<Awaited<ReturnType<typeof listMySshKeys>>>;
-export type CreateMySshKeyResult = NonNullable<Awaited<ReturnType<typeof createMySshKey>>>;
-export type RevokeMySshKeyResult = NonNullable<Awaited<ReturnType<typeof revokeMySshKey>>>;
-export type GetMySshKeyResult = NonNullable<Awaited<ReturnType<typeof getMySshKey>>>;
-export type RenameMySshKeyResult = NonNullable<Awaited<ReturnType<typeof renameMySshKey>>>;
 export type ListPermissionsResult = NonNullable<Awaited<ReturnType<typeof listPermissions>>>;
 export type ListProjectsResult = NonNullable<Awaited<ReturnType<typeof listProjects>>>;
 export type CreateProjectResult = NonNullable<Awaited<ReturnType<typeof createProject>>>;
@@ -252,11 +229,11 @@ export type CreateRoleResult = NonNullable<Awaited<ReturnType<typeof createRole>
 export type DeleteRoleResult = NonNullable<Awaited<ReturnType<typeof deleteRole>>>;
 export type GetRoleResult = NonNullable<Awaited<ReturnType<typeof getRole>>>;
 export type UpdateRoleResult = NonNullable<Awaited<ReturnType<typeof updateRole>>>;
-export type ListProjectSshKeysResult = NonNullable<Awaited<ReturnType<typeof listProjectSshKeys>>>;
-export type CreateProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof createProjectSshKey>>>;
-export type RevokeProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof revokeProjectSshKey>>>;
-export type GetProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof getProjectSshKey>>>;
-export type RenameProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof renameProjectSshKey>>>;
+export type ListSshKeysResult = NonNullable<Awaited<ReturnType<typeof listSshKeys>>>;
+export type CreateSshKeyResult = NonNullable<Awaited<ReturnType<typeof createSshKey>>>;
+export type RevokeSshKeyResult = NonNullable<Awaited<ReturnType<typeof revokeSshKey>>>;
+export type GetSshKeyResult = NonNullable<Awaited<ReturnType<typeof getSshKey>>>;
+export type RenameSshKeyResult = NonNullable<Awaited<ReturnType<typeof renameSshKey>>>;
 export type ExchangeProjectTokenResult = NonNullable<Awaited<ReturnType<typeof exchangeProjectToken>>>;
 export type TransferProjectOwnershipResult = NonNullable<Awaited<ReturnType<typeof transferProjectOwnership>>>;
 export type RegisterResult = NonNullable<Awaited<ReturnType<typeof register>>>;

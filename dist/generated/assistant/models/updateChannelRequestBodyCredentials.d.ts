@@ -28,6 +28,9 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
 - 三种结束事件：`done` 本次 turn 完成（附带最终状态）、`paused` 助手在等待用户处理（重新取回对话文档读 `wait`）、`stalled` 执行已中断且不会恢复，不要重连。
  * OpenAPI spec version: 1.0.0
  */
+/**
+ * 整份替换而不是逐键合并。不传表示不动
+ */
 export type UpdateChannelRequestBodyCredentials = {
     [key: string]: string;
 };

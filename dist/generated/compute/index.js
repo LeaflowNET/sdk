@@ -1,7 +1,66 @@
 import { request } from '../../http.js';
 /**
-* @summary 列出在售硬盘类型
+* @summary 列出备份
 */
+export const listBackups = (params) => {
+    return request({ url: `/api/v1/backups`, method: 'GET',
+        params
+    });
+};
+/**
+ * 备份是云硬盘在独立存储中的一份完整副本：**源云硬盘删除后仍可恢复，且可恢复到本地区的其他可用区。**快照不具备这两项能力，它与源云硬盘位于同一存储，且源云硬盘存在快照时无法删除。
+
+运行中云服务器上挂载的云硬盘、以及系统盘，均可创建备份。
+
+备份耗时取决于数据量。接口返回时尚未完成，请轮询查看接口。
+ * @summary 创建备份
+ */
+export const createBackup = (createBackupRequestBody) => {
+    return request({ url: `/api/v1/backups`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: createBackupRequestBody
+    });
+};
+/**
+ * 与源云硬盘无关，源云硬盘是否存在都不影响删除。
+ * @summary 删除备份
+ */
+export const deleteBackup = (backupId) => {
+    return request({ url: `/api/v1/backups/${backupId}`, method: 'DELETE'
+    });
+};
+/**
+ * 会实时查询备份的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
+ * @summary 查看备份
+ */
+export const getBackup = (backupId) => {
+    return request({ url: `/api/v1/backups/${backupId}`, method: 'GET'
+    });
+};
+/**
+ * @summary 重命名备份
+ */
+export const renameBackup = (backupId, renameBackupRequestBody) => {
+    return request({ url: `/api/v1/backups/${backupId}`, method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', },
+        data: renameBackupRequestBody
+    });
+};
+/**
+ * 恢复到一块**新建的**云硬盘上，源云硬盘不受影响，也不要求它仍然存在。
+
+目标硬盘类型可位于本地区的其他可用区，容量不能小于备份。恢复完成前该云硬盘不可挂载，请轮询云硬盘查看接口。
+ * @summary 由备份恢复
+ */
+export const restoreBackup = (backupId, restoreBackupRequestBody) => {
+    return request({ url: `/api/v1/backups/${backupId}/restore`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: restoreBackupRequestBody
+    });
+};
+/**
+ * @summary 列出在售硬盘类型
+ */
 export const listDiskTypes = (params) => {
     return request({ url: `/api/v1/disk-types`, method: 'GET',
         params
@@ -27,7 +86,7 @@ export const createDisk = (createDiskRequestBody) => {
     });
 };
 /**
- * 云硬盘仍处于挂载状态，或仍存在快照时，删除会被拒绝。
+ * 云硬盘处于挂载状态，或仍存在基于它创建的快照时，删除会被拒绝。
  * @summary 删除云硬盘
  */
 export const deleteDisk = (diskId) => {
@@ -35,7 +94,7 @@ export const deleteDisk = (diskId) => {
     });
 };
 /**
- * 会同步一次底层的当前状态，因此比列表接口慢但更准确。
+ * 会实时查询云硬盘的当前状态，因此比列表接口慢但更准确。
  * @summary 查看云硬盘
  */
 export const getDisk = (diskId) => {
@@ -63,6 +122,20 @@ export const resizeDisk = (diskId, resizeDiskRequestBody) => {
     });
 };
 /**
+ * 将云硬盘的内容恢复到创建该快照的时刻。**该时刻之后写入的数据全部丢失，且无法撤销。**
+
+三项限制：只能回滚到该云硬盘最新的一个快照；云硬盘必须先从云服务器上卸载；创建快照后扩容过的云硬盘不能回滚。需要回到更早的时刻，或需要保留现有云硬盘时，请改用由快照创建一块新的云硬盘。
+
+接口返回时回滚尚未完成，请轮询查看接口。
+ * @summary 回滚到快照
+ */
+export const revertDisk = (diskId, revertDiskRequestBody) => {
+    return request({ url: `/api/v1/disks/${diskId}/revert`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: revertDiskRequestBody
+    });
+};
+/**
  * @summary 列出公网 IP
  */
 export const listFloatingIps = () => {
@@ -72,7 +145,7 @@ export const listFloatingIps = () => {
 /**
  * 若该私有网络尚未连通外网，会一并为其接入外网。
 
-IPv6 不通过本接口申请：IPv6 地址由 SLAAC 下发到网卡，启用 IPv6 是私有网络上的一个开关。
+IPv6 不通过本接口申请。IPv6 地址由私有网络自动下发至云服务器，在私有网络上启用即可。
  * @summary 申领公网 IP
  */
 export const allocateFloatingIp = (allocateFloatingIPRequestBody) => {
@@ -148,7 +221,13 @@ export const listInstances = () => {
     });
 };
 /**
- * **必须提供一种登录方式**：项目上已有 SSH 公钥，或在请求中设置密码。两者都没有时请求会被拒绝，否则创建出的云服务器将无法登录。
+ * **必须在请求中设置密码**：不设置时请求会被拒绝，否则创建出的云服务器将无法登录。密码可由平台生成，此时仅在本次响应中返回一次。
+
+`count` 可一次创建多台（最多 20 台），名称自动加 `-1`、`-2` 编号，所有云服务器共用同一个密码。**响应中的 `instances` 始终是数组**，单台创建时也是。
+
+批量创建按顺序逐台进行。若中途失败（例如配额不足），**已创建的云服务器会保留**，响应中的 `failure` 给出中止原因；第一台就失败时视为整次请求失败，不会创建任何云服务器。
+
+镜像二选一：`image_id` 使用平台提供的镜像，`private_image_id` 使用自制镜像。两者都给或都不给都会被拒绝。
 
 云服务器创建在机型所属的可用区。后续要挂载的云硬盘必须位于同一可用区。
 
@@ -162,7 +241,9 @@ export const launchInstance = (launchInstanceRequestBody) => {
     });
 };
 /**
- * 系统盘随云服务器一并删除。数据盘会被卸载并保留。主网卡随云服务器一并释放。
+ * 系统盘随云服务器一并删除，**基于系统盘创建的快照也会一并删除**。数据盘会被卸载并保留，其快照与备份不受影响。主网卡随云服务器一并释放。
+
+正在制作镜像的云服务器无法释放，请等待制作完成或先删除该镜像。
  * @summary 释放云服务器
  */
 export const deleteInstance = (instanceId) => {
@@ -170,7 +251,7 @@ export const deleteInstance = (instanceId) => {
     });
 };
 /**
- * 会同步一次底层的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
+ * 会实时查询云服务器的当前状态，因此比列表接口慢但更准确。轮询创建进度请使用本接口。
  * @summary 查看云服务器
  */
 export const getInstance = (instanceId) => {
@@ -188,7 +269,11 @@ export const renameInstance = (instanceId, renameInstanceRequestBody) => {
     });
 };
 /**
- * 重启为软重启，由操作系统正常关闭后重新启动。已被平台停服的云服务器需先解除停服。
+ * 重启默认为软重启，由操作系统正常关闭后重新启动。
+
+系统已无响应时软重启不会生效，此时可设置 `force` 强制重启。强制重启不等待操作系统关闭，**未落盘的数据会丢失**。`force` 仅适用于 reboot。
+
+已被平台停服的云服务器需先解除停服。
  * @summary 开机、关机、重启
  */
 export const actOnInstance = (instanceId, actOnInstanceRequestBody) => {
@@ -198,11 +283,24 @@ export const actOnInstance = (instanceId, actOnInstanceRequestBody) => {
     });
 };
 /**
- * 返回的地址一次性使用，数分钟后失效。**请勿缓存**，每次使用前重新获取。
- * @summary 打开 VNC 控制台
+ * 在浏览器中直接操作云服务器，无需网络可达，适用于网络配置失误导致无法登录的情况。
+
+返回的地址一次性使用，数分钟后失效。**请勿缓存**，每次使用前重新获取。
+ * @summary 打开远程控制台
  */
 export const openInstanceConsole = (instanceId) => {
     return request({ url: `/api/v1/instances/${instanceId}/console`, method: 'POST'
+    });
+};
+/**
+ * 云服务器启动过程与内核输出的原始文本。无法登录或远程控制台无输出时，应首先查看本接口。其中可查看启动停止于哪一步、系统盘是否正常挂载、初始化过程是否报错。
+
+处于错误状态或已被平台停服的云服务器同样可以读取。
+ * @summary 读取串口输出
+ */
+export const getInstanceConsoleOutput = (instanceId, params) => {
+    return request({ url: `/api/v1/instances/${instanceId}/console-output`, method: 'GET',
+        params
     });
 };
 /**
@@ -248,13 +346,17 @@ export const detachInstanceFloatingIp = (instanceId, floatingIpId) => {
     });
 };
 /**
- * 创建出的镜像不会自动上架，仅归本项目所有。
- * @summary 将云服务器创建为镜像
+ * 在不重启的情况下改掉 root 的密码，云服务器必须处于运行中。
+
+**并非所有镜像都支持**：镜像列表中 `supports_password_reset` 为 false 的镜像做不到，此时只能通过重装系统设置新密码，而重装会清除系统盘上的全部数据。
+
+镜像标记为支持、但云服务器内相应组件已被卸载或停止时，本接口同样会被拒绝。
+ * @summary 重置登录密码
  */
-export const createInstanceImage = (instanceId, createInstanceImageRequestBody) => {
-    return request({ url: `/api/v1/instances/${instanceId}/image`, method: 'POST',
+export const resetInstancePassword = (instanceId, resetPasswordRequestBody) => {
+    return request({ url: `/api/v1/instances/${instanceId}/password`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createInstanceImageRequestBody
+        data: resetPasswordRequestBody
     });
 };
 /**
@@ -282,7 +384,7 @@ export const detachPort = (instanceId, portId) => {
     });
 };
 /**
- * **系统盘数据将被清除且无法恢复。** 数据盘不受影响。
+ * **系统盘数据将被清除且无法恢复。** 已挂载的数据盘不受影响。
  * @summary 重装系统
  */
 export const rebuildInstance = (instanceId, rebuildInstanceRequestBody) => {
@@ -294,7 +396,9 @@ export const rebuildInstance = (instanceId, rebuildInstanceRequestBody) => {
 /**
  * 只能变更为同一地区、同一可用区的机型，否则已挂载的云硬盘无法随之迁移。
 
-变配后需调用确认接口才算完成；未确认时原规格占用的资源不会释放。
+变配分两步：本接口下发后云服务器会在新规格上重新启动，状态变为 `resize_verifying`，此时**必须**调用确认或回滚接口。目标机型在确认前记在 `pending_instance_type_id` 上，`instance_type_id` 仍为当前生效并计费的机型。
+
+**未确认期间新旧两份规格同时占用资源。** 请在状态变为 `resize_verifying` 后尽快确认。
  * @summary 变配
  */
 export const resizeInstance = (instanceId, resizeInstanceRequestBody) => {
@@ -304,6 +408,7 @@ export const resizeInstance = (instanceId, resizeInstanceRequestBody) => {
     });
 };
 /**
+ * 释放原规格占用的资源，`pending_instance_type_id` 成为生效机型并从此按它计费。
  * @summary 确认变配
  */
 export const confirmInstanceResize = (instanceId) => {
@@ -311,10 +416,24 @@ export const confirmInstanceResize = (instanceId) => {
     });
 };
 /**
+ * 云服务器回到原规格，`pending_instance_type_id` 被丢弃，计费不受本次变配影响。
  * @summary 回滚变配
  */
 export const revertInstanceResize = (instanceId) => {
     return request({ url: `/api/v1/instances/${instanceId}/resize/revert`, method: 'POST'
+    });
+};
+/**
+ * 记录本项目内的每一次写操作：谁、在什么时候、对什么做了什么、成功还是失败。读取操作不记录。
+
+**平台代为执行的操作也在其中，但不显示具体执行人**，`by_platform` 为 true。例如欠费停机、违规封禁：需要知道机器何时被平台停止，但执行人属于平台内部信息。
+
+密码一类的字段在写入时即被替换为占位符，不会出现在 `payload` 中。
+ * @summary 列出本项目的操作记录
+ */
+export const listOperationLogs = (params) => {
+    return request({ url: `/api/v1/operation-logs`, method: 'GET',
+        params
     });
 };
 /**
@@ -340,6 +459,62 @@ export const createPort = (createPortRequestBody) => {
  */
 export const deletePort = (portId) => {
     return request({ url: `/api/v1/ports/${portId}`, method: 'DELETE'
+    });
+};
+/**
+ * @summary 列出自制镜像
+ */
+export const listPrivateImages = (params) => {
+    return request({ url: `/api/v1/private-images`, method: 'GET',
+        params
+    });
+};
+/**
+ * 依据云服务器的系统盘制作，数据盘不包含在内。制作出的镜像可用于创建云服务器或重装系统，并在源云服务器释放后继续可用。
+
+**镜像内容取自开始制作的那一刻，此后对云服务器的改动不会包含在内。**
+
+制作分两个阶段，请轮询查看接口：
+
+- `provisioning` 正在读取系统盘，通常数十秒。此阶段云服务器可以继续使用，但为保证一致性建议先关机。
+- `uploading` 已与系统盘无关，**此时即可开机，无需等待制作完成**。该阶段耗时与系统盘容量成正比，20 GB 约需 3 分钟。
+
+运行中的云服务器其文件系统可能处于写入中间状态，制作出的镜像等同于一次断电后的磁盘内容。对一致性有要求时，请在开始制作前关机，并在状态变为 `uploading` 后开机。
+
+制作期间该云服务器可以正常启停与使用，但无法释放。
+ * @summary 将云服务器制作为镜像
+ */
+export const createPrivateImage = (createPrivateImageRequestBody) => {
+    return request({ url: `/api/v1/private-images`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: createPrivateImageRequestBody
+    });
+};
+/**
+ * 仍有云服务器由该镜像创建时，删除会被拒绝：这些云服务器需要它才能重装系统。
+
+制作尚未完成的镜像也可以删除，制作会被终止。
+ * @summary 删除自制镜像
+ */
+export const deletePrivateImage = (privateImageId) => {
+    return request({ url: `/api/v1/private-images/${privateImageId}`, method: 'DELETE'
+    });
+};
+/**
+ * 轮询制作进度请使用本接口。status 为 error 时，failure 给出失败原因。
+ * @summary 查看自制镜像
+ */
+export const getPrivateImage = (privateImageId) => {
+    return request({ url: `/api/v1/private-images/${privateImageId}`, method: 'GET'
+    });
+};
+/**
+ * @summary 重命名自制镜像
+ */
+export const renamePrivateImage = (privateImageId, renamePrivateImageRequestBody) => {
+    return request({ url: `/api/v1/private-images/${privateImageId}`, method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', },
+        data: renamePrivateImageRequestBody
     });
 };
 /**
@@ -376,19 +551,13 @@ export const getPrivateNetwork = (privateNetworkId) => {
     });
 };
 /**
- * 项目中仍有已绑定的公网 IP 时会被拒绝：断开外网接入会使这些地址立即不可达。
- * @summary 断开私有网络的外网接入
+ * 仅修改显示名称。网段、路由与外网网关均不可修改。
+ * @summary 重命名私有网络
  */
-export const detachInternetGateway = (privateNetworkId) => {
-    return request({ url: `/api/v1/private-networks/${privateNetworkId}/internet-gateway`, method: 'DELETE'
-    });
-};
-/**
- * 申领公网 IP 时会自动完成此步骤，通常无需单独调用。启用 IPv6 前必须先接入外网。
- * @summary 为私有网络接入外网
- */
-export const attachInternetGateway = (privateNetworkId) => {
-    return request({ url: `/api/v1/private-networks/${privateNetworkId}/internet-gateway`, method: 'POST'
+export const renamePrivateNetwork = (privateNetworkId, renamePrivateNetworkRequestBody) => {
+    return request({ url: `/api/v1/private-networks/${privateNetworkId}`, method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', },
+        data: renamePrivateNetworkRequestBody
     });
 };
 /**
@@ -407,9 +576,9 @@ export const getPrivateNetworkIpv6 = (privateNetworkId) => {
     });
 };
 /**
- * 为该私有网络分配一个 /64 前缀。IPv6 地址由 SLAAC 下发到网卡，无需也无法单独申领。
+ * 为该私有网络分配一段 IPv6 地址。地址由私有网络自动下发至云服务器，无需也无法单独申领，也不占用公网 IPv4。
 
-前提是该私有网络已接入外网。
+该私有网络尚未接入外网时会自动接入，无需单独操作。
  * @summary 为私有网络启用 IPv6
  */
 export const enablePrivateNetworkIpv6 = (privateNetworkId) => {
@@ -549,12 +718,15 @@ export const deleteSecurityGroupRule = (securityGroupId, ruleId) => {
 /**
  * @summary 列出快照
  */
-export const listSnapshots = () => {
-    return request({ url: `/api/v1/snapshots`, method: 'GET'
+export const listSnapshots = (params) => {
+    return request({ url: `/api/v1/snapshots`, method: 'GET',
+        params
     });
 };
 /**
  * 运行中云服务器上挂载的云硬盘同样可以创建快照。快照记录的是某一时刻的块设备状态，文件系统层面可能不一致，重要数据建议先在云服务器内执行 sync。
+
+**系统盘的快照不能用于回滚该系统盘**：回滚要求先从云服务器上卸载，而系统盘不可卸载。它可用于创建一块新的数据盘。需要保留并恢复整个系统时，请使用自制镜像；需要可跨可用区、且在云硬盘删除后仍可恢复的副本时，请使用备份。
  * @summary 创建快照
  */
 export const createSnapshot = (createSnapshotRequestBody) => {
@@ -575,5 +747,14 @@ export const deleteSnapshot = (snapshotId) => {
  */
 export const getSnapshot = (snapshotId) => {
     return request({ url: `/api/v1/snapshots/${snapshotId}`, method: 'GET'
+    });
+};
+/**
+ * @summary 重命名快照
+ */
+export const renameSnapshot = (snapshotId, renameSnapshotRequestBody) => {
+    return request({ url: `/api/v1/snapshots/${snapshotId}`, method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', },
+        data: renameSnapshotRequestBody
     });
 };

@@ -28,10 +28,18 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
 - 三种结束事件：`done` 本次 turn 完成（附带最终状态）、`paused` 助手在等待用户处理（重新取回对话文档读 `wait`）、`stalled` 执行已中断且不会恢复，不要重连。
  * OpenAPI spec version: 1.0.0
  */
+import type { PlatformResourceCredentialFields } from './platformResourceCredentialFields.js';
+import type { PlatformResourceSecretSource } from './platformResourceSecretSource.js';
+import type { PlatformResourceSetupChallenge } from './platformResourceSetupChallenge.js';
+import type { PlatformResourceSetupMethod } from './platformResourceSetupMethod.js';
 import type { PlatformResourceWebhookUrlTemplate } from './platformResourceWebhookUrlTemplate.js';
 export interface PlatformResource {
+    credentialFields: PlatformResourceCredentialFields;
     name: string;
     resident: boolean;
+    secretSource: PlatformResourceSecretSource;
+    setupChallenge: PlatformResourceSetupChallenge;
+    setupMethod: PlatformResourceSetupMethod;
     /** 回调路径模板，{channel} 处替换为通道 id */
     webhookPath: string;
     /** 完整回调地址模板。部署未声明公网入口时为 null */

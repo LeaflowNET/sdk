@@ -30,17 +30,21 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
  */
 import type {
   AnswerRequestBody,
-  BindingListResponseBody,
-  ChannelListResponseBody,
+  BindingResource,
   ChannelResource,
+  CheckSenderParams,
   ClaimCodeResponseBody,
   CreateChannelRequestBody,
   CreateThreadRequestBody,
   DecideRequestBody,
   DocumentResource,
+  EarlierResponseBody,
+  LengthAwarePageBindingResource,
+  LengthAwarePageChannelResource,
   ListBindingsParams,
   ListChannelRejectionsParams,
   ListChannelsParams,
+  ListEarlierItemsParams,
   ListThreadsParams,
   LoginResource,
   ModelListResponseBody,
@@ -48,7 +52,9 @@ import type {
   RejectionListResponseBody,
   RevertRequestBody,
   RevertedCountResponseBody,
+  RotateSecretRequestBody,
   SendMessageRequestBody,
+  SenderCheckResource,
   ThreadListResponseBody,
   ThreadSummaryResource,
   TurnIDResponseBody,
@@ -92,12 +98,13 @@ export const downloadAttachment = (
     }
   
 /**
+ * 接入面那张表按通道列出各自绑了谁时用 channelId 过滤。
  * @summary 列出绑定
  */
 export const listBindings = (
     params?: ListBindingsParams,
  ) => {
-      return request<BindingListResponseBody>(
+      return request<LengthAwarePageBindingResource>(
       {url: `/v1/bindings`, method: 'GET',
         params
     },
@@ -117,12 +124,24 @@ export const deleteBinding = (
     }
   
 /**
+ * @summary 查看绑定
+ */
+export const getBinding = (
+    binding: string,
+ ) => {
+      return request<BindingResource>(
+      {url: `/v1/bindings/${binding}`, method: 'GET'
+    },
+      );
+    }
+  
+/**
  * @summary 列出通道
  */
 export const listChannels = (
     params?: ListChannelsParams,
  ) => {
-      return request<ChannelListResponseBody>(
+      return request<LengthAwarePageChannelResource>(
       {url: `/v1/channels`, method: 'GET',
         params
     },
@@ -169,6 +188,7 @@ export const getChannel = (
     }
   
 /**
+ * 只修改传了的字段。senderPolicy 与 allowFrom 是一对，由 senderPolicy 决定是否替换；改动对常驻连接要等连接重建后才生效，回调型平台立即生效。
  * @summary 修改通道
  */
 export const updateChannel = (
@@ -212,14 +232,32 @@ export const listChannelRejections = (
     }
   
 /**
- * 生成新的回调密钥并立即使旧密钥失效。新密钥仅在本次响应中返回，之后无法再次取回，请先在平台侧完成配置。
+ * 换一把新的回调密钥，旧的立即失效，通道降回待平台确认状态。密钥归谁定由平台决定，见 list-platforms 的 secretSource：generated 的平台不要传请求体，新密钥仅在本次响应中返回、之后无法再次取回；supplied 的平台必须把平台后台那把新密钥传进来。
  * @summary 轮换回调密钥
  */
 export const rotateChannelSecret = (
     channel: string,
+    rotateSecretRequestBody: RotateSecretRequestBody,
  ) => {
       return request<WebhookSecretResponseBody>(
-      {url: `/v1/channels/${channel}/secret`, method: 'POST'
+      {url: `/v1/channels/${channel}/secret`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: rotateSecretRequestBody
+    },
+      );
+    }
+  
+/**
+ * 改完发件人策略之后用来自查，不发送任何消息、也不改变任何状态：它走的是和真实入站完全相同的那份判定，并说明结论由哪一条规则得出。无法推演认领码那一条——是否是认领码取决于对方发来的内容。
+ * @summary 推演一个发件人会不会被放行
+ */
+export const checkSender = (
+    channel: string,
+    params: CheckSenderParams,
+ ) => {
+      return request<SenderCheckResource>(
+      {url: `/v1/channels/${channel}/sender-check`, method: 'GET',
+        params
     },
       );
     }
@@ -251,7 +289,7 @@ export const listModels = (
     }
   
 /**
- * 返回本平台当前支持接入的即时通讯平台，以及各自建通道时需要提供的凭据字段。用于填充新建通道表单。
+ * 返回本平台当前支持接入的即时通讯平台，以及各自建通道时要走的流程和要填的凭据字段。新建通道表单完全由这份响应驱动：setupMethod 决定展示录入表单还是扫码流程，credentialFields 是要填的字段，secretSource 决定要不要有回调密钥那一栏。
  * @summary 列出可接入的平台
  */
 export const listPlatforms = (
@@ -264,6 +302,7 @@ export const listPlatforms = (
     }
   
 /**
+ * 按最近活动排序，只返回当前账号在当前项目里的对话。archived 是一个二选一的开关而不是「包含归档」：归档的对话不出现在默认列表里，要看它们就把这个参数打开。
  * @summary 列出对话
  */
 export const listThreads = (
@@ -332,6 +371,21 @@ export const decideApproval = (
       {url: `/v1/threads/${thread}/approvals/${batch}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: decideRequestBody
+    },
+      );
+    }
+  
+/**
+ * 首屏只给对话最新的那一段，再往上的内容用本接口按需取回，一次一段。before 用文档里的 earlier.before，响应里的 earlier 是再往上那一段的游标，为 null 表示已经到顶。返回的条目和文档里的 items 是同一种形状，顺序也一样（由旧到新），直接接在现有内容前面即可。
+ * @summary 取回更早的对话内容
+ */
+export const listEarlierItems = (
+    thread: string,
+    params: ListEarlierItemsParams,
+ ) => {
+      return request<EarlierResponseBody>(
+      {url: `/v1/threads/${thread}/earlier`, method: 'GET',
+        params
     },
       );
     }
@@ -443,6 +497,7 @@ export type UploadAttachmentResult = NonNullable<Awaited<ReturnType<typeof uploa
 export type DownloadAttachmentResult = NonNullable<Awaited<ReturnType<typeof downloadAttachment>>>
 export type ListBindingsResult = NonNullable<Awaited<ReturnType<typeof listBindings>>>
 export type DeleteBindingResult = NonNullable<Awaited<ReturnType<typeof deleteBinding>>>
+export type GetBindingResult = NonNullable<Awaited<ReturnType<typeof getBinding>>>
 export type ListChannelsResult = NonNullable<Awaited<ReturnType<typeof listChannels>>>
 export type CreateChannelResult = NonNullable<Awaited<ReturnType<typeof createChannel>>>
 export type DeleteChannelResult = NonNullable<Awaited<ReturnType<typeof deleteChannel>>>
@@ -451,6 +506,7 @@ export type UpdateChannelResult = NonNullable<Awaited<ReturnType<typeof updateCh
 export type CreateClaimCodeResult = NonNullable<Awaited<ReturnType<typeof createClaimCode>>>
 export type ListChannelRejectionsResult = NonNullable<Awaited<ReturnType<typeof listChannelRejections>>>
 export type RotateChannelSecretResult = NonNullable<Awaited<ReturnType<typeof rotateChannelSecret>>>
+export type CheckSenderResult = NonNullable<Awaited<ReturnType<typeof checkSender>>>
 export type BeginWeixinLoginResult = NonNullable<Awaited<ReturnType<typeof beginWeixinLogin>>>
 export type ListModelsResult = NonNullable<Awaited<ReturnType<typeof listModels>>>
 export type ListPlatformsResult = NonNullable<Awaited<ReturnType<typeof listPlatforms>>>
@@ -459,6 +515,7 @@ export type CreateThreadResult = NonNullable<Awaited<ReturnType<typeof createThr
 export type GetThreadResult = NonNullable<Awaited<ReturnType<typeof getThread>>>
 export type UpdateThreadResult = NonNullable<Awaited<ReturnType<typeof updateThread>>>
 export type DecideApprovalResult = NonNullable<Awaited<ReturnType<typeof decideApproval>>>
+export type ListEarlierItemsResult = NonNullable<Awaited<ReturnType<typeof listEarlierItems>>>
 export type InterruptThreadResult = NonNullable<Awaited<ReturnType<typeof interruptThread>>>
 export type SendMessageResult = NonNullable<Awaited<ReturnType<typeof sendMessage>>>
 export type AnswerQuestionResult = NonNullable<Awaited<ReturnType<typeof answerQuestion>>>

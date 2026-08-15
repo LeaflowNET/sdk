@@ -27,15 +27,16 @@ import type {
   AddCommentRequestBody,
   AssignIncidentRequestBody,
   CloseIncidentRequestBody,
+  CursorPageIncidentActivityResource,
   EnableMonitoringRequestBody,
   EnrollmentResource,
   GetServerMetricParams,
   GetSliReportParams,
-  IncidentActivityListResponseBody,
   IncidentActivityResource,
-  IncidentListResponseBody,
   IncidentResource,
   ItemListResponseBody,
+  LengthAwarePageIncidentResource,
+  LengthAwarePageServerResource,
   ListIncidentTimelineParams,
   ListIncidentsParams,
   ListProjectTopItemsParams,
@@ -52,7 +53,6 @@ import type {
   SLIReportResponseBody,
   SLOResource,
   ServerEnrollmentResponseBody,
-  ServerListResponseBody,
   ServerResource,
   ServerResourcesResource,
   SetFollowingRequestBody,
@@ -74,7 +74,7 @@ import { request } from '../../http.js';
 export const listIncidents = (
     params?: ListIncidentsParams,
  ) => {
-      return request<IncidentListResponseBody>(
+      return request<LengthAwarePageIncidentResource>(
       {url: `/api/v1/incidents`, method: 'GET',
         params
     },
@@ -194,7 +194,7 @@ export const listIncidentTimeline = (
     incidentId: string,
     params?: ListIncidentTimelineParams,
  ) => {
-      return request<IncidentActivityListResponseBody>(
+      return request<CursorPageIncidentActivityResource>(
       {url: `/api/v1/incidents/${incidentId}/timeline`, method: 'GET',
         params
     },
@@ -275,7 +275,7 @@ export const getProjectOverview = (
 export const listServers = (
     params?: ListServersParams,
  ) => {
-      return request<ServerListResponseBody>(
+      return request<LengthAwarePageServerResource>(
       {url: `/api/v1/servers`, method: 'GET',
         params
     },

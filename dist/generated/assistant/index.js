@@ -18,6 +18,7 @@ export const downloadAttachment = (attachment) => {
     });
 };
 /**
+ * 接入面那张表按通道列出各自绑了谁时用 channelId 过滤。
  * @summary 列出绑定
  */
 export const listBindings = (params) => {
@@ -30,6 +31,13 @@ export const listBindings = (params) => {
  */
 export const deleteBinding = (binding) => {
     return request({ url: `/v1/bindings/${binding}`, method: 'DELETE'
+    });
+};
+/**
+ * @summary 查看绑定
+ */
+export const getBinding = (binding) => {
+    return request({ url: `/v1/bindings/${binding}`, method: 'GET'
     });
 };
 /**
@@ -65,6 +73,7 @@ export const getChannel = (channel) => {
     });
 };
 /**
+ * 只修改传了的字段。senderPolicy 与 allowFrom 是一对，由 senderPolicy 决定是否替换；改动对常驻连接要等连接重建后才生效，回调型平台立即生效。
  * @summary 修改通道
  */
 export const updateChannel = (channel, updateChannelRequestBody) => {
@@ -91,11 +100,22 @@ export const listChannelRejections = (channel, params) => {
     });
 };
 /**
- * 生成新的回调密钥并立即使旧密钥失效。新密钥仅在本次响应中返回，之后无法再次取回，请先在平台侧完成配置。
+ * 换一把新的回调密钥，旧的立即失效，通道降回待平台确认状态。密钥归谁定由平台决定，见 list-platforms 的 secretSource：generated 的平台不要传请求体，新密钥仅在本次响应中返回、之后无法再次取回；supplied 的平台必须把平台后台那把新密钥传进来。
  * @summary 轮换回调密钥
  */
-export const rotateChannelSecret = (channel) => {
-    return request({ url: `/v1/channels/${channel}/secret`, method: 'POST'
+export const rotateChannelSecret = (channel, rotateSecretRequestBody) => {
+    return request({ url: `/v1/channels/${channel}/secret`, method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        data: rotateSecretRequestBody
+    });
+};
+/**
+ * 改完发件人策略之后用来自查，不发送任何消息、也不改变任何状态：它走的是和真实入站完全相同的那份判定，并说明结论由哪一条规则得出。无法推演认领码那一条——是否是认领码取决于对方发来的内容。
+ * @summary 推演一个发件人会不会被放行
+ */
+export const checkSender = (channel, params) => {
+    return request({ url: `/v1/channels/${channel}/sender-check`, method: 'GET',
+        params
     });
 };
 /**
@@ -115,7 +135,7 @@ export const listModels = () => {
     });
 };
 /**
- * 返回本平台当前支持接入的即时通讯平台，以及各自建通道时需要提供的凭据字段。用于填充新建通道表单。
+ * 返回本平台当前支持接入的即时通讯平台，以及各自建通道时要走的流程和要填的凭据字段。新建通道表单完全由这份响应驱动：setupMethod 决定展示录入表单还是扫码流程，credentialFields 是要填的字段，secretSource 决定要不要有回调密钥那一栏。
  * @summary 列出可接入的平台
  */
 export const listPlatforms = () => {
@@ -123,6 +143,7 @@ export const listPlatforms = () => {
     });
 };
 /**
+ * 按最近活动排序，只返回当前账号在当前项目里的对话。archived 是一个二选一的开关而不是「包含归档」：归档的对话不出现在默认列表里，要看它们就把这个参数打开。
  * @summary 列出对话
  */
 export const listThreads = (params) => {
@@ -165,6 +186,15 @@ export const decideApproval = (thread, batch, decideRequestBody) => {
     return request({ url: `/v1/threads/${thread}/approvals/${batch}`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
         data: decideRequestBody
+    });
+};
+/**
+ * 首屏只给对话最新的那一段，再往上的内容用本接口按需取回，一次一段。before 用文档里的 earlier.before，响应里的 earlier 是再往上那一段的游标，为 null 表示已经到顶。返回的条目和文档里的 items 是同一种形状，顺序也一样（由旧到新），直接接在现有内容前面即可。
+ * @summary 取回更早的对话内容
+ */
+export const listEarlierItems = (thread, params) => {
+    return request({ url: `/v1/threads/${thread}/earlier`, method: 'GET',
+        params
     });
 };
 /**

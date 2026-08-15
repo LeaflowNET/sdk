@@ -31,7 +31,12 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
 
 export type ListThreadsParams = {
 /**
- * 仅返回已归档的对话
+ * 按标题搜索，大小写不敏感。留空则返回最近的对话
+ * @maxLength 100
+ */
+q?: string;
+/**
+ * 为真时**只**返回已归档的对话，否则只返回未归档的
  */
 archived?: boolean;
 /**

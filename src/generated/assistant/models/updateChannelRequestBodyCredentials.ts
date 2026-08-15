@@ -29,4 +29,7 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * 整份替换而不是逐键合并。不传表示不动
+ */
 export type UpdateChannelRequestBodyCredentials = {[key: string]: string};

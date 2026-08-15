@@ -83,48 +83,6 @@ export const acceptInvitation = (invitationId) => {
     });
 };
 /**
- * @summary 列出我的公钥
- */
-export const listMySshKeys = (params) => {
-    return request({ url: `/api/v1/me/ssh-keys`, method: 'GET',
-        params
-    });
-};
-/**
- * @summary 添加一把我的公钥
- */
-export const createMySshKey = (createUserSSHKeyRequestBody) => {
-    return request({ url: `/api/v1/me/ssh-keys`, method: 'POST',
-        headers: { 'Content-Type': 'application/json', },
-        data: createUserSSHKeyRequestBody
-    });
-};
-/**
- * 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
- * @summary 吊销我的一把公钥
- */
-export const revokeMySshKey = (keyId) => {
-    return request({ url: `/api/v1/me/ssh-keys/${keyId}`, method: 'DELETE'
-    });
-};
-/**
- * @summary 查看我的一把公钥
- */
-export const getMySshKey = (keyId) => {
-    return request({ url: `/api/v1/me/ssh-keys/${keyId}`, method: 'GET'
-    });
-};
-/**
- * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
- * @summary 给我的公钥改名
- */
-export const renameMySshKey = (keyId, renameUserSSHKeyRequestBody) => {
-    return request({ url: `/api/v1/me/ssh-keys/${keyId}`, method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', },
-        data: renameUserSSHKeyRequestBody
-    });
-};
-/**
  * **只有 IAM 这一份。** 别的服务的操作不在这里——权限目录是各服务各自声明、由 各个服务自己声明的，IAM 认识它们就等于要跟着每个下游一起发版。
  * @summary 列出 IAM 自己声明的权限
  */
@@ -278,43 +236,47 @@ export const updateRole = (projectId, code, updateRoleRequestBody) => {
     });
 };
 /**
- * @summary 列出项目的公钥
+ * 归成员的和归项目的都在里面，靠每一条上的 owner_user_id 区分。
+ * @summary 列出这个项目的公钥
  */
-export const listProjectSshKeys = (projectId, params) => {
+export const listSshKeys = (projectId, params) => {
     return request({ url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'GET',
         params
     });
 };
 /**
- * @summary 给项目添加一把公钥
+ * owner=me 是自己的，是成员就能加；owner=project 是项目公用的，要 iam:ssh_keys.manage —— 它会进这个项目之后开出来的每一台机器。
+ * @summary 添加一把公钥
  */
-export const createProjectSshKey = (projectId, createProjectSSHKeyRequestBody) => {
+export const createSshKey = (projectId, createSSHKeyRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        data: createProjectSSHKeyRequestBody
+        data: createSSHKeyRequestBody
     });
 };
 /**
- * @summary 吊销项目的一把公钥
+ * 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
+ * @summary 吊销一把公钥
  */
-export const revokeProjectSshKey = (projectId, keyId) => {
+export const revokeSshKey = (projectId, keyId) => {
     return request({ url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'DELETE'
     });
 };
 /**
- * @summary 查看项目的一把公钥
+ * @summary 查看一把公钥
  */
-export const getProjectSshKey = (projectId, keyId) => {
+export const getSshKey = (projectId, keyId) => {
     return request({ url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'GET'
     });
 };
 /**
- * @summary 给项目的公钥改名
+ * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
+ * @summary 给公钥改名
  */
-export const renameProjectSshKey = (projectId, keyId, renameProjectSSHKeyRequestBody) => {
+export const renameSshKey = (projectId, keyId, renameSSHKeyRequestBody) => {
     return request({ url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'PATCH',
         headers: { 'Content-Type': 'application/json', },
-        data: renameProjectSSHKeyRequestBody
+        data: renameSSHKeyRequestBody
     });
 };
 /**

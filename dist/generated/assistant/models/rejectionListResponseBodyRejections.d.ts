@@ -28,5 +28,5 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
 - 三种结束事件：`done` 本次 turn 完成（附带最终状态）、`paused` 助手在等待用户处理（重新取回对话文档读 `wait`）、`stalled` 执行已中断且不会恢复，不要重连。
  * OpenAPI spec version: 1.0.0
  */
-import type { Entry } from './entry.js';
-export type RejectionListResponseBodyRejections = Entry[] | null;
+import type { RejectionResource } from './rejectionResource.js';
+export type RejectionListResponseBodyRejections = RejectionResource[] | null;

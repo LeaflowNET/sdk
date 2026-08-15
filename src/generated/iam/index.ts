@@ -27,33 +27,30 @@ import type {
   AgreementListResponseBody,
   ConsentListResponseBody,
   CreateProjectRequestBody,
-  CreateProjectSSHKeyRequestBody,
   CreateRoleRequestBody,
-  CreateUserSSHKeyRequestBody,
+  CreateSSHKeyRequestBody,
   IdentityVerificationResource,
-  InvitationListResponseBody,
   IssueInvitationRequestBody,
   IssuedInvitationResponseBody,
+  LengthAwarePageInvitationResource,
+  LengthAwarePageMemberResource,
+  LengthAwarePageProjectAccessResource,
+  LengthAwarePageSSHKeyResource,
   ListMembersParams,
   ListMyInvitationsParams,
-  ListMySshKeysParams,
   ListProjectInvitationsParams,
-  ListProjectSshKeysParams,
   ListProjectsParams,
-  MemberListResponseBody,
+  ListSshKeysParams,
   MemberResource,
   MembershipResource,
   OwnershipTransferResponseBody,
   PermissionListResponseBody,
-  ProjectAccessListResponseBody,
   ProjectAccessResource,
   ProjectTokenResponseBody,
   RegisterRequestBody,
-  RenameProjectSSHKeyRequestBody,
-  RenameUserSSHKeyRequestBody,
+  RenameSSHKeyRequestBody,
   RoleListResponseBody,
   RoleResource,
-  SSHKeyListResponseBody,
   SSHKeyResource,
   SetMemberRolesRequestBody,
   SubmitIdentityVerificationRequestBody,
@@ -159,7 +156,7 @@ export const submitIdentityVerification = (
 export const listMyInvitations = (
     params?: ListMyInvitationsParams,
  ) => {
-      return request<InvitationListResponseBody>(
+      return request<LengthAwarePageInvitationResource>(
       {url: `/api/v1/me/invitations`, method: 'GET',
         params
     },
@@ -195,74 +192,6 @@ export const acceptInvitation = (
     }
   
 /**
- * @summary 列出我的公钥
- */
-export const listMySshKeys = (
-    params?: ListMySshKeysParams,
- ) => {
-      return request<SSHKeyListResponseBody>(
-      {url: `/api/v1/me/ssh-keys`, method: 'GET',
-        params
-    },
-      );
-    }
-  
-/**
- * @summary 添加一把我的公钥
- */
-export const createMySshKey = (
-    createUserSSHKeyRequestBody: CreateUserSSHKeyRequestBody,
- ) => {
-      return request<SSHKeyResource>(
-      {url: `/api/v1/me/ssh-keys`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createUserSSHKeyRequestBody
-    },
-      );
-    }
-  
-/**
- * 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
- * @summary 吊销我的一把公钥
- */
-export const revokeMySshKey = (
-    keyId: string,
- ) => {
-      return request<SSHKeyResource>(
-      {url: `/api/v1/me/ssh-keys/${keyId}`, method: 'DELETE'
-    },
-      );
-    }
-  
-/**
- * @summary 查看我的一把公钥
- */
-export const getMySshKey = (
-    keyId: string,
- ) => {
-      return request<SSHKeyResource>(
-      {url: `/api/v1/me/ssh-keys/${keyId}`, method: 'GET'
-    },
-      );
-    }
-  
-/**
- * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
- * @summary 给我的公钥改名
- */
-export const renameMySshKey = (
-    keyId: string,
-    renameUserSSHKeyRequestBody: RenameUserSSHKeyRequestBody,
- ) => {
-      return request<SSHKeyResource>(
-      {url: `/api/v1/me/ssh-keys/${keyId}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: renameUserSSHKeyRequestBody
-    },
-      );
-    }
-  
-/**
  * **只有 IAM 这一份。** 别的服务的操作不在这里——权限目录是各服务各自声明、由 各个服务自己声明的，IAM 认识它们就等于要跟着每个下游一起发版。
  * @summary 列出 IAM 自己声明的权限
  */
@@ -282,7 +211,7 @@ export const listPermissions = (
 export const listProjects = (
     params?: ListProjectsParams,
  ) => {
-      return request<ProjectAccessListResponseBody>(
+      return request<LengthAwarePageProjectAccessResource>(
       {url: `/api/v1/projects`, method: 'GET',
         params
     },
@@ -353,7 +282,7 @@ export const listProjectInvitations = (
     projectId: string,
     params?: ListProjectInvitationsParams,
  ) => {
-      return request<InvitationListResponseBody>(
+      return request<LengthAwarePageInvitationResource>(
       {url: `/api/v1/projects/${projectId}/invitations`, method: 'GET',
         params
     },
@@ -396,7 +325,7 @@ export const listMembers = (
     projectId: string,
     params?: ListMembersParams,
  ) => {
-      return request<MemberListResponseBody>(
+      return request<LengthAwarePageMemberResource>(
       {url: `/api/v1/projects/${projectId}/members`, method: 'GET',
         params
     },
@@ -519,13 +448,14 @@ export const updateRole = (
     }
   
 /**
- * @summary 列出项目的公钥
+ * 归成员的和归项目的都在里面，靠每一条上的 owner_user_id 区分。
+ * @summary 列出这个项目的公钥
  */
-export const listProjectSshKeys = (
+export const listSshKeys = (
     projectId: string,
-    params?: ListProjectSshKeysParams,
+    params?: ListSshKeysParams,
  ) => {
-      return request<SSHKeyListResponseBody>(
+      return request<LengthAwarePageSSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'GET',
         params
     },
@@ -533,24 +463,26 @@ export const listProjectSshKeys = (
     }
   
 /**
- * @summary 给项目添加一把公钥
+ * owner=me 是自己的，是成员就能加；owner=project 是项目公用的，要 iam:ssh_keys.manage —— 它会进这个项目之后开出来的每一台机器。
+ * @summary 添加一把公钥
  */
-export const createProjectSshKey = (
+export const createSshKey = (
     projectId: string,
-    createProjectSSHKeyRequestBody: CreateProjectSSHKeyRequestBody,
+    createSSHKeyRequestBody: CreateSSHKeyRequestBody,
  ) => {
       return request<SSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: createProjectSSHKeyRequestBody
+      data: createSSHKeyRequestBody
     },
       );
     }
   
 /**
- * @summary 吊销项目的一把公钥
+ * 行留着，状态变成 REVOKED。事故之后要问的是当时信任的是哪把钥匙。
+ * @summary 吊销一把公钥
  */
-export const revokeProjectSshKey = (
+export const revokeSshKey = (
     projectId: string,
     keyId: string,
  ) => {
@@ -561,9 +493,9 @@ export const revokeProjectSshKey = (
     }
   
 /**
- * @summary 查看项目的一把公钥
+ * @summary 查看一把公钥
  */
-export const getProjectSshKey = (
+export const getSshKey = (
     projectId: string,
     keyId: string,
  ) => {
@@ -574,17 +506,18 @@ export const getProjectSshKey = (
     }
   
 /**
- * @summary 给项目的公钥改名
+ * 只有名字能改：公钥、类型、指纹是同一样东西的三种说法，改其中一个会让这一行描述一把并不存在的钥匙。
+ * @summary 给公钥改名
  */
-export const renameProjectSshKey = (
+export const renameSshKey = (
     projectId: string,
     keyId: string,
-    renameProjectSSHKeyRequestBody: RenameProjectSSHKeyRequestBody,
+    renameSSHKeyRequestBody: RenameSSHKeyRequestBody,
  ) => {
       return request<SSHKeyResource>(
       {url: `/api/v1/projects/${projectId}/ssh-keys/${keyId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
-      data: renameProjectSSHKeyRequestBody
+      data: renameSSHKeyRequestBody
     },
       );
     }
@@ -652,11 +585,6 @@ export type SubmitIdentityVerificationResult = NonNullable<Awaited<ReturnType<ty
 export type ListMyInvitationsResult = NonNullable<Awaited<ReturnType<typeof listMyInvitations>>>
 export type AcceptInvitationByTokenResult = NonNullable<Awaited<ReturnType<typeof acceptInvitationByToken>>>
 export type AcceptInvitationResult = NonNullable<Awaited<ReturnType<typeof acceptInvitation>>>
-export type ListMySshKeysResult = NonNullable<Awaited<ReturnType<typeof listMySshKeys>>>
-export type CreateMySshKeyResult = NonNullable<Awaited<ReturnType<typeof createMySshKey>>>
-export type RevokeMySshKeyResult = NonNullable<Awaited<ReturnType<typeof revokeMySshKey>>>
-export type GetMySshKeyResult = NonNullable<Awaited<ReturnType<typeof getMySshKey>>>
-export type RenameMySshKeyResult = NonNullable<Awaited<ReturnType<typeof renameMySshKey>>>
 export type ListPermissionsResult = NonNullable<Awaited<ReturnType<typeof listPermissions>>>
 export type ListProjectsResult = NonNullable<Awaited<ReturnType<typeof listProjects>>>
 export type CreateProjectResult = NonNullable<Awaited<ReturnType<typeof createProject>>>
@@ -675,11 +603,11 @@ export type CreateRoleResult = NonNullable<Awaited<ReturnType<typeof createRole>
 export type DeleteRoleResult = NonNullable<Awaited<ReturnType<typeof deleteRole>>>
 export type GetRoleResult = NonNullable<Awaited<ReturnType<typeof getRole>>>
 export type UpdateRoleResult = NonNullable<Awaited<ReturnType<typeof updateRole>>>
-export type ListProjectSshKeysResult = NonNullable<Awaited<ReturnType<typeof listProjectSshKeys>>>
-export type CreateProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof createProjectSshKey>>>
-export type RevokeProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof revokeProjectSshKey>>>
-export type GetProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof getProjectSshKey>>>
-export type RenameProjectSshKeyResult = NonNullable<Awaited<ReturnType<typeof renameProjectSshKey>>>
+export type ListSshKeysResult = NonNullable<Awaited<ReturnType<typeof listSshKeys>>>
+export type CreateSshKeyResult = NonNullable<Awaited<ReturnType<typeof createSshKey>>>
+export type RevokeSshKeyResult = NonNullable<Awaited<ReturnType<typeof revokeSshKey>>>
+export type GetSshKeyResult = NonNullable<Awaited<ReturnType<typeof getSshKey>>>
+export type RenameSshKeyResult = NonNullable<Awaited<ReturnType<typeof renameSshKey>>>
 export type ExchangeProjectTokenResult = NonNullable<Awaited<ReturnType<typeof exchangeProjectToken>>>
 export type TransferProjectOwnershipResult = NonNullable<Awaited<ReturnType<typeof transferProjectOwnership>>>
 export type RegisterResult = NonNullable<Awaited<ReturnType<typeof register>>>

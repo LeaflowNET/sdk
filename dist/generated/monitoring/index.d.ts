@@ -22,12 +22,12 @@
 接入和轮换的响应中包含 `tls_psk`，其他任何接口都不会再返回它，请及时保存。遗失后可再轮换一次，代价是被监控的机器需要同步更新一次 agent 配置。
  * OpenAPI spec version: 1.0.0
  */
-import type { AcknowledgeIncidentRequestBody, AddCommentRequestBody, AssignIncidentRequestBody, CloseIncidentRequestBody, EnableMonitoringRequestBody, EnrollmentResource, GetServerMetricParams, GetSliReportParams, IncidentActivityListResponseBody, IncidentActivityResource, IncidentListResponseBody, IncidentResource, ItemListResponseBody, ListIncidentTimelineParams, ListIncidentsParams, ListProjectTopItemsParams, ListServerItemsParams, ListServersParams, ListWebChecksParams, MaintenanceWindowListResponseBody, MaintenanceWindowResource, MetricResponseBody, ProjectOverviewResource, PutMaintenanceWindowRequestBody, PutSLORequestBody, PutWebCheckRequestBody, SLIReportResponseBody, SLOResource, ServerEnrollmentResponseBody, ServerListResponseBody, ServerResource, ServerResourcesResource, SetFollowingRequestBody, SnapshotResource, TopItemListResponseBody, UpdateServerRequestBody, WebCheckListResponseBody, WebCheckResource } from './models/index.js';
+import type { AcknowledgeIncidentRequestBody, AddCommentRequestBody, AssignIncidentRequestBody, CloseIncidentRequestBody, CursorPageIncidentActivityResource, EnableMonitoringRequestBody, EnrollmentResource, GetServerMetricParams, GetSliReportParams, IncidentActivityResource, IncidentResource, ItemListResponseBody, LengthAwarePageIncidentResource, LengthAwarePageServerResource, ListIncidentTimelineParams, ListIncidentsParams, ListProjectTopItemsParams, ListServerItemsParams, ListServersParams, ListWebChecksParams, MaintenanceWindowListResponseBody, MaintenanceWindowResource, MetricResponseBody, ProjectOverviewResource, PutMaintenanceWindowRequestBody, PutSLORequestBody, PutWebCheckRequestBody, SLIReportResponseBody, SLOResource, ServerEnrollmentResponseBody, ServerResource, ServerResourcesResource, SetFollowingRequestBody, SnapshotResource, TopItemListResponseBody, UpdateServerRequestBody, WebCheckListResponseBody, WebCheckResource } from './models/index.js';
 /**
 * `incident_status` 表示监控系统是否判定已恢复，`closed` 表示是否有人完成了处理。两者相互独立，可分别筛选。
 * @summary 列出告警
 */
-export declare const listIncidents: (params?: ListIncidentsParams) => Promise<IncidentListResponseBody>;
+export declare const listIncidents: (params?: ListIncidentsParams) => Promise<LengthAwarePageIncidentResource>;
 /**
  * @summary 查一条告警
  */
@@ -66,7 +66,7 @@ export declare const reopenIncident: (incidentId: string) => Promise<IncidentRes
  * 游标翻页而不是偏移量：时间线是只增的，用偏移量翻页会在新记录写入时漏行和重行。
  * @summary 列出这条告警的时间线
  */
-export declare const listIncidentTimeline: (incidentId: string, params?: ListIncidentTimelineParams) => Promise<IncidentActivityListResponseBody>;
+export declare const listIncidentTimeline: (incidentId: string, params?: ListIncidentTimelineParams) => Promise<CursorPageIncidentActivityResource>;
 /**
  * @summary 列出维护窗口
  */
@@ -95,7 +95,7 @@ export declare const getProjectOverview: () => Promise<ProjectOverviewResource>;
 /**
  * @summary 列出项目里的机器
  */
-export declare const listServers: (params?: ListServersParams) => Promise<ServerListResponseBody>;
+export declare const listServers: (params?: ListServersParams) => Promise<LengthAwarePageServerResource>;
 /**
  * **不可逆**：监控主机、历史数据和这台机器名下的告警会一并删除。若只是想暂时停止采集，改用 /disable。
  * @summary 删掉这台机器

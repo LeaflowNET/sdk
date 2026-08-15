@@ -28,10 +28,17 @@ GET /v1/turns/{turn}/stream?ticket=<ticket>&cursor=<cursor>
 - 三种结束事件：`done` 本次 turn 完成（附带最终状态）、`paused` 助手在等待用户处理（重新取回对话文档读 `wait`）、`stalled` 执行已中断且不会恢复，不要重连。
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateChannelRequestBodyAllowFrom } from './updateChannelRequestBodyAllowFrom.js';
 import type { UpdateChannelRequestBodyCredentials } from './updateChannelRequestBodyCredentials.js';
+import type { UpdateChannelRequestBodySenderPolicy } from './updateChannelRequestBodySenderPolicy.js';
 export interface UpdateChannelRequestBody {
+    /** 放行名单。仅在同时传了 senderPolicy 时生效 */
+    allowFrom?: UpdateChannelRequestBodyAllowFrom;
+    /** 整份替换而不是逐键合并。不传表示不动 */
     credentials?: UpdateChannelRequestBodyCredentials;
     enabled?: boolean;
     /** @maxLength 128 */
     name?: string;
+    /** 传了才会连同 allowFrom 一起替换 */
+    senderPolicy?: UpdateChannelRequestBodySenderPolicy;
 }

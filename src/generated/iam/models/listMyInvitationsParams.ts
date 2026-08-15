@@ -22,14 +22,15 @@
 
 export type ListMyInvitationsParams = {
 /**
- * 这一页最多返回多少条，0 表示用默认值
- * @minimum 0
- * @maximum 100
+ * 这一页最多返回多少条
+ * @minimum 1
+ * @maximum 200
  */
 limit?: number;
 /**
- * 跳过多少条
+ * 跳过多少条。要翻得更深请改用游标翻页的接口
  * @minimum 0
+ * @maximum 10000
  */
 offset?: number;
 };
