@@ -10,7 +10,7 @@
 
 **路径和请求头上都没有 `project_id`**：当前项目由令牌决定。
 
-鉴权在网关完成，失败的请求不会到达这些接口。按错误码区分处理方式：`PROJECT_TOKEN_MISSING` 表示没带令牌；`PROJECT_TOKEN_EXPIRED` 表示令牌过期，用账号令牌重新换取即可，无需重新登录；`PROJECT_TOKEN_INVALID` 表示令牌验不过；`NOT_A_MEMBER` 表示当前账号不是该项目成员；`USER_SUSPENDED` / `USER_BANNED` 表示账号本身不能操作。
+鉴权在网关完成，失败的请求不会到达这些接口。按错误码区分处理方式：`TOKEN_MISSING` 表示没带令牌；`TOKEN_EXPIRED` 表示令牌过期，用账号令牌重新换取即可，无需重新登录；`TOKEN_INVALID` 表示令牌验不过；`NOT_A_MEMBER` 表示当前账号不是该项目成员；`USER_SUSPENDED` / `USER_BANNED` 表示账号本身不能操作。
 
 ## 通用约定
 
@@ -21,17 +21,11 @@
 - **密码只返回一次。** 创建或重装时若由平台生成密码，它仅出现在该次响应中，请及时保存。
  * OpenAPI spec version: 1.0.0
  */
-import type { PrivateNetworkResourceGatewayV4 } from './privateNetworkResourceGatewayV4.js';
-import type { PrivateNetworkResourceGatewayV6 } from './privateNetworkResourceGatewayV6.js';
 import type { PrivateNetworkResourceStatus } from './privateNetworkResourceStatus.js';
 
 export interface PrivateNetworkResource {
   cidr: string;
   created_at: string;
-  /** 该私有网络出口的 v4 地址 */
-  gateway_v4: PrivateNetworkResourceGatewayV4;
-  /** 该私有网络出口的 v6 地址，未启用 IPv6 时为空 */
-  gateway_v6: PrivateNetworkResourceGatewayV6;
   has_internet_gateway: boolean;
   id: string;
   name: string;

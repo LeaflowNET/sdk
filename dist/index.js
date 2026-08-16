@@ -60,8 +60,8 @@ export function createMonitoringClient(options) {
 }
 /** Service versions the bundled specs were generated from. */
 export const SERVICE_VERSIONS = {
-    assistant: "v2.1.1",
-    compute: "v2.1.1",
-    iam: "v0.30.0",
-    monitoring: "v9.0.2",
+    assistant: "v2.2.0",
+    compute: "v2.5.0",
+    iam: "v0.32.0",
+    monitoring: "v9.2.0",
 };
