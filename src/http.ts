@@ -147,30 +147,65 @@ export type Bound<T> = {
  * `scripts/check-generated-arity.mjs` fails the build if that changes: a slot
  * that silently shifts by one would pass the client as somebody's request body,
  * and no amount of type checking on generated code would catch it.
+ *
+ * # Why this builds an object instead of returning a Proxy
+ *
+ * It used to be a `Proxy` over the namespace, which is smaller and binds lazily.
+ * It also threw, in production only:
+ *
+ *     'get' on proxy: property 'getAccount' is a read-only and non-configurable
+ *     data property on the proxy target but the proxy did not return its actual
+ *     value
+ *
+ * That is a Proxy invariant, not a bug in the trap. `api` is an ES module
+ * namespace object, and a bundler is free to emit its exports as non-writable and
+ * non-configurable — Next's production build does, its dev server does not. When
+ * a target property is a read-only non-configurable data property, `get` **must**
+ * return that exact value, so a trap whose entire purpose is to return a wrapper
+ * cannot be correct. The old code was not wrong about the bundler; it was wrong
+ * about Proxy.
+ *
+ * It failed the worst possible way: every local check passes, `pnpm dev` passes,
+ * the production bundle throws on the first call. In the console that first call
+ * is `getAccount` during sign-in, so the symptom was "nobody can log in" with an
+ * error naming IAM — a service that was fine.
+ *
+ * Copying costs one pass over a few dozen keys per client. Clients are made per
+ * request here, which sounds like a lot until you notice the request that follows
+ * goes over a network.
  */
 export function bindClient<T extends object>(api: T, client: Client): Bound<T> {
-    return new Proxy(api, {
-        get(target, property, receiver): unknown {
-            const value: unknown = Reflect.get(target, property, receiver);
+    const bound: Record<string, unknown> = {};
 
-            if (typeof value !== 'function') {
-                return value;
+    /*
+     * `for...in` rather than `Object.keys`: a namespace object's exports are its
+     * own enumerable properties either way, but re-exported members can arrive on
+     * the prototype chain depending on how the bundler emitted them, and an
+     * operation that is silently missing is worse than one that is bound twice.
+     */
+    for (const property in api) {
+        const value: unknown = (api as Record<string, unknown>)[property];
+
+        if (typeof value !== 'function') {
+            bound[property] = value;
+            continue;
+        }
+
+        const operation = value as ((...args: unknown[]) => unknown) & {
+            length: number;
+        };
+
+        bound[property] = (...args: unknown[]): unknown => {
+            const slot = Math.max(operation.length - 1, 0);
+            const head = args.slice(0, slot);
+
+            while (head.length < slot) {
+                head.push(undefined);
             }
 
-            const operation = value as ((...args: unknown[]) => unknown) & {
-                length: number;
-            };
+            return operation(...head, { client });
+        };
+    }
 
-            return (...args: unknown[]): unknown => {
-                const slot = Math.max(operation.length - 1, 0);
-                const head = args.slice(0, slot);
-
-                while (head.length < slot) {
-                    head.push(undefined);
-                }
-
-                return operation(...head, { client });
-            };
-        },
-    }) as Bound<T>;
+    return bound as Bound<T>;
 }
