@@ -1,13 +1,42 @@
-# The openapi/ directory is populated by each service's release pipeline.
+# 校验每次推送，发布只在打 tag 时。
 #
-# Verification runs on every push; publishing runs only on a tag, so the version
-# number stays a deliberate choice; this package aggregates several services.
+# # 为什么每次推送也跑
+#
+# 跑的是生成 + 类型检查 + Go 编译，也就是「这份契约还能生成出能编译的代码」。它同时替开发挡住
+# 一类改动：契约改了、但改出来的东西生不出合法的客户端——那件事在 review 时发现是改一行，
+# 在打 tag 那天发现是发布中断。
+#
+# 推送还会发一个 dev 快照到 npm 的 dev 标签上，版本号带 commit hash。这样一个功能合进 main
+# 之后，前端立刻能装到带它的那一版，而不用等我们发正式版；`npm i @leaflow/sdk` 拿到的仍然是
+# 上一个正式版，不受影响。
+#
+# Go 那边不需要对应的东西：`go get github.com/LeaflowNET/sdk/go@<commit>` 本来就能用，
+# Go 的伪版本是免费的。
+#
+# # CI 不写回生成物
+#
+# 一个会 commit 回来的流水线，在两次推送挨得近时要处理「我算完了但 main 又变了」，而处理方式
+# 无非是重试或者强推——前者会打架，后者会丢东西。所以这里只读不写：`npm run generate` 的产物
+# 由**开发在本地跑完提交**，CI 拿它来验证。
+#
+# 那么忘了重新生成会怎样？verify 会红——见下面那一步。它放在这里而不是发布流水线里：发布那天
+# 拦下来毫无意义，那时候 CI 手上明明有正确的产物，而人要做的只是重跑一次生成。
+#
+# # 为什么 Go 的产物必须是对的，而不能靠发布时现生成
+#
+# TS 有构建步骤，发布前 tsc 一次，所以理论上可以现生成。Go 没有：`go get` 直接读 tag 上的
+# 源码。**签进去的 *.gen.go 就是消费者拿到的东西**，没有任何一步会替它兜底。
+#
+# # 为什么是 npm 不是 pnpm
+#
+# pnpm 的好处在开发机上（硬链接、多包工作区），CI 里每次都是干净环境，那些好处不存在，
+# 而多一个 corepack/pnpm 安装步骤就是多一种挂法。
 name: ci
 
 on:
   push:
     branches: [main]
-    tags: ['v*']
+    tags: ['ts/v*', 'go/v*']
   pull_request:
 
 jobs:
@@ -15,31 +44,97 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
+          cache: npm
+          cache-dependency-path: ts/package-lock.json
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: go/go.sum
+      - run: pip install pyyaml
 
-  publish:
+      - run: npm ci
+        working-directory: ts
+
+      # 签进来的产物必须和契约对得上。这一步只在校验里跑，不在发布里。
+      - name: 生成物是最新的
+        working-directory: ts
+        run: |
+          npm run generate
+          if ! git -C .. diff --quiet; then
+            echo "::error::openapi/ 改了但生成物没跟着更新。本地跑一次 npm run generate 再提交。" >&2
+            git -C .. --no-pager diff --stat >&2
+            exit 1
+          fi
+
+      - run: npm run typecheck
+        working-directory: ts
+      - run: go build ./...
+        working-directory: go
+      - run: go vet ./...
+        working-directory: go
+
+  # main 上的每次推送发一个 dev 快照。装它要显式写版本或者 @dev 标签，
+  # `npm i @leaflow/sdk` 拿到的还是正式版。
+  snapshot:
     needs: verify
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: pnpm
+          cache: npm
+          cache-dependency-path: ts/package-lock.json
           registry-url: https://registry.npmjs.org
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      # The version comes from the tag rather than package.json.
-      - run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
-      - run: npm publish --provenance
+      - run: npm ci
+        working-directory: ts
+      - run: npm run build
+        working-directory: ts
+      # g 前缀让 commit hash 在以数字开头时仍然是合法的 semver 预发布标识；
+      # run number 让快照之间有先后。
+      - name: 版本号来自 commit
+        working-directory: ts
+        run: npm version "0.0.0-dev.${{ github.run_number }}.g${GITHUB_SHA::7}" --no-git-tag-version
+      - run: npm publish --provenance --tag dev
+        working-directory: ts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ts/v1.2.3 → npm 正式版。
+  #
+  # go/v1.2.3 不在这里：Go 模块没有发布这回事，tag 本身就是发布，verify 过了就够了。
+  release:
+    needs: verify
+    if: startsWith(github.ref, 'refs/tags/ts/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ts/package-lock.json
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+        working-directory: ts
+      - run: npm run build
+        working-directory: ts
+      # 版本号来自 tag，不来自 package.json——两处各写一遍的话，忘改的那处会让 npm 上出现一个
+      # 和 tag 对不上的版本，而 npm 不会拒绝，它只是发出去了。
+      - name: 版本号来自 tag
+        working-directory: ts
+        run: npm version "${GITHUB_REF_NAME#ts/v}" --no-git-tag-version
+      - run: npm publish --provenance --access public
+        working-directory: ts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

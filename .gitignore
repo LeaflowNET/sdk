@@ -1,1 +1,18 @@
-node_modules/
+# 依赖
+ts/node_modules/
+scripts/__pycache__/
+
+# 从源现编出来的，一个都不进仓库
+ts/dist/        # tsc 输出
+*.tsbuildinfo
+
+# 下面这些**都要进仓库**，别加到这里来：
+#
+#   openapi/**        源契约。人只改这里，接口改了什么就是这里的 diff
+#   go/**/*.gen.go    Go 客户端和服务端。服务端实现直接 import 它
+#   ts/gen/**         TS 类型和别名。这个包里没有手写代码，全是生成的
+#
+# 生成物进仓库有两个理由：发版不依赖那一刻能不能重新生成成功；以及那份 diff 就是给使用者看的
+# 变更说明，比一句 "sync openapi" 有用得多。
+#
+# ts/dist/ 不一样：它由上面那些完全决定，谁都不会去读它的 diff。

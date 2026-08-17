@@ -1,0 +1,73 @@
+{
+  "name": "@leaflow/sdk",
+  "version": "0.0.0",
+  "description": "Leaflow 平台 API 的 TypeScript SDK",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeaflowNET/sdk.git"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./account/v1": {
+      "types": "./dist/account/v1/index.d.ts",
+      "default": "./dist/account/v1/index.js"
+    },
+    "./assistant/v1": {
+      "types": "./dist/assistant/v1/index.d.ts",
+      "default": "./dist/assistant/v1/index.js"
+    },
+    "./canopy/v1": {
+      "types": "./dist/canopy/v1/index.d.ts",
+      "default": "./dist/canopy/v1/index.js"
+    },
+    "./compute/v1": {
+      "types": "./dist/compute/v1/index.d.ts",
+      "default": "./dist/compute/v1/index.js"
+    },
+    "./iam/v1": {
+      "types": "./dist/iam/v1/index.d.ts",
+      "default": "./dist/iam/v1/index.js"
+    },
+    "./monitoring/v1": {
+      "types": "./dist/monitoring/v1/index.d.ts",
+      "default": "./dist/monitoring/v1/index.js"
+    },
+    "./tunnel/v1": {
+      "types": "./dist/tunnel/v1/index.d.ts",
+      "default": "./dist/tunnel/v1/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "generate": "node ../scripts/generate-ts.mjs && python3 ../scripts/generate-go.py",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "^5.9.3",
+    "openapi-fetch": "^0.17.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "openapi-fetch": ">=0.14"
+  },
+  "peerDependenciesMeta": {
+    "openapi-fetch": {
+      "optional": true
+    }
+  }
+}
