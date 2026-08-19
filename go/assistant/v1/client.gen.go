@@ -734,15 +734,15 @@ type DecideRequestBody struct {
 
 // DocumentResource defines model for DocumentResource.
 type DocumentResource struct {
-	Context ContextResource `json:"context"`
-	Cursor  *string         `json:"cursor"`
-	Earlier EarlierResource `json:"earlier"`
-	Items   []ItemResource  `json:"items"`
-	Status  string          `json:"status"`
-	Stream  StreamResource  `json:"stream"`
-	Turn    TurnResource    `json:"turn"`
-	TurnId  *string         `json:"turnId"`
-	Wait    WaitResource    `json:"wait"`
+	Context ContextResource  `json:"context"`
+	Cursor  *string          `json:"cursor"`
+	Earlier *EarlierResource `json:"earlier"`
+	Items   []ItemResource   `json:"items"`
+	Status  string           `json:"status"`
+	Stream  *StreamResource  `json:"stream"`
+	Turn    *TurnResource    `json:"turn"`
+	TurnId  *string          `json:"turnId"`
+	Wait    *WaitResource    `json:"wait"`
 }
 
 // EarlierResource defines model for EarlierResource.
@@ -1214,36 +1214,36 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/attachments (the `UploadAttachment` operationId).
+	// Corresponds with POST /api/v1/attachments (the `UploadAttachment` operationId).
 	UploadAttachmentWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DownloadAttachment 取回图片
 	//
 	// 按附件 id 取回原始字节，可直接作为 <img> 的地址使用。响应带长期缓存头，附件内容不会变化。附件不存在或不属于当前用户时返回 404。.
 	//
-	// Corresponds with GET /v1/attachments/{attachment} (the `DownloadAttachment` operationId).
+	// Corresponds with GET /api/v1/attachments/{attachment} (the `DownloadAttachment` operationId).
 	DownloadAttachment(ctx context.Context, attachment string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListBindings 列出绑定
 	//
 	// 接入面那张表按通道列出各自绑了谁时用 channelId 过滤。.
 	//
-	// Corresponds with GET /v1/bindings (the `ListBindings` operationId).
+	// Corresponds with GET /api/v1/bindings (the `ListBindings` operationId).
 	ListBindings(ctx context.Context, params *ListBindingsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteBinding 解除绑定
 	//
-	// Corresponds with DELETE /v1/bindings/{binding} (the `DeleteBinding` operationId).
+	// Corresponds with DELETE /api/v1/bindings/{binding} (the `DeleteBinding` operationId).
 	DeleteBinding(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetBinding 查看绑定
 	//
-	// Corresponds with GET /v1/bindings/{binding} (the `GetBinding` operationId).
+	// Corresponds with GET /api/v1/bindings/{binding} (the `GetBinding` operationId).
 	GetBinding(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListChannels 列出通道
 	//
-	// Corresponds with GET /v1/channels (the `ListChannels` operationId).
+	// Corresponds with GET /api/v1/channels (the `ListChannels` operationId).
 	ListChannels(ctx context.Context, params *ListChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateChannelWithBody 创建通道
@@ -1252,7 +1252,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+	// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 	CreateChannelWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateChannel 创建通道
@@ -1261,19 +1261,19 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+	// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 	CreateChannel(ctx context.Context, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteChannel 删除通道
 	//
 	// 删除后该通道不再接收入站消息，其上的绑定一并失效。项目处于停服或清理状态时本接口仍然可用。.
 	//
-	// Corresponds with DELETE /v1/channels/{channel} (the `DeleteChannel` operationId).
+	// Corresponds with DELETE /api/v1/channels/{channel} (the `DeleteChannel` operationId).
 	DeleteChannel(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetChannel 查看通道
 	//
-	// Corresponds with GET /v1/channels/{channel} (the `GetChannel` operationId).
+	// Corresponds with GET /api/v1/channels/{channel} (the `GetChannel` operationId).
 	GetChannel(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateChannelWithBody 修改通道
@@ -1282,7 +1282,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+	// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 	UpdateChannelWithBody(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateChannel 修改通道
@@ -1291,21 +1291,21 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+	// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 	UpdateChannel(ctx context.Context, channel openapi_types.UUID, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateBindingCode 签发绑定码
 	//
 	// 生成一个一次性绑定码交给待绑定的人，他在该平台上用自己的账号把这个码发给助手即完成绑定。绑定只能由本人以这种方式建立，不能直接指定平台账号。绑定码有有效期，过期后需重新签发。.
 	//
-	// Corresponds with POST /v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
 	CreateBindingCode(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListChannelRejections 查看最近被拒绝的入站消息
 	//
 	// 排查「发了消息但助手没有响应」时使用。按时间倒序返回最近被这条通道拒绝的入站消息及其拒绝原因，最常见的原因是发送方尚未绑定。.
 	//
-	// Corresponds with GET /v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
+	// Corresponds with GET /api/v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
 	ListChannelRejections(ctx context.Context, channel openapi_types.UUID, params *ListChannelRejectionsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RotateChannelSecretWithBody 轮换回调密钥
@@ -1314,7 +1314,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 	RotateChannelSecretWithBody(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RotateChannelSecret 轮换回调密钥
@@ -1323,63 +1323,63 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 	RotateChannelSecret(ctx context.Context, channel openapi_types.UUID, body RotateChannelSecretJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CheckSender 推演一个发件人会不会被放行
 	//
 	// 改完发件人策略之后用来自查，不发送任何消息、也不改变任何状态：它走的是和真实入站完全相同的那份判定，并说明结论由哪一条规则得出。无法推演绑定码那一条——是否是绑定码取决于对方发来的内容。.
 	//
-	// Corresponds with GET /v1/channels/{channel}/sender-check (the `CheckSender` operationId).
+	// Corresponds with GET /api/v1/channels/{channel}/sender-check (the `CheckSender` operationId).
 	CheckSender(ctx context.Context, channel openapi_types.UUID, params *CheckSenderParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// BeginWeixinLogin 发起微信扫码登录
 	//
 	// 微信个人号通道需要本人扫码登录后才能收发消息。本接口返回二维码，之后轮询 `GET /v1/weixin-logins/{login}` 获取进度；状态提示需要验证码时，调用 `POST /v1/weixin-logins/{login}/verify-code` 补交。.
 	//
-	// Corresponds with POST /v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
 	BeginWeixinLogin(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListModels 列出可用模型
 	//
 	// 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。.
 	//
-	// Corresponds with GET /v1/models (the `ListModels` operationId).
+	// Corresponds with GET /api/v1/models (the `ListModels` operationId).
 	ListModels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListPlatforms 列出可接入的平台
 	//
 	// 返回本平台当前支持接入的即时通讯平台，以及各自建通道时要走的流程和要填的凭据字段。新建通道表单完全由这份响应驱动：setupMethod 决定展示录入表单还是扫码流程，credentialFields 是要填的字段，secretSource 决定要不要有回调密钥那一栏。.
 	//
-	// Corresponds with GET /v1/platforms (the `ListPlatforms` operationId).
+	// Corresponds with GET /api/v1/platforms (the `ListPlatforms` operationId).
 	ListPlatforms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListThreads 列出对话
 	//
 	// 按最近活动排序，只返回当前账号在当前项目里的对话。archived 是一个二选一的开关而不是「包含归档」：归档的对话不出现在默认列表里，要看它们就把这个参数打开。.
 	//
-	// Corresponds with GET /v1/threads (the `ListThreads` operationId).
+	// Corresponds with GET /api/v1/threads (the `ListThreads` operationId).
 	ListThreads(ctx context.Context, params *ListThreadsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateThreadWithBody 创建对话
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+	// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 	CreateThreadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateThread 创建对话
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+	// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 	CreateThread(ctx context.Context, body CreateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetThread 取回对话文档
 	//
 	// 对话的完整当前状态，用于首屏渲染。文档中的 stream 给出实时输出地址和入场票据，流推送的是对这份文档的增量编辑，可直接套用同一套渲染逻辑。.
 	//
-	// Corresponds with GET /v1/threads/{thread} (the `GetThread` operationId).
+	// Corresponds with GET /api/v1/threads/{thread} (the `GetThread` operationId).
 	GetThread(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateThreadWithBody 修改对话设置
@@ -1388,7 +1388,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+	// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 	UpdateThreadWithBody(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateThread 修改对话设置
@@ -1397,7 +1397,7 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+	// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 	UpdateThread(ctx context.Context, thread string, body UpdateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DecideApprovalWithBody 批准或拒绝一批工具调用
@@ -1406,7 +1406,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 	DecideApprovalWithBody(ctx context.Context, thread string, batch string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DecideApproval 批准或拒绝一批工具调用
@@ -1415,21 +1415,21 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 	DecideApproval(ctx context.Context, thread string, batch string, body DecideApprovalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListEarlierItems 取回更早的对话内容
 	//
 	// 首屏只给对话最新的那一段，再往上的内容用本接口按需取回，一次一段。before 用文档里的 earlier.before，响应里的 earlier 是再往上那一段的游标，为 null 表示已经到顶。返回的条目和文档里的 items 是同一种形状，顺序也一样（由旧到新），直接接在现有内容前面即可。
 	//
-	// Corresponds with GET /v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
+	// Corresponds with GET /api/v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
 	ListEarlierItems(ctx context.Context, thread string, params *ListEarlierItemsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// InterruptThread 中断正在执行的 turn
 	//
 	// 对没有正在执行的 turn 的对话调用同样返回 204，不视为错误——用户点击停止与 turn 自然结束之间存在竞争，两种结果一致。项目处于停服或清理状态时本接口仍然可用。.
 	//
-	// Corresponds with POST /v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
 	InterruptThread(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SendMessageWithBody 发送消息并触发一次 turn
@@ -1438,7 +1438,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 	SendMessageWithBody(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SendMessage 发送消息并触发一次 turn
@@ -1447,7 +1447,7 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 	SendMessage(ctx context.Context, thread string, body SendMessageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// AnswerQuestionWithBody 回答助手提出的问题
@@ -1456,7 +1456,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 	AnswerQuestionWithBody(ctx context.Context, thread string, item string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// AnswerQuestion 回答助手提出的问题
@@ -1465,12 +1465,12 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 	AnswerQuestion(ctx context.Context, thread string, item string, body AnswerQuestionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// MarkThreadRead 标记对话已读
 	//
-	// Corresponds with POST /v1/threads/{thread}/read (the `MarkThreadRead` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/read (the `MarkThreadRead` operationId).
 	MarkThreadRead(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RevertThreadWithBody 从指定位置起撤回
@@ -1479,7 +1479,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 	RevertThreadWithBody(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RevertThread 从指定位置起撤回
@@ -1488,14 +1488,14 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 	RevertThread(ctx context.Context, thread string, body RevertThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetWeixinLogin 查询扫码登录状态
 	//
 	// 轮询本接口直到状态变为成功或失败。状态提示需要验证码时，调用补交验证码接口。.
 	//
-	// Corresponds with GET /v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
+	// Corresponds with GET /api/v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
 	GetWeixinLogin(ctx context.Context, login openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SubmitWeixinVerifyCodeWithBody 补交登录验证码
@@ -1504,7 +1504,7 @@ type ClientInterface interface {
 	//
 	// Takes any type of body and a specified content type.
 	//
-	// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+	// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 	SubmitWeixinVerifyCodeWithBody(ctx context.Context, login openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// SubmitWeixinVerifyCode 补交登录验证码
@@ -1513,7 +1513,7 @@ type ClientInterface interface {
 	//
 	// Takes a body of the `application/json` content type.
 	//
-	// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+	// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 	SubmitWeixinVerifyCode(ctx context.Context, login openapi_types.UUID, body SubmitWeixinVerifyCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
@@ -1523,7 +1523,7 @@ type ClientInterface interface {
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/attachments (the `UploadAttachment` operationId).
+// Corresponds with POST /api/v1/attachments (the `UploadAttachment` operationId).
 func (c *Client) UploadAttachmentWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUploadAttachmentRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -1540,7 +1540,7 @@ func (c *Client) UploadAttachmentWithBody(ctx context.Context, contentType strin
 //
 // 按附件 id 取回原始字节，可直接作为 <img> 的地址使用。响应带长期缓存头，附件内容不会变化。附件不存在或不属于当前用户时返回 404。.
 //
-// Corresponds with GET /v1/attachments/{attachment} (the `DownloadAttachment` operationId).
+// Corresponds with GET /api/v1/attachments/{attachment} (the `DownloadAttachment` operationId).
 func (c *Client) DownloadAttachment(ctx context.Context, attachment string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDownloadAttachmentRequest(c.Server, attachment)
 	if err != nil {
@@ -1557,7 +1557,7 @@ func (c *Client) DownloadAttachment(ctx context.Context, attachment string, reqE
 //
 // 接入面那张表按通道列出各自绑了谁时用 channelId 过滤。.
 //
-// Corresponds with GET /v1/bindings (the `ListBindings` operationId).
+// Corresponds with GET /api/v1/bindings (the `ListBindings` operationId).
 func (c *Client) ListBindings(ctx context.Context, params *ListBindingsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListBindingsRequest(c.Server, params)
 	if err != nil {
@@ -1572,7 +1572,7 @@ func (c *Client) ListBindings(ctx context.Context, params *ListBindingsParams, r
 
 // DeleteBinding 解除绑定
 //
-// Corresponds with DELETE /v1/bindings/{binding} (the `DeleteBinding` operationId).
+// Corresponds with DELETE /api/v1/bindings/{binding} (the `DeleteBinding` operationId).
 func (c *Client) DeleteBinding(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteBindingRequest(c.Server, binding)
 	if err != nil {
@@ -1587,7 +1587,7 @@ func (c *Client) DeleteBinding(ctx context.Context, binding openapi_types.UUID, 
 
 // GetBinding 查看绑定
 //
-// Corresponds with GET /v1/bindings/{binding} (the `GetBinding` operationId).
+// Corresponds with GET /api/v1/bindings/{binding} (the `GetBinding` operationId).
 func (c *Client) GetBinding(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetBindingRequest(c.Server, binding)
 	if err != nil {
@@ -1602,7 +1602,7 @@ func (c *Client) GetBinding(ctx context.Context, binding openapi_types.UUID, req
 
 // ListChannels 列出通道
 //
-// Corresponds with GET /v1/channels (the `ListChannels` operationId).
+// Corresponds with GET /api/v1/channels (the `ListChannels` operationId).
 func (c *Client) ListChannels(ctx context.Context, params *ListChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListChannelsRequest(c.Server, params)
 	if err != nil {
@@ -1621,7 +1621,7 @@ func (c *Client) ListChannels(ctx context.Context, params *ListChannelsParams, r
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 func (c *Client) CreateChannelWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateChannelRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -1640,7 +1640,7 @@ func (c *Client) CreateChannelWithBody(ctx context.Context, contentType string, 
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 func (c *Client) CreateChannel(ctx context.Context, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateChannelRequest(c.Server, body)
 	if err != nil {
@@ -1657,7 +1657,7 @@ func (c *Client) CreateChannel(ctx context.Context, body CreateChannelJSONReques
 //
 // 删除后该通道不再接收入站消息，其上的绑定一并失效。项目处于停服或清理状态时本接口仍然可用。.
 //
-// Corresponds with DELETE /v1/channels/{channel} (the `DeleteChannel` operationId).
+// Corresponds with DELETE /api/v1/channels/{channel} (the `DeleteChannel` operationId).
 func (c *Client) DeleteChannel(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteChannelRequest(c.Server, channel)
 	if err != nil {
@@ -1672,7 +1672,7 @@ func (c *Client) DeleteChannel(ctx context.Context, channel openapi_types.UUID, 
 
 // GetChannel 查看通道
 //
-// Corresponds with GET /v1/channels/{channel} (the `GetChannel` operationId).
+// Corresponds with GET /api/v1/channels/{channel} (the `GetChannel` operationId).
 func (c *Client) GetChannel(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetChannelRequest(c.Server, channel)
 	if err != nil {
@@ -1691,7 +1691,7 @@ func (c *Client) GetChannel(ctx context.Context, channel openapi_types.UUID, req
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 func (c *Client) UpdateChannelWithBody(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateChannelRequestWithBody(c.Server, channel, contentType, body)
 	if err != nil {
@@ -1710,7 +1710,7 @@ func (c *Client) UpdateChannelWithBody(ctx context.Context, channel openapi_type
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 func (c *Client) UpdateChannel(ctx context.Context, channel openapi_types.UUID, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateChannelRequest(c.Server, channel, body)
 	if err != nil {
@@ -1727,7 +1727,7 @@ func (c *Client) UpdateChannel(ctx context.Context, channel openapi_types.UUID, 
 //
 // 生成一个一次性绑定码交给待绑定的人，他在该平台上用自己的账号把这个码发给助手即完成绑定。绑定只能由本人以这种方式建立，不能直接指定平台账号。绑定码有有效期，过期后需重新签发。.
 //
-// Corresponds with POST /v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
 func (c *Client) CreateBindingCode(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateBindingCodeRequest(c.Server, channel)
 	if err != nil {
@@ -1744,7 +1744,7 @@ func (c *Client) CreateBindingCode(ctx context.Context, channel openapi_types.UU
 //
 // 排查「发了消息但助手没有响应」时使用。按时间倒序返回最近被这条通道拒绝的入站消息及其拒绝原因，最常见的原因是发送方尚未绑定。.
 //
-// Corresponds with GET /v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
+// Corresponds with GET /api/v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
 func (c *Client) ListChannelRejections(ctx context.Context, channel openapi_types.UUID, params *ListChannelRejectionsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListChannelRejectionsRequest(c.Server, channel, params)
 	if err != nil {
@@ -1763,7 +1763,7 @@ func (c *Client) ListChannelRejections(ctx context.Context, channel openapi_type
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 func (c *Client) RotateChannelSecretWithBody(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRotateChannelSecretRequestWithBody(c.Server, channel, contentType, body)
 	if err != nil {
@@ -1782,7 +1782,7 @@ func (c *Client) RotateChannelSecretWithBody(ctx context.Context, channel openap
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 func (c *Client) RotateChannelSecret(ctx context.Context, channel openapi_types.UUID, body RotateChannelSecretJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRotateChannelSecretRequest(c.Server, channel, body)
 	if err != nil {
@@ -1799,7 +1799,7 @@ func (c *Client) RotateChannelSecret(ctx context.Context, channel openapi_types.
 //
 // 改完发件人策略之后用来自查，不发送任何消息、也不改变任何状态：它走的是和真实入站完全相同的那份判定，并说明结论由哪一条规则得出。无法推演绑定码那一条——是否是绑定码取决于对方发来的内容。.
 //
-// Corresponds with GET /v1/channels/{channel}/sender-check (the `CheckSender` operationId).
+// Corresponds with GET /api/v1/channels/{channel}/sender-check (the `CheckSender` operationId).
 func (c *Client) CheckSender(ctx context.Context, channel openapi_types.UUID, params *CheckSenderParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCheckSenderRequest(c.Server, channel, params)
 	if err != nil {
@@ -1816,7 +1816,7 @@ func (c *Client) CheckSender(ctx context.Context, channel openapi_types.UUID, pa
 //
 // 微信个人号通道需要本人扫码登录后才能收发消息。本接口返回二维码，之后轮询 `GET /v1/weixin-logins/{login}` 获取进度；状态提示需要验证码时，调用 `POST /v1/weixin-logins/{login}/verify-code` 补交。.
 //
-// Corresponds with POST /v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
 func (c *Client) BeginWeixinLogin(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewBeginWeixinLoginRequest(c.Server, channel)
 	if err != nil {
@@ -1833,7 +1833,7 @@ func (c *Client) BeginWeixinLogin(ctx context.Context, channel openapi_types.UUI
 //
 // 返回本平台当前提供的模型及其上下文窗口、推理档位和支持的输入类型。用于填充对话设置里的模型选择。.
 //
-// Corresponds with GET /v1/models (the `ListModels` operationId).
+// Corresponds with GET /api/v1/models (the `ListModels` operationId).
 func (c *Client) ListModels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListModelsRequest(c.Server)
 	if err != nil {
@@ -1850,7 +1850,7 @@ func (c *Client) ListModels(ctx context.Context, reqEditors ...RequestEditorFn) 
 //
 // 返回本平台当前支持接入的即时通讯平台，以及各自建通道时要走的流程和要填的凭据字段。新建通道表单完全由这份响应驱动：setupMethod 决定展示录入表单还是扫码流程，credentialFields 是要填的字段，secretSource 决定要不要有回调密钥那一栏。.
 //
-// Corresponds with GET /v1/platforms (the `ListPlatforms` operationId).
+// Corresponds with GET /api/v1/platforms (the `ListPlatforms` operationId).
 func (c *Client) ListPlatforms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListPlatformsRequest(c.Server)
 	if err != nil {
@@ -1867,7 +1867,7 @@ func (c *Client) ListPlatforms(ctx context.Context, reqEditors ...RequestEditorF
 //
 // 按最近活动排序，只返回当前账号在当前项目里的对话。archived 是一个二选一的开关而不是「包含归档」：归档的对话不出现在默认列表里，要看它们就把这个参数打开。.
 //
-// Corresponds with GET /v1/threads (the `ListThreads` operationId).
+// Corresponds with GET /api/v1/threads (the `ListThreads` operationId).
 func (c *Client) ListThreads(ctx context.Context, params *ListThreadsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListThreadsRequest(c.Server, params)
 	if err != nil {
@@ -1884,7 +1884,7 @@ func (c *Client) ListThreads(ctx context.Context, params *ListThreadsParams, req
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 func (c *Client) CreateThreadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateThreadRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -1901,7 +1901,7 @@ func (c *Client) CreateThreadWithBody(ctx context.Context, contentType string, b
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 func (c *Client) CreateThread(ctx context.Context, body CreateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateThreadRequest(c.Server, body)
 	if err != nil {
@@ -1918,7 +1918,7 @@ func (c *Client) CreateThread(ctx context.Context, body CreateThreadJSONRequestB
 //
 // 对话的完整当前状态，用于首屏渲染。文档中的 stream 给出实时输出地址和入场票据，流推送的是对这份文档的增量编辑，可直接套用同一套渲染逻辑。.
 //
-// Corresponds with GET /v1/threads/{thread} (the `GetThread` operationId).
+// Corresponds with GET /api/v1/threads/{thread} (the `GetThread` operationId).
 func (c *Client) GetThread(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetThreadRequest(c.Server, thread)
 	if err != nil {
@@ -1937,7 +1937,7 @@ func (c *Client) GetThread(ctx context.Context, thread string, reqEditors ...Req
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 func (c *Client) UpdateThreadWithBody(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateThreadRequestWithBody(c.Server, thread, contentType, body)
 	if err != nil {
@@ -1956,7 +1956,7 @@ func (c *Client) UpdateThreadWithBody(ctx context.Context, thread string, conten
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 func (c *Client) UpdateThread(ctx context.Context, thread string, body UpdateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateThreadRequest(c.Server, thread, body)
 	if err != nil {
@@ -1975,7 +1975,7 @@ func (c *Client) UpdateThread(ctx context.Context, thread string, body UpdateThr
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 func (c *Client) DecideApprovalWithBody(ctx context.Context, thread string, batch string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDecideApprovalRequestWithBody(c.Server, thread, batch, contentType, body)
 	if err != nil {
@@ -1994,7 +1994,7 @@ func (c *Client) DecideApprovalWithBody(ctx context.Context, thread string, batc
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 func (c *Client) DecideApproval(ctx context.Context, thread string, batch string, body DecideApprovalJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDecideApprovalRequest(c.Server, thread, batch, body)
 	if err != nil {
@@ -2011,7 +2011,7 @@ func (c *Client) DecideApproval(ctx context.Context, thread string, batch string
 //
 // 首屏只给对话最新的那一段，再往上的内容用本接口按需取回，一次一段。before 用文档里的 earlier.before，响应里的 earlier 是再往上那一段的游标，为 null 表示已经到顶。返回的条目和文档里的 items 是同一种形状，顺序也一样（由旧到新），直接接在现有内容前面即可。
 //
-// Corresponds with GET /v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
+// Corresponds with GET /api/v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
 func (c *Client) ListEarlierItems(ctx context.Context, thread string, params *ListEarlierItemsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListEarlierItemsRequest(c.Server, thread, params)
 	if err != nil {
@@ -2028,7 +2028,7 @@ func (c *Client) ListEarlierItems(ctx context.Context, thread string, params *Li
 //
 // 对没有正在执行的 turn 的对话调用同样返回 204，不视为错误——用户点击停止与 turn 自然结束之间存在竞争，两种结果一致。项目处于停服或清理状态时本接口仍然可用。.
 //
-// Corresponds with POST /v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
 func (c *Client) InterruptThread(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewInterruptThreadRequest(c.Server, thread)
 	if err != nil {
@@ -2047,7 +2047,7 @@ func (c *Client) InterruptThread(ctx context.Context, thread string, reqEditors 
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 func (c *Client) SendMessageWithBody(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendMessageRequestWithBody(c.Server, thread, contentType, body)
 	if err != nil {
@@ -2066,7 +2066,7 @@ func (c *Client) SendMessageWithBody(ctx context.Context, thread string, content
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 func (c *Client) SendMessage(ctx context.Context, thread string, body SendMessageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendMessageRequest(c.Server, thread, body)
 	if err != nil {
@@ -2085,7 +2085,7 @@ func (c *Client) SendMessage(ctx context.Context, thread string, body SendMessag
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 func (c *Client) AnswerQuestionWithBody(ctx context.Context, thread string, item string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAnswerQuestionRequestWithBody(c.Server, thread, item, contentType, body)
 	if err != nil {
@@ -2104,7 +2104,7 @@ func (c *Client) AnswerQuestionWithBody(ctx context.Context, thread string, item
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 func (c *Client) AnswerQuestion(ctx context.Context, thread string, item string, body AnswerQuestionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAnswerQuestionRequest(c.Server, thread, item, body)
 	if err != nil {
@@ -2119,7 +2119,7 @@ func (c *Client) AnswerQuestion(ctx context.Context, thread string, item string,
 
 // MarkThreadRead 标记对话已读
 //
-// Corresponds with POST /v1/threads/{thread}/read (the `MarkThreadRead` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/read (the `MarkThreadRead` operationId).
 func (c *Client) MarkThreadRead(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewMarkThreadReadRequest(c.Server, thread)
 	if err != nil {
@@ -2138,7 +2138,7 @@ func (c *Client) MarkThreadRead(ctx context.Context, thread string, reqEditors .
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 func (c *Client) RevertThreadWithBody(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRevertThreadRequestWithBody(c.Server, thread, contentType, body)
 	if err != nil {
@@ -2157,7 +2157,7 @@ func (c *Client) RevertThreadWithBody(ctx context.Context, thread string, conten
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 func (c *Client) RevertThread(ctx context.Context, thread string, body RevertThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRevertThreadRequest(c.Server, thread, body)
 	if err != nil {
@@ -2174,7 +2174,7 @@ func (c *Client) RevertThread(ctx context.Context, thread string, body RevertThr
 //
 // 轮询本接口直到状态变为成功或失败。状态提示需要验证码时，调用补交验证码接口。.
 //
-// Corresponds with GET /v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
+// Corresponds with GET /api/v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
 func (c *Client) GetWeixinLogin(ctx context.Context, login openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetWeixinLoginRequest(c.Server, login)
 	if err != nil {
@@ -2193,7 +2193,7 @@ func (c *Client) GetWeixinLogin(ctx context.Context, login openapi_types.UUID, r
 //
 // Takes any type of body and a specified content type.
 //
-// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 func (c *Client) SubmitWeixinVerifyCodeWithBody(ctx context.Context, login openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSubmitWeixinVerifyCodeRequestWithBody(c.Server, login, contentType, body)
 	if err != nil {
@@ -2212,7 +2212,7 @@ func (c *Client) SubmitWeixinVerifyCodeWithBody(ctx context.Context, login opena
 //
 // Takes a body of the `application/json` content type.
 //
-// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 func (c *Client) SubmitWeixinVerifyCode(ctx context.Context, login openapi_types.UUID, body SubmitWeixinVerifyCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSubmitWeixinVerifyCodeRequest(c.Server, login, body)
 	if err != nil {
@@ -2234,7 +2234,7 @@ func NewUploadAttachmentRequestWithBody(server string, contentType string, body 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/attachments")
+	operationPath := fmt.Sprintf("/api/v1/attachments")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2270,7 +2270,7 @@ func NewDownloadAttachmentRequest(server string, attachment string) (*http.Reque
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/attachments/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/attachments/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2297,7 +2297,7 @@ func NewListBindingsRequest(server string, params *ListBindingsParams) (*http.Re
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/bindings")
+	operationPath := fmt.Sprintf("/api/v1/bindings")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2406,7 +2406,7 @@ func NewDeleteBindingRequest(server string, binding openapi_types.UUID) (*http.R
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/bindings/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/bindings/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2440,7 +2440,7 @@ func NewGetBindingRequest(server string, binding openapi_types.UUID) (*http.Requ
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/bindings/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/bindings/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2467,7 +2467,7 @@ func NewListChannelsRequest(server string, params *ListChannelsParams) (*http.Re
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels")
+	operationPath := fmt.Sprintf("/api/v1/channels")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2568,7 +2568,7 @@ func NewCreateChannelRequestWithBody(server string, contentType string, body io.
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels")
+	operationPath := fmt.Sprintf("/api/v1/channels")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2604,7 +2604,7 @@ func NewDeleteChannelRequest(server string, channel openapi_types.UUID) (*http.R
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2638,7 +2638,7 @@ func NewGetChannelRequest(server string, channel openapi_types.UUID) (*http.Requ
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2683,7 +2683,7 @@ func NewUpdateChannelRequestWithBody(server string, channel openapi_types.UUID, 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2719,7 +2719,7 @@ func NewCreateBindingCodeRequest(server string, channel openapi_types.UUID) (*ht
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s/binding-codes", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s/binding-codes", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2753,7 +2753,7 @@ func NewListChannelRejectionsRequest(server string, channel openapi_types.UUID, 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s/rejections", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s/rejections", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2825,7 +2825,7 @@ func NewRotateChannelSecretRequestWithBody(server string, channel openapi_types.
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s/secret", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s/secret", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2861,7 +2861,7 @@ func NewCheckSenderRequest(server string, channel openapi_types.UUID, params *Ch
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s/sender-check", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s/sender-check", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2930,7 +2930,7 @@ func NewBeginWeixinLoginRequest(server string, channel openapi_types.UUID) (*htt
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/channels/%s/weixin-logins", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/channels/%s/weixin-logins", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2957,7 +2957,7 @@ func NewListModelsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/models")
+	operationPath := fmt.Sprintf("/api/v1/models")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2984,7 +2984,7 @@ func NewListPlatformsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/platforms")
+	operationPath := fmt.Sprintf("/api/v1/platforms")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3011,7 +3011,7 @@ func NewListThreadsRequest(server string, params *ListThreadsParams) (*http.Requ
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads")
+	operationPath := fmt.Sprintf("/api/v1/threads")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3100,7 +3100,7 @@ func NewCreateThreadRequestWithBody(server string, contentType string, body io.R
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads")
+	operationPath := fmt.Sprintf("/api/v1/threads")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3136,7 +3136,7 @@ func NewGetThreadRequest(server string, thread string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3181,7 +3181,7 @@ func NewUpdateThreadRequestWithBody(server string, thread string, contentType st
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3235,7 +3235,7 @@ func NewDecideApprovalRequestWithBody(server string, thread string, batch string
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s/approvals/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s/approvals/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3271,7 +3271,7 @@ func NewListEarlierItemsRequest(server string, thread string, params *ListEarlie
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s/earlier", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s/earlier", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3328,7 +3328,7 @@ func NewInterruptThreadRequest(server string, thread string) (*http.Request, err
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s/interrupt", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s/interrupt", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3373,7 +3373,7 @@ func NewSendMessageRequestWithBody(server string, thread string, contentType str
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s/messages", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s/messages", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3427,7 +3427,7 @@ func NewAnswerQuestionRequestWithBody(server string, thread string, item string,
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s/questions/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s/questions/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3463,7 +3463,7 @@ func NewMarkThreadReadRequest(server string, thread string) (*http.Request, erro
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s/read", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s/read", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3508,7 +3508,7 @@ func NewRevertThreadRequestWithBody(server string, thread string, contentType st
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/threads/%s/revert", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/threads/%s/revert", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3544,7 +3544,7 @@ func NewGetWeixinLoginRequest(server string, login openapi_types.UUID) (*http.Re
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/weixin-logins/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/weixin-logins/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3589,7 +3589,7 @@ func NewSubmitWeixinVerifyCodeRequestWithBody(server string, login openapi_types
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/weixin-logins/%s/verify-code", pathParam0)
+	operationPath := fmt.Sprintf("/api/v1/weixin-logins/%s/verify-code", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3659,7 +3659,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/attachments (the `UploadAttachment` operationId).
+	// Corresponds with POST /api/v1/attachments (the `UploadAttachment` operationId).
 	UploadAttachmentWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadAttachmentResponse, error)
 
 	// DownloadAttachmentWithResponse 取回图片
@@ -3668,7 +3668,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/attachments/{attachment} (the `DownloadAttachment` operationId).
+	// Corresponds with GET /api/v1/attachments/{attachment} (the `DownloadAttachment` operationId).
 	DownloadAttachmentWithResponse(ctx context.Context, attachment string, reqEditors ...RequestEditorFn) (*DownloadAttachmentResponse, error)
 
 	// ListBindingsWithResponse 列出绑定
@@ -3677,28 +3677,28 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/bindings (the `ListBindings` operationId).
+	// Corresponds with GET /api/v1/bindings (the `ListBindings` operationId).
 	ListBindingsWithResponse(ctx context.Context, params *ListBindingsParams, reqEditors ...RequestEditorFn) (*ListBindingsResponse, error)
 
 	// DeleteBindingWithResponse 解除绑定
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with DELETE /v1/bindings/{binding} (the `DeleteBinding` operationId).
+	// Corresponds with DELETE /api/v1/bindings/{binding} (the `DeleteBinding` operationId).
 	DeleteBindingWithResponse(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteBindingResponse, error)
 
 	// GetBindingWithResponse 查看绑定
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/bindings/{binding} (the `GetBinding` operationId).
+	// Corresponds with GET /api/v1/bindings/{binding} (the `GetBinding` operationId).
 	GetBindingWithResponse(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetBindingResponse, error)
 
 	// ListChannelsWithResponse 列出通道
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/channels (the `ListChannels` operationId).
+	// Corresponds with GET /api/v1/channels (the `ListChannels` operationId).
 	ListChannelsWithResponse(ctx context.Context, params *ListChannelsParams, reqEditors ...RequestEditorFn) (*ListChannelsResponse, error)
 
 	// CreateChannelWithBodyWithResponse 创建通道
@@ -3707,7 +3707,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+	// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 	CreateChannelWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error)
 
 	// CreateChannelWithResponse 创建通道
@@ -3716,7 +3716,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+	// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 	CreateChannelWithResponse(ctx context.Context, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error)
 
 	// DeleteChannelWithResponse 删除通道
@@ -3725,14 +3725,14 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with DELETE /v1/channels/{channel} (the `DeleteChannel` operationId).
+	// Corresponds with DELETE /api/v1/channels/{channel} (the `DeleteChannel` operationId).
 	DeleteChannelWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteChannelResponse, error)
 
 	// GetChannelWithResponse 查看通道
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/channels/{channel} (the `GetChannel` operationId).
+	// Corresponds with GET /api/v1/channels/{channel} (the `GetChannel` operationId).
 	GetChannelWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetChannelResponse, error)
 
 	// UpdateChannelWithBodyWithResponse 修改通道
@@ -3741,7 +3741,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+	// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 	UpdateChannelWithBodyWithResponse(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error)
 
 	// UpdateChannelWithResponse 修改通道
@@ -3750,7 +3750,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+	// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 	UpdateChannelWithResponse(ctx context.Context, channel openapi_types.UUID, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error)
 
 	// CreateBindingCodeWithResponse 签发绑定码
@@ -3759,7 +3759,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
 	CreateBindingCodeWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*CreateBindingCodeResponse, error)
 
 	// ListChannelRejectionsWithResponse 查看最近被拒绝的入站消息
@@ -3768,7 +3768,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
+	// Corresponds with GET /api/v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
 	ListChannelRejectionsWithResponse(ctx context.Context, channel openapi_types.UUID, params *ListChannelRejectionsParams, reqEditors ...RequestEditorFn) (*ListChannelRejectionsResponse, error)
 
 	// RotateChannelSecretWithBodyWithResponse 轮换回调密钥
@@ -3777,7 +3777,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 	RotateChannelSecretWithBodyWithResponse(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RotateChannelSecretResponse, error)
 
 	// RotateChannelSecretWithResponse 轮换回调密钥
@@ -3786,7 +3786,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 	RotateChannelSecretWithResponse(ctx context.Context, channel openapi_types.UUID, body RotateChannelSecretJSONRequestBody, reqEditors ...RequestEditorFn) (*RotateChannelSecretResponse, error)
 
 	// CheckSenderWithResponse 推演一个发件人会不会被放行
@@ -3795,7 +3795,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/channels/{channel}/sender-check (the `CheckSender` operationId).
+	// Corresponds with GET /api/v1/channels/{channel}/sender-check (the `CheckSender` operationId).
 	CheckSenderWithResponse(ctx context.Context, channel openapi_types.UUID, params *CheckSenderParams, reqEditors ...RequestEditorFn) (*CheckSenderResponse, error)
 
 	// BeginWeixinLoginWithResponse 发起微信扫码登录
@@ -3804,7 +3804,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
+	// Corresponds with POST /api/v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
 	BeginWeixinLoginWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*BeginWeixinLoginResponse, error)
 
 	// ListModelsWithResponse 列出可用模型
@@ -3813,7 +3813,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/models (the `ListModels` operationId).
+	// Corresponds with GET /api/v1/models (the `ListModels` operationId).
 	ListModelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListModelsResponse, error)
 
 	// ListPlatformsWithResponse 列出可接入的平台
@@ -3822,7 +3822,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/platforms (the `ListPlatforms` operationId).
+	// Corresponds with GET /api/v1/platforms (the `ListPlatforms` operationId).
 	ListPlatformsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPlatformsResponse, error)
 
 	// ListThreadsWithResponse 列出对话
@@ -3831,21 +3831,21 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/threads (the `ListThreads` operationId).
+	// Corresponds with GET /api/v1/threads (the `ListThreads` operationId).
 	ListThreadsWithResponse(ctx context.Context, params *ListThreadsParams, reqEditors ...RequestEditorFn) (*ListThreadsResponse, error)
 
 	// CreateThreadWithBodyWithResponse 创建对话
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+	// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 	CreateThreadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateThreadResponse, error)
 
 	// CreateThreadWithResponse 创建对话
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+	// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 	CreateThreadWithResponse(ctx context.Context, body CreateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateThreadResponse, error)
 
 	// GetThreadWithResponse 取回对话文档
@@ -3854,7 +3854,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/threads/{thread} (the `GetThread` operationId).
+	// Corresponds with GET /api/v1/threads/{thread} (the `GetThread` operationId).
 	GetThreadWithResponse(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*GetThreadResponse, error)
 
 	// UpdateThreadWithBodyWithResponse 修改对话设置
@@ -3863,7 +3863,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+	// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 	UpdateThreadWithBodyWithResponse(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateThreadResponse, error)
 
 	// UpdateThreadWithResponse 修改对话设置
@@ -3872,7 +3872,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+	// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 	UpdateThreadWithResponse(ctx context.Context, thread string, body UpdateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateThreadResponse, error)
 
 	// DecideApprovalWithBodyWithResponse 批准或拒绝一批工具调用
@@ -3881,7 +3881,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 	DecideApprovalWithBodyWithResponse(ctx context.Context, thread string, batch string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DecideApprovalResponse, error)
 
 	// DecideApprovalWithResponse 批准或拒绝一批工具调用
@@ -3890,7 +3890,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 	DecideApprovalWithResponse(ctx context.Context, thread string, batch string, body DecideApprovalJSONRequestBody, reqEditors ...RequestEditorFn) (*DecideApprovalResponse, error)
 
 	// ListEarlierItemsWithResponse 取回更早的对话内容
@@ -3899,7 +3899,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
+	// Corresponds with GET /api/v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
 	ListEarlierItemsWithResponse(ctx context.Context, thread string, params *ListEarlierItemsParams, reqEditors ...RequestEditorFn) (*ListEarlierItemsResponse, error)
 
 	// InterruptThreadWithResponse 中断正在执行的 turn
@@ -3908,7 +3908,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
 	InterruptThreadWithResponse(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*InterruptThreadResponse, error)
 
 	// SendMessageWithBodyWithResponse 发送消息并触发一次 turn
@@ -3917,7 +3917,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 	SendMessageWithBodyWithResponse(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendMessageResponse, error)
 
 	// SendMessageWithResponse 发送消息并触发一次 turn
@@ -3926,7 +3926,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 	SendMessageWithResponse(ctx context.Context, thread string, body SendMessageJSONRequestBody, reqEditors ...RequestEditorFn) (*SendMessageResponse, error)
 
 	// AnswerQuestionWithBodyWithResponse 回答助手提出的问题
@@ -3935,7 +3935,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 	AnswerQuestionWithBodyWithResponse(ctx context.Context, thread string, item string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AnswerQuestionResponse, error)
 
 	// AnswerQuestionWithResponse 回答助手提出的问题
@@ -3944,14 +3944,14 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 	AnswerQuestionWithResponse(ctx context.Context, thread string, item string, body AnswerQuestionJSONRequestBody, reqEditors ...RequestEditorFn) (*AnswerQuestionResponse, error)
 
 	// MarkThreadReadWithResponse 标记对话已读
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/read (the `MarkThreadRead` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/read (the `MarkThreadRead` operationId).
 	MarkThreadReadWithResponse(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*MarkThreadReadResponse, error)
 
 	// RevertThreadWithBodyWithResponse 从指定位置起撤回
@@ -3960,7 +3960,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 	RevertThreadWithBodyWithResponse(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RevertThreadResponse, error)
 
 	// RevertThreadWithResponse 从指定位置起撤回
@@ -3969,7 +3969,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+	// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 	RevertThreadWithResponse(ctx context.Context, thread string, body RevertThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*RevertThreadResponse, error)
 
 	// GetWeixinLoginWithResponse 查询扫码登录状态
@@ -3978,7 +3978,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with GET /v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
+	// Corresponds with GET /api/v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
 	GetWeixinLoginWithResponse(ctx context.Context, login openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetWeixinLoginResponse, error)
 
 	// SubmitWeixinVerifyCodeWithBodyWithResponse 补交登录验证码
@@ -3987,7 +3987,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+	// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 	SubmitWeixinVerifyCodeWithBodyWithResponse(ctx context.Context, login openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SubmitWeixinVerifyCodeResponse, error)
 
 	// SubmitWeixinVerifyCodeWithResponse 补交登录验证码
@@ -3996,7 +3996,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
-	// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+	// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 	SubmitWeixinVerifyCodeWithResponse(ctx context.Context, login openapi_types.UUID, body SubmitWeixinVerifyCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*SubmitWeixinVerifyCodeResponse, error)
 }
 
@@ -4048,11 +4048,18 @@ func (r UploadAttachmentResponse) ContentType() string {
 	return ""
 }
 
+// DownloadAttachmentResponse200Headers the declared response headers of an HTTP 200 response for DownloadAttachment
+type DownloadAttachmentResponse200Headers struct {
+	CacheControl *string
+}
+
 type DownloadAttachmentResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *Error
+	// Headers200 the parsed response headers for an HTTP 200 response
+	Headers200 *DownloadAttachmentResponse200Headers
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -5397,7 +5404,7 @@ func (r SubmitWeixinVerifyCodeResponse) ContentType() string {
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/attachments (the `UploadAttachment` operationId).
+// Corresponds with POST /api/v1/attachments (the `UploadAttachment` operationId).
 func (c *ClientWithResponses) UploadAttachmentWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadAttachmentResponse, error) {
 	rsp, err := c.UploadAttachmentWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -5412,7 +5419,7 @@ func (c *ClientWithResponses) UploadAttachmentWithBodyWithResponse(ctx context.C
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/attachments/{attachment} (the `DownloadAttachment` operationId).
+// Corresponds with GET /api/v1/attachments/{attachment} (the `DownloadAttachment` operationId).
 func (c *ClientWithResponses) DownloadAttachmentWithResponse(ctx context.Context, attachment string, reqEditors ...RequestEditorFn) (*DownloadAttachmentResponse, error) {
 	rsp, err := c.DownloadAttachment(ctx, attachment, reqEditors...)
 	if err != nil {
@@ -5427,7 +5434,7 @@ func (c *ClientWithResponses) DownloadAttachmentWithResponse(ctx context.Context
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/bindings (the `ListBindings` operationId).
+// Corresponds with GET /api/v1/bindings (the `ListBindings` operationId).
 func (c *ClientWithResponses) ListBindingsWithResponse(ctx context.Context, params *ListBindingsParams, reqEditors ...RequestEditorFn) (*ListBindingsResponse, error) {
 	rsp, err := c.ListBindings(ctx, params, reqEditors...)
 	if err != nil {
@@ -5440,7 +5447,7 @@ func (c *ClientWithResponses) ListBindingsWithResponse(ctx context.Context, para
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with DELETE /v1/bindings/{binding} (the `DeleteBinding` operationId).
+// Corresponds with DELETE /api/v1/bindings/{binding} (the `DeleteBinding` operationId).
 func (c *ClientWithResponses) DeleteBindingWithResponse(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteBindingResponse, error) {
 	rsp, err := c.DeleteBinding(ctx, binding, reqEditors...)
 	if err != nil {
@@ -5453,7 +5460,7 @@ func (c *ClientWithResponses) DeleteBindingWithResponse(ctx context.Context, bin
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/bindings/{binding} (the `GetBinding` operationId).
+// Corresponds with GET /api/v1/bindings/{binding} (the `GetBinding` operationId).
 func (c *ClientWithResponses) GetBindingWithResponse(ctx context.Context, binding openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetBindingResponse, error) {
 	rsp, err := c.GetBinding(ctx, binding, reqEditors...)
 	if err != nil {
@@ -5466,7 +5473,7 @@ func (c *ClientWithResponses) GetBindingWithResponse(ctx context.Context, bindin
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/channels (the `ListChannels` operationId).
+// Corresponds with GET /api/v1/channels (the `ListChannels` operationId).
 func (c *ClientWithResponses) ListChannelsWithResponse(ctx context.Context, params *ListChannelsParams, reqEditors ...RequestEditorFn) (*ListChannelsResponse, error) {
 	rsp, err := c.ListChannels(ctx, params, reqEditors...)
 	if err != nil {
@@ -5481,7 +5488,7 @@ func (c *ClientWithResponses) ListChannelsWithResponse(ctx context.Context, para
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 func (c *ClientWithResponses) CreateChannelWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error) {
 	rsp, err := c.CreateChannelWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -5496,7 +5503,7 @@ func (c *ClientWithResponses) CreateChannelWithBodyWithResponse(ctx context.Cont
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/channels (the `CreateChannel` operationId).
+// Corresponds with POST /api/v1/channels (the `CreateChannel` operationId).
 func (c *ClientWithResponses) CreateChannelWithResponse(ctx context.Context, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error) {
 	rsp, err := c.CreateChannel(ctx, body, reqEditors...)
 	if err != nil {
@@ -5511,7 +5518,7 @@ func (c *ClientWithResponses) CreateChannelWithResponse(ctx context.Context, bod
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with DELETE /v1/channels/{channel} (the `DeleteChannel` operationId).
+// Corresponds with DELETE /api/v1/channels/{channel} (the `DeleteChannel` operationId).
 func (c *ClientWithResponses) DeleteChannelWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteChannelResponse, error) {
 	rsp, err := c.DeleteChannel(ctx, channel, reqEditors...)
 	if err != nil {
@@ -5524,7 +5531,7 @@ func (c *ClientWithResponses) DeleteChannelWithResponse(ctx context.Context, cha
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/channels/{channel} (the `GetChannel` operationId).
+// Corresponds with GET /api/v1/channels/{channel} (the `GetChannel` operationId).
 func (c *ClientWithResponses) GetChannelWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetChannelResponse, error) {
 	rsp, err := c.GetChannel(ctx, channel, reqEditors...)
 	if err != nil {
@@ -5539,7 +5546,7 @@ func (c *ClientWithResponses) GetChannelWithResponse(ctx context.Context, channe
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 func (c *ClientWithResponses) UpdateChannelWithBodyWithResponse(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error) {
 	rsp, err := c.UpdateChannelWithBody(ctx, channel, contentType, body, reqEditors...)
 	if err != nil {
@@ -5554,7 +5561,7 @@ func (c *ClientWithResponses) UpdateChannelWithBodyWithResponse(ctx context.Cont
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with PATCH /v1/channels/{channel} (the `UpdateChannel` operationId).
+// Corresponds with PATCH /api/v1/channels/{channel} (the `UpdateChannel` operationId).
 func (c *ClientWithResponses) UpdateChannelWithResponse(ctx context.Context, channel openapi_types.UUID, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error) {
 	rsp, err := c.UpdateChannel(ctx, channel, body, reqEditors...)
 	if err != nil {
@@ -5569,7 +5576,7 @@ func (c *ClientWithResponses) UpdateChannelWithResponse(ctx context.Context, cha
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/binding-codes (the `CreateBindingCode` operationId).
 func (c *ClientWithResponses) CreateBindingCodeWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*CreateBindingCodeResponse, error) {
 	rsp, err := c.CreateBindingCode(ctx, channel, reqEditors...)
 	if err != nil {
@@ -5584,7 +5591,7 @@ func (c *ClientWithResponses) CreateBindingCodeWithResponse(ctx context.Context,
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
+// Corresponds with GET /api/v1/channels/{channel}/rejections (the `ListChannelRejections` operationId).
 func (c *ClientWithResponses) ListChannelRejectionsWithResponse(ctx context.Context, channel openapi_types.UUID, params *ListChannelRejectionsParams, reqEditors ...RequestEditorFn) (*ListChannelRejectionsResponse, error) {
 	rsp, err := c.ListChannelRejections(ctx, channel, params, reqEditors...)
 	if err != nil {
@@ -5599,7 +5606,7 @@ func (c *ClientWithResponses) ListChannelRejectionsWithResponse(ctx context.Cont
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 func (c *ClientWithResponses) RotateChannelSecretWithBodyWithResponse(ctx context.Context, channel openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RotateChannelSecretResponse, error) {
 	rsp, err := c.RotateChannelSecretWithBody(ctx, channel, contentType, body, reqEditors...)
 	if err != nil {
@@ -5614,7 +5621,7 @@ func (c *ClientWithResponses) RotateChannelSecretWithBodyWithResponse(ctx contex
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/secret (the `RotateChannelSecret` operationId).
 func (c *ClientWithResponses) RotateChannelSecretWithResponse(ctx context.Context, channel openapi_types.UUID, body RotateChannelSecretJSONRequestBody, reqEditors ...RequestEditorFn) (*RotateChannelSecretResponse, error) {
 	rsp, err := c.RotateChannelSecret(ctx, channel, body, reqEditors...)
 	if err != nil {
@@ -5629,7 +5636,7 @@ func (c *ClientWithResponses) RotateChannelSecretWithResponse(ctx context.Contex
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/channels/{channel}/sender-check (the `CheckSender` operationId).
+// Corresponds with GET /api/v1/channels/{channel}/sender-check (the `CheckSender` operationId).
 func (c *ClientWithResponses) CheckSenderWithResponse(ctx context.Context, channel openapi_types.UUID, params *CheckSenderParams, reqEditors ...RequestEditorFn) (*CheckSenderResponse, error) {
 	rsp, err := c.CheckSender(ctx, channel, params, reqEditors...)
 	if err != nil {
@@ -5644,7 +5651,7 @@ func (c *ClientWithResponses) CheckSenderWithResponse(ctx context.Context, chann
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
+// Corresponds with POST /api/v1/channels/{channel}/weixin-logins (the `BeginWeixinLogin` operationId).
 func (c *ClientWithResponses) BeginWeixinLoginWithResponse(ctx context.Context, channel openapi_types.UUID, reqEditors ...RequestEditorFn) (*BeginWeixinLoginResponse, error) {
 	rsp, err := c.BeginWeixinLogin(ctx, channel, reqEditors...)
 	if err != nil {
@@ -5659,7 +5666,7 @@ func (c *ClientWithResponses) BeginWeixinLoginWithResponse(ctx context.Context, 
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/models (the `ListModels` operationId).
+// Corresponds with GET /api/v1/models (the `ListModels` operationId).
 func (c *ClientWithResponses) ListModelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListModelsResponse, error) {
 	rsp, err := c.ListModels(ctx, reqEditors...)
 	if err != nil {
@@ -5674,7 +5681,7 @@ func (c *ClientWithResponses) ListModelsWithResponse(ctx context.Context, reqEdi
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/platforms (the `ListPlatforms` operationId).
+// Corresponds with GET /api/v1/platforms (the `ListPlatforms` operationId).
 func (c *ClientWithResponses) ListPlatformsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPlatformsResponse, error) {
 	rsp, err := c.ListPlatforms(ctx, reqEditors...)
 	if err != nil {
@@ -5689,7 +5696,7 @@ func (c *ClientWithResponses) ListPlatformsWithResponse(ctx context.Context, req
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/threads (the `ListThreads` operationId).
+// Corresponds with GET /api/v1/threads (the `ListThreads` operationId).
 func (c *ClientWithResponses) ListThreadsWithResponse(ctx context.Context, params *ListThreadsParams, reqEditors ...RequestEditorFn) (*ListThreadsResponse, error) {
 	rsp, err := c.ListThreads(ctx, params, reqEditors...)
 	if err != nil {
@@ -5702,7 +5709,7 @@ func (c *ClientWithResponses) ListThreadsWithResponse(ctx context.Context, param
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 func (c *ClientWithResponses) CreateThreadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateThreadResponse, error) {
 	rsp, err := c.CreateThreadWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -5715,7 +5722,7 @@ func (c *ClientWithResponses) CreateThreadWithBodyWithResponse(ctx context.Conte
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads (the `CreateThread` operationId).
+// Corresponds with POST /api/v1/threads (the `CreateThread` operationId).
 func (c *ClientWithResponses) CreateThreadWithResponse(ctx context.Context, body CreateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateThreadResponse, error) {
 	rsp, err := c.CreateThread(ctx, body, reqEditors...)
 	if err != nil {
@@ -5730,7 +5737,7 @@ func (c *ClientWithResponses) CreateThreadWithResponse(ctx context.Context, body
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/threads/{thread} (the `GetThread` operationId).
+// Corresponds with GET /api/v1/threads/{thread} (the `GetThread` operationId).
 func (c *ClientWithResponses) GetThreadWithResponse(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*GetThreadResponse, error) {
 	rsp, err := c.GetThread(ctx, thread, reqEditors...)
 	if err != nil {
@@ -5745,7 +5752,7 @@ func (c *ClientWithResponses) GetThreadWithResponse(ctx context.Context, thread 
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 func (c *ClientWithResponses) UpdateThreadWithBodyWithResponse(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateThreadResponse, error) {
 	rsp, err := c.UpdateThreadWithBody(ctx, thread, contentType, body, reqEditors...)
 	if err != nil {
@@ -5760,7 +5767,7 @@ func (c *ClientWithResponses) UpdateThreadWithBodyWithResponse(ctx context.Conte
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with PATCH /v1/threads/{thread} (the `UpdateThread` operationId).
+// Corresponds with PATCH /api/v1/threads/{thread} (the `UpdateThread` operationId).
 func (c *ClientWithResponses) UpdateThreadWithResponse(ctx context.Context, thread string, body UpdateThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateThreadResponse, error) {
 	rsp, err := c.UpdateThread(ctx, thread, body, reqEditors...)
 	if err != nil {
@@ -5775,7 +5782,7 @@ func (c *ClientWithResponses) UpdateThreadWithResponse(ctx context.Context, thre
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 func (c *ClientWithResponses) DecideApprovalWithBodyWithResponse(ctx context.Context, thread string, batch string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DecideApprovalResponse, error) {
 	rsp, err := c.DecideApprovalWithBody(ctx, thread, batch, contentType, body, reqEditors...)
 	if err != nil {
@@ -5790,7 +5797,7 @@ func (c *ClientWithResponses) DecideApprovalWithBodyWithResponse(ctx context.Con
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/approvals/{batch} (the `DecideApproval` operationId).
 func (c *ClientWithResponses) DecideApprovalWithResponse(ctx context.Context, thread string, batch string, body DecideApprovalJSONRequestBody, reqEditors ...RequestEditorFn) (*DecideApprovalResponse, error) {
 	rsp, err := c.DecideApproval(ctx, thread, batch, body, reqEditors...)
 	if err != nil {
@@ -5805,7 +5812,7 @@ func (c *ClientWithResponses) DecideApprovalWithResponse(ctx context.Context, th
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
+// Corresponds with GET /api/v1/threads/{thread}/earlier (the `ListEarlierItems` operationId).
 func (c *ClientWithResponses) ListEarlierItemsWithResponse(ctx context.Context, thread string, params *ListEarlierItemsParams, reqEditors ...RequestEditorFn) (*ListEarlierItemsResponse, error) {
 	rsp, err := c.ListEarlierItems(ctx, thread, params, reqEditors...)
 	if err != nil {
@@ -5820,7 +5827,7 @@ func (c *ClientWithResponses) ListEarlierItemsWithResponse(ctx context.Context, 
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/interrupt (the `InterruptThread` operationId).
 func (c *ClientWithResponses) InterruptThreadWithResponse(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*InterruptThreadResponse, error) {
 	rsp, err := c.InterruptThread(ctx, thread, reqEditors...)
 	if err != nil {
@@ -5835,7 +5842,7 @@ func (c *ClientWithResponses) InterruptThreadWithResponse(ctx context.Context, t
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 func (c *ClientWithResponses) SendMessageWithBodyWithResponse(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendMessageResponse, error) {
 	rsp, err := c.SendMessageWithBody(ctx, thread, contentType, body, reqEditors...)
 	if err != nil {
@@ -5850,7 +5857,7 @@ func (c *ClientWithResponses) SendMessageWithBodyWithResponse(ctx context.Contex
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/messages (the `SendMessage` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/messages (the `SendMessage` operationId).
 func (c *ClientWithResponses) SendMessageWithResponse(ctx context.Context, thread string, body SendMessageJSONRequestBody, reqEditors ...RequestEditorFn) (*SendMessageResponse, error) {
 	rsp, err := c.SendMessage(ctx, thread, body, reqEditors...)
 	if err != nil {
@@ -5865,7 +5872,7 @@ func (c *ClientWithResponses) SendMessageWithResponse(ctx context.Context, threa
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 func (c *ClientWithResponses) AnswerQuestionWithBodyWithResponse(ctx context.Context, thread string, item string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AnswerQuestionResponse, error) {
 	rsp, err := c.AnswerQuestionWithBody(ctx, thread, item, contentType, body, reqEditors...)
 	if err != nil {
@@ -5880,7 +5887,7 @@ func (c *ClientWithResponses) AnswerQuestionWithBodyWithResponse(ctx context.Con
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/questions/{item} (the `AnswerQuestion` operationId).
 func (c *ClientWithResponses) AnswerQuestionWithResponse(ctx context.Context, thread string, item string, body AnswerQuestionJSONRequestBody, reqEditors ...RequestEditorFn) (*AnswerQuestionResponse, error) {
 	rsp, err := c.AnswerQuestion(ctx, thread, item, body, reqEditors...)
 	if err != nil {
@@ -5893,7 +5900,7 @@ func (c *ClientWithResponses) AnswerQuestionWithResponse(ctx context.Context, th
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/read (the `MarkThreadRead` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/read (the `MarkThreadRead` operationId).
 func (c *ClientWithResponses) MarkThreadReadWithResponse(ctx context.Context, thread string, reqEditors ...RequestEditorFn) (*MarkThreadReadResponse, error) {
 	rsp, err := c.MarkThreadRead(ctx, thread, reqEditors...)
 	if err != nil {
@@ -5908,7 +5915,7 @@ func (c *ClientWithResponses) MarkThreadReadWithResponse(ctx context.Context, th
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 func (c *ClientWithResponses) RevertThreadWithBodyWithResponse(ctx context.Context, thread string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RevertThreadResponse, error) {
 	rsp, err := c.RevertThreadWithBody(ctx, thread, contentType, body, reqEditors...)
 	if err != nil {
@@ -5923,7 +5930,7 @@ func (c *ClientWithResponses) RevertThreadWithBodyWithResponse(ctx context.Conte
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/threads/{thread}/revert (the `RevertThread` operationId).
+// Corresponds with POST /api/v1/threads/{thread}/revert (the `RevertThread` operationId).
 func (c *ClientWithResponses) RevertThreadWithResponse(ctx context.Context, thread string, body RevertThreadJSONRequestBody, reqEditors ...RequestEditorFn) (*RevertThreadResponse, error) {
 	rsp, err := c.RevertThread(ctx, thread, body, reqEditors...)
 	if err != nil {
@@ -5938,7 +5945,7 @@ func (c *ClientWithResponses) RevertThreadWithResponse(ctx context.Context, thre
 //
 // Returns a wrapper object for the known response body format(s).
 //
-// Corresponds with GET /v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
+// Corresponds with GET /api/v1/weixin-logins/{login} (the `GetWeixinLogin` operationId).
 func (c *ClientWithResponses) GetWeixinLoginWithResponse(ctx context.Context, login openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetWeixinLoginResponse, error) {
 	rsp, err := c.GetWeixinLogin(ctx, login, reqEditors...)
 	if err != nil {
@@ -5953,7 +5960,7 @@ func (c *ClientWithResponses) GetWeixinLoginWithResponse(ctx context.Context, lo
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 func (c *ClientWithResponses) SubmitWeixinVerifyCodeWithBodyWithResponse(ctx context.Context, login openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SubmitWeixinVerifyCodeResponse, error) {
 	rsp, err := c.SubmitWeixinVerifyCodeWithBody(ctx, login, contentType, body, reqEditors...)
 	if err != nil {
@@ -5968,7 +5975,7 @@ func (c *ClientWithResponses) SubmitWeixinVerifyCodeWithBodyWithResponse(ctx con
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
-// Corresponds with POST /v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
+// Corresponds with POST /api/v1/weixin-logins/{login}/verify-code (the `SubmitWeixinVerifyCode` operationId).
 func (c *ClientWithResponses) SubmitWeixinVerifyCodeWithResponse(ctx context.Context, login openapi_types.UUID, body SubmitWeixinVerifyCodeJSONRequestBody, reqEditors ...RequestEditorFn) (*SubmitWeixinVerifyCodeResponse, error) {
 	rsp, err := c.SubmitWeixinVerifyCode(ctx, login, body, reqEditors...)
 	if err != nil {
@@ -6024,9 +6031,6 @@ func ParseDownloadAttachmentResponse(rsp *http.Response) (*DownloadAttachmentRes
 	}
 
 	switch {
-	case rsp.StatusCode == 200:
-		break // No content-type
-
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest Error
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -6034,6 +6038,19 @@ func ParseDownloadAttachmentResponse(rsp *http.Response) (*DownloadAttachmentRes
 		}
 		response.JSONDefault = &dest
 
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		var headers DownloadAttachmentResponse200Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		response.Headers200 = &headers
 	}
 
 	return response, nil

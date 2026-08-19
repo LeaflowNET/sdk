@@ -1369,16 +1369,18 @@ type WebCheckListResponseBody struct {
 
 // WebCheckResource defines model for WebCheckResource.
 type WebCheckResource struct {
-	CheckId                      openapi_types.UUID         `json:"check_id"`
-	IntervalSeconds              int64                      `json:"interval_seconds"`
-	LastError                    string                     `json:"last_error"`
-	ResponseTimeThresholdSeconds int64                      `json:"response_time_threshold_seconds"`
-	Result                       WebCheckResultResource     `json:"result"`
-	Retries                      int64                      `json:"retries"`
-	ServerId                     openapi_types.UUID         `json:"server_id"`
-	Steps                        []WebCheckStepResource     `json:"steps"`
-	SyncStatus                   WebCheckResourceSyncStatus `json:"sync_status"`
-	TimeoutSeconds               int64                      `json:"timeout_seconds"`
+	CheckId                      openapi_types.UUID `json:"check_id"`
+	IntervalSeconds              int64              `json:"interval_seconds"`
+	LastError                    string             `json:"last_error"`
+	ResponseTimeThresholdSeconds int64              `json:"response_time_threshold_seconds"`
+
+	// Result null 表示这个检查还一轮都没跑过。零值会把「还不知道」显示成「响应 0 秒、状态码 0」
+	Result         *WebCheckResultResource    `json:"result"`
+	Retries        int64                      `json:"retries"`
+	ServerId       openapi_types.UUID         `json:"server_id"`
+	Steps          []WebCheckStepResource     `json:"steps"`
+	SyncStatus     WebCheckResourceSyncStatus `json:"sync_status"`
+	TimeoutSeconds int64                      `json:"timeout_seconds"`
 }
 
 // WebCheckResourceSyncStatus defines model for WebCheckResource.SyncStatus.

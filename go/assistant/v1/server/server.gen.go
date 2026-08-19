@@ -735,15 +735,15 @@ type DecideRequestBody struct {
 
 // DocumentResource defines model for DocumentResource.
 type DocumentResource struct {
-	Context ContextResource `json:"context"`
-	Cursor  *string         `json:"cursor"`
-	Earlier EarlierResource `json:"earlier"`
-	Items   []ItemResource  `json:"items"`
-	Status  string          `json:"status"`
-	Stream  StreamResource  `json:"stream"`
-	Turn    TurnResource    `json:"turn"`
-	TurnId  *string         `json:"turnId"`
-	Wait    WaitResource    `json:"wait"`
+	Context ContextResource  `json:"context"`
+	Cursor  *string          `json:"cursor"`
+	Earlier *EarlierResource `json:"earlier"`
+	Items   []ItemResource   `json:"items"`
+	Status  string           `json:"status"`
+	Stream  *StreamResource  `json:"stream"`
+	Turn    *TurnResource    `json:"turn"`
+	TurnId  *string          `json:"turnId"`
+	Wait    *WaitResource    `json:"wait"`
 }
 
 // EarlierResource defines model for EarlierResource.
@@ -1138,94 +1138,94 @@ type SubmitWeixinVerifyCodeJSONRequestBody = VerifyCodeRequestBody
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// UploadAttachment 上传图片
-	// (POST /v1/attachments)
+	// (POST /api/v1/attachments)
 	UploadAttachment(w http.ResponseWriter, r *http.Request)
 	// DownloadAttachment 取回图片
-	// (GET /v1/attachments/{attachment})
+	// (GET /api/v1/attachments/{attachment})
 	DownloadAttachment(w http.ResponseWriter, r *http.Request, attachment string)
 	// ListBindings 列出绑定
-	// (GET /v1/bindings)
+	// (GET /api/v1/bindings)
 	ListBindings(w http.ResponseWriter, r *http.Request, params ListBindingsParams)
 	// DeleteBinding 解除绑定
-	// (DELETE /v1/bindings/{binding})
+	// (DELETE /api/v1/bindings/{binding})
 	DeleteBinding(w http.ResponseWriter, r *http.Request, binding openapi_types.UUID)
 	// GetBinding 查看绑定
-	// (GET /v1/bindings/{binding})
+	// (GET /api/v1/bindings/{binding})
 	GetBinding(w http.ResponseWriter, r *http.Request, binding openapi_types.UUID)
 	// ListChannels 列出通道
-	// (GET /v1/channels)
+	// (GET /api/v1/channels)
 	ListChannels(w http.ResponseWriter, r *http.Request, params ListChannelsParams)
 	// CreateChannel 创建通道
-	// (POST /v1/channels)
+	// (POST /api/v1/channels)
 	CreateChannel(w http.ResponseWriter, r *http.Request)
 	// DeleteChannel 删除通道
-	// (DELETE /v1/channels/{channel})
+	// (DELETE /api/v1/channels/{channel})
 	DeleteChannel(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID)
 	// GetChannel 查看通道
-	// (GET /v1/channels/{channel})
+	// (GET /api/v1/channels/{channel})
 	GetChannel(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID)
 	// UpdateChannel 修改通道
-	// (PATCH /v1/channels/{channel})
+	// (PATCH /api/v1/channels/{channel})
 	UpdateChannel(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID)
 	// CreateBindingCode 签发绑定码
-	// (POST /v1/channels/{channel}/binding-codes)
+	// (POST /api/v1/channels/{channel}/binding-codes)
 	CreateBindingCode(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID)
 	// ListChannelRejections 查看最近被拒绝的入站消息
-	// (GET /v1/channels/{channel}/rejections)
+	// (GET /api/v1/channels/{channel}/rejections)
 	ListChannelRejections(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID, params ListChannelRejectionsParams)
 	// RotateChannelSecret 轮换回调密钥
-	// (POST /v1/channels/{channel}/secret)
+	// (POST /api/v1/channels/{channel}/secret)
 	RotateChannelSecret(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID)
 	// CheckSender 推演一个发件人会不会被放行
-	// (GET /v1/channels/{channel}/sender-check)
+	// (GET /api/v1/channels/{channel}/sender-check)
 	CheckSender(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID, params CheckSenderParams)
 	// BeginWeixinLogin 发起微信扫码登录
-	// (POST /v1/channels/{channel}/weixin-logins)
+	// (POST /api/v1/channels/{channel}/weixin-logins)
 	BeginWeixinLogin(w http.ResponseWriter, r *http.Request, channel openapi_types.UUID)
 	// ListModels 列出可用模型
-	// (GET /v1/models)
+	// (GET /api/v1/models)
 	ListModels(w http.ResponseWriter, r *http.Request)
 	// ListPlatforms 列出可接入的平台
-	// (GET /v1/platforms)
+	// (GET /api/v1/platforms)
 	ListPlatforms(w http.ResponseWriter, r *http.Request)
 	// ListThreads 列出对话
-	// (GET /v1/threads)
+	// (GET /api/v1/threads)
 	ListThreads(w http.ResponseWriter, r *http.Request, params ListThreadsParams)
 	// CreateThread 创建对话
-	// (POST /v1/threads)
+	// (POST /api/v1/threads)
 	CreateThread(w http.ResponseWriter, r *http.Request)
 	// GetThread 取回对话文档
-	// (GET /v1/threads/{thread})
+	// (GET /api/v1/threads/{thread})
 	GetThread(w http.ResponseWriter, r *http.Request, thread string)
 	// UpdateThread 修改对话设置
-	// (PATCH /v1/threads/{thread})
+	// (PATCH /api/v1/threads/{thread})
 	UpdateThread(w http.ResponseWriter, r *http.Request, thread string)
 	// DecideApproval 批准或拒绝一批工具调用
-	// (POST /v1/threads/{thread}/approvals/{batch})
+	// (POST /api/v1/threads/{thread}/approvals/{batch})
 	DecideApproval(w http.ResponseWriter, r *http.Request, thread string, batch string)
 	// ListEarlierItems 取回更早的对话内容
-	// (GET /v1/threads/{thread}/earlier)
+	// (GET /api/v1/threads/{thread}/earlier)
 	ListEarlierItems(w http.ResponseWriter, r *http.Request, thread string, params ListEarlierItemsParams)
 	// InterruptThread 中断正在执行的 turn
-	// (POST /v1/threads/{thread}/interrupt)
+	// (POST /api/v1/threads/{thread}/interrupt)
 	InterruptThread(w http.ResponseWriter, r *http.Request, thread string)
 	// SendMessage 发送消息并触发一次 turn
-	// (POST /v1/threads/{thread}/messages)
+	// (POST /api/v1/threads/{thread}/messages)
 	SendMessage(w http.ResponseWriter, r *http.Request, thread string)
 	// AnswerQuestion 回答助手提出的问题
-	// (POST /v1/threads/{thread}/questions/{item})
+	// (POST /api/v1/threads/{thread}/questions/{item})
 	AnswerQuestion(w http.ResponseWriter, r *http.Request, thread string, item string)
 	// MarkThreadRead 标记对话已读
-	// (POST /v1/threads/{thread}/read)
+	// (POST /api/v1/threads/{thread}/read)
 	MarkThreadRead(w http.ResponseWriter, r *http.Request, thread string)
 	// RevertThread 从指定位置起撤回
-	// (POST /v1/threads/{thread}/revert)
+	// (POST /api/v1/threads/{thread}/revert)
 	RevertThread(w http.ResponseWriter, r *http.Request, thread string)
 	// GetWeixinLogin 查询扫码登录状态
-	// (GET /v1/weixin-logins/{login})
+	// (GET /api/v1/weixin-logins/{login})
 	GetWeixinLogin(w http.ResponseWriter, r *http.Request, login openapi_types.UUID)
 	// SubmitWeixinVerifyCode 补交登录验证码
-	// (POST /v1/weixin-logins/{login}/verify-code)
+	// (POST /api/v1/weixin-logins/{login}/verify-code)
 	SubmitWeixinVerifyCode(w http.ResponseWriter, r *http.Request, login openapi_types.UUID)
 }
 
@@ -2295,36 +2295,36 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/attachments", wrapper.UploadAttachment)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/attachments/{attachment}", wrapper.DownloadAttachment)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/bindings", wrapper.ListBindings)
-	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/bindings/{binding}", wrapper.DeleteBinding)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/bindings/{binding}", wrapper.GetBinding)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/channels", wrapper.ListChannels)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/channels", wrapper.CreateChannel)
-	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/v1/channels/{channel}", wrapper.DeleteChannel)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/channels/{channel}", wrapper.GetChannel)
-	m.HandleFunc(http.MethodPatch+" "+options.BaseURL+"/v1/channels/{channel}", wrapper.UpdateChannel)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/channels/{channel}/binding-codes", wrapper.CreateBindingCode)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/channels/{channel}/rejections", wrapper.ListChannelRejections)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/channels/{channel}/secret", wrapper.RotateChannelSecret)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/channels/{channel}/sender-check", wrapper.CheckSender)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/channels/{channel}/weixin-logins", wrapper.BeginWeixinLogin)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/platforms", wrapper.ListPlatforms)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/weixin-logins/{login}", wrapper.GetWeixinLogin)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/weixin-logins/{login}/verify-code", wrapper.SubmitWeixinVerifyCode)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/models", wrapper.ListModels)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/threads", wrapper.ListThreads)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/threads", wrapper.CreateThread)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/threads/{thread}", wrapper.GetThread)
-	m.HandleFunc(http.MethodPatch+" "+options.BaseURL+"/v1/threads/{thread}", wrapper.UpdateThread)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/threads/{thread}/approvals/{batch}", wrapper.DecideApproval)
-	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/threads/{thread}/earlier", wrapper.ListEarlierItems)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/threads/{thread}/interrupt", wrapper.InterruptThread)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/threads/{thread}/messages", wrapper.SendMessage)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/threads/{thread}/questions/{item}", wrapper.AnswerQuestion)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/threads/{thread}/read", wrapper.MarkThreadRead)
-	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/threads/{thread}/revert", wrapper.RevertThread)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/attachments", wrapper.UploadAttachment)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/attachments/{attachment}", wrapper.DownloadAttachment)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/bindings", wrapper.ListBindings)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/api/v1/bindings/{binding}", wrapper.DeleteBinding)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/bindings/{binding}", wrapper.GetBinding)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/channels", wrapper.ListChannels)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/channels", wrapper.CreateChannel)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/api/v1/channels/{channel}", wrapper.DeleteChannel)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/channels/{channel}", wrapper.GetChannel)
+	m.HandleFunc(http.MethodPatch+" "+options.BaseURL+"/api/v1/channels/{channel}", wrapper.UpdateChannel)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/channels/{channel}/binding-codes", wrapper.CreateBindingCode)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/channels/{channel}/rejections", wrapper.ListChannelRejections)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/channels/{channel}/secret", wrapper.RotateChannelSecret)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/channels/{channel}/sender-check", wrapper.CheckSender)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/channels/{channel}/weixin-logins", wrapper.BeginWeixinLogin)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/platforms", wrapper.ListPlatforms)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/weixin-logins/{login}", wrapper.GetWeixinLogin)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/weixin-logins/{login}/verify-code", wrapper.SubmitWeixinVerifyCode)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/models", wrapper.ListModels)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/threads", wrapper.ListThreads)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/threads", wrapper.CreateThread)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/threads/{thread}", wrapper.GetThread)
+	m.HandleFunc(http.MethodPatch+" "+options.BaseURL+"/api/v1/threads/{thread}", wrapper.UpdateThread)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/threads/{thread}/approvals/{batch}", wrapper.DecideApproval)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/threads/{thread}/earlier", wrapper.ListEarlierItems)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/threads/{thread}/interrupt", wrapper.InterruptThread)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/threads/{thread}/messages", wrapper.SendMessage)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/threads/{thread}/questions/{item}", wrapper.AnswerQuestion)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/threads/{thread}/read", wrapper.MarkThreadRead)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/threads/{thread}/revert", wrapper.RevertThread)
 
 	return m
 }
@@ -2376,12 +2376,33 @@ type DownloadAttachmentResponseObject interface {
 	VisitDownloadAttachmentResponse(w http.ResponseWriter) error
 }
 
-type DownloadAttachment200Response struct {
+type DownloadAttachment200ResponseHeaders struct {
+	CacheControl *string
 }
 
-func (response DownloadAttachment200Response) VisitDownloadAttachmentResponse(w http.ResponseWriter) error {
+type DownloadAttachment200ImageResponse struct {
+	Body          io.Reader
+	Headers       DownloadAttachment200ResponseHeaders
+	ContentType   string
+	ContentLength int64
+}
+
+func (response DownloadAttachment200ImageResponse) VisitDownloadAttachmentResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", response.ContentType)
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
 	w.WriteHeader(200)
-	return nil
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
 }
 
 type DownloadAttachmentdefaultJSONResponse struct {
@@ -3471,94 +3492,94 @@ func (response SubmitWeixinVerifyCodedefaultJSONResponse) VisitSubmitWeixinVerif
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// UploadAttachment 上传图片
-	// (POST /v1/attachments)
+	// (POST /api/v1/attachments)
 	UploadAttachment(ctx context.Context, request UploadAttachmentRequestObject) (UploadAttachmentResponseObject, error)
 	// DownloadAttachment 取回图片
-	// (GET /v1/attachments/{attachment})
+	// (GET /api/v1/attachments/{attachment})
 	DownloadAttachment(ctx context.Context, request DownloadAttachmentRequestObject) (DownloadAttachmentResponseObject, error)
 	// ListBindings 列出绑定
-	// (GET /v1/bindings)
+	// (GET /api/v1/bindings)
 	ListBindings(ctx context.Context, request ListBindingsRequestObject) (ListBindingsResponseObject, error)
 	// DeleteBinding 解除绑定
-	// (DELETE /v1/bindings/{binding})
+	// (DELETE /api/v1/bindings/{binding})
 	DeleteBinding(ctx context.Context, request DeleteBindingRequestObject) (DeleteBindingResponseObject, error)
 	// GetBinding 查看绑定
-	// (GET /v1/bindings/{binding})
+	// (GET /api/v1/bindings/{binding})
 	GetBinding(ctx context.Context, request GetBindingRequestObject) (GetBindingResponseObject, error)
 	// ListChannels 列出通道
-	// (GET /v1/channels)
+	// (GET /api/v1/channels)
 	ListChannels(ctx context.Context, request ListChannelsRequestObject) (ListChannelsResponseObject, error)
 	// CreateChannel 创建通道
-	// (POST /v1/channels)
+	// (POST /api/v1/channels)
 	CreateChannel(ctx context.Context, request CreateChannelRequestObject) (CreateChannelResponseObject, error)
 	// DeleteChannel 删除通道
-	// (DELETE /v1/channels/{channel})
+	// (DELETE /api/v1/channels/{channel})
 	DeleteChannel(ctx context.Context, request DeleteChannelRequestObject) (DeleteChannelResponseObject, error)
 	// GetChannel 查看通道
-	// (GET /v1/channels/{channel})
+	// (GET /api/v1/channels/{channel})
 	GetChannel(ctx context.Context, request GetChannelRequestObject) (GetChannelResponseObject, error)
 	// UpdateChannel 修改通道
-	// (PATCH /v1/channels/{channel})
+	// (PATCH /api/v1/channels/{channel})
 	UpdateChannel(ctx context.Context, request UpdateChannelRequestObject) (UpdateChannelResponseObject, error)
 	// CreateBindingCode 签发绑定码
-	// (POST /v1/channels/{channel}/binding-codes)
+	// (POST /api/v1/channels/{channel}/binding-codes)
 	CreateBindingCode(ctx context.Context, request CreateBindingCodeRequestObject) (CreateBindingCodeResponseObject, error)
 	// ListChannelRejections 查看最近被拒绝的入站消息
-	// (GET /v1/channels/{channel}/rejections)
+	// (GET /api/v1/channels/{channel}/rejections)
 	ListChannelRejections(ctx context.Context, request ListChannelRejectionsRequestObject) (ListChannelRejectionsResponseObject, error)
 	// RotateChannelSecret 轮换回调密钥
-	// (POST /v1/channels/{channel}/secret)
+	// (POST /api/v1/channels/{channel}/secret)
 	RotateChannelSecret(ctx context.Context, request RotateChannelSecretRequestObject) (RotateChannelSecretResponseObject, error)
 	// CheckSender 推演一个发件人会不会被放行
-	// (GET /v1/channels/{channel}/sender-check)
+	// (GET /api/v1/channels/{channel}/sender-check)
 	CheckSender(ctx context.Context, request CheckSenderRequestObject) (CheckSenderResponseObject, error)
 	// BeginWeixinLogin 发起微信扫码登录
-	// (POST /v1/channels/{channel}/weixin-logins)
+	// (POST /api/v1/channels/{channel}/weixin-logins)
 	BeginWeixinLogin(ctx context.Context, request BeginWeixinLoginRequestObject) (BeginWeixinLoginResponseObject, error)
 	// ListModels 列出可用模型
-	// (GET /v1/models)
+	// (GET /api/v1/models)
 	ListModels(ctx context.Context, request ListModelsRequestObject) (ListModelsResponseObject, error)
 	// ListPlatforms 列出可接入的平台
-	// (GET /v1/platforms)
+	// (GET /api/v1/platforms)
 	ListPlatforms(ctx context.Context, request ListPlatformsRequestObject) (ListPlatformsResponseObject, error)
 	// ListThreads 列出对话
-	// (GET /v1/threads)
+	// (GET /api/v1/threads)
 	ListThreads(ctx context.Context, request ListThreadsRequestObject) (ListThreadsResponseObject, error)
 	// CreateThread 创建对话
-	// (POST /v1/threads)
+	// (POST /api/v1/threads)
 	CreateThread(ctx context.Context, request CreateThreadRequestObject) (CreateThreadResponseObject, error)
 	// GetThread 取回对话文档
-	// (GET /v1/threads/{thread})
+	// (GET /api/v1/threads/{thread})
 	GetThread(ctx context.Context, request GetThreadRequestObject) (GetThreadResponseObject, error)
 	// UpdateThread 修改对话设置
-	// (PATCH /v1/threads/{thread})
+	// (PATCH /api/v1/threads/{thread})
 	UpdateThread(ctx context.Context, request UpdateThreadRequestObject) (UpdateThreadResponseObject, error)
 	// DecideApproval 批准或拒绝一批工具调用
-	// (POST /v1/threads/{thread}/approvals/{batch})
+	// (POST /api/v1/threads/{thread}/approvals/{batch})
 	DecideApproval(ctx context.Context, request DecideApprovalRequestObject) (DecideApprovalResponseObject, error)
 	// ListEarlierItems 取回更早的对话内容
-	// (GET /v1/threads/{thread}/earlier)
+	// (GET /api/v1/threads/{thread}/earlier)
 	ListEarlierItems(ctx context.Context, request ListEarlierItemsRequestObject) (ListEarlierItemsResponseObject, error)
 	// InterruptThread 中断正在执行的 turn
-	// (POST /v1/threads/{thread}/interrupt)
+	// (POST /api/v1/threads/{thread}/interrupt)
 	InterruptThread(ctx context.Context, request InterruptThreadRequestObject) (InterruptThreadResponseObject, error)
 	// SendMessage 发送消息并触发一次 turn
-	// (POST /v1/threads/{thread}/messages)
+	// (POST /api/v1/threads/{thread}/messages)
 	SendMessage(ctx context.Context, request SendMessageRequestObject) (SendMessageResponseObject, error)
 	// AnswerQuestion 回答助手提出的问题
-	// (POST /v1/threads/{thread}/questions/{item})
+	// (POST /api/v1/threads/{thread}/questions/{item})
 	AnswerQuestion(ctx context.Context, request AnswerQuestionRequestObject) (AnswerQuestionResponseObject, error)
 	// MarkThreadRead 标记对话已读
-	// (POST /v1/threads/{thread}/read)
+	// (POST /api/v1/threads/{thread}/read)
 	MarkThreadRead(ctx context.Context, request MarkThreadReadRequestObject) (MarkThreadReadResponseObject, error)
 	// RevertThread 从指定位置起撤回
-	// (POST /v1/threads/{thread}/revert)
+	// (POST /api/v1/threads/{thread}/revert)
 	RevertThread(ctx context.Context, request RevertThreadRequestObject) (RevertThreadResponseObject, error)
 	// GetWeixinLogin 查询扫码登录状态
-	// (GET /v1/weixin-logins/{login})
+	// (GET /api/v1/weixin-logins/{login})
 	GetWeixinLogin(ctx context.Context, request GetWeixinLoginRequestObject) (GetWeixinLoginResponseObject, error)
 	// SubmitWeixinVerifyCode 补交登录验证码
-	// (POST /v1/weixin-logins/{login}/verify-code)
+	// (POST /api/v1/weixin-logins/{login}/verify-code)
 	SubmitWeixinVerifyCode(ctx context.Context, request SubmitWeixinVerifyCodeRequestObject) (SubmitWeixinVerifyCodeResponseObject, error)
 }
 

@@ -460,7 +460,7 @@ type CreateDiskRequestBody struct {
 	SizeGb     int64              `json:"size_gb"`
 
 	// SnapshotId 从该快照恢复。提供时容量只需不小于快照本身
-	SnapshotId *string `json:"snapshot_id,omitempty"`
+	SnapshotId *openapi_types.UUID `json:"snapshot_id,omitempty"`
 }
 
 // CreatePortRequestBody defines model for CreatePortRequestBody.
@@ -471,8 +471,8 @@ type CreatePortRequestBody struct {
 	PrivateIp *string `json:"private_ip,omitempty"`
 
 	// SecurityGroupIds 至少一个，且必须属于同一个私有网络
-	SecurityGroupIds []string           `json:"security_group_ids"`
-	SubnetId         openapi_types.UUID `json:"subnet_id"`
+	SecurityGroupIds []openapi_types.UUID `json:"security_group_ids"`
+	SubnetId         openapi_types.UUID   `json:"subnet_id"`
 }
 
 // CreatePrivateImageRequestBody defines model for CreatePrivateImageRequestBody.
@@ -758,7 +758,7 @@ type LaunchInstanceRequestBody struct {
 	RootDiskGb *int64 `json:"root_disk_gb,omitempty"`
 
 	// SecurityGroupIds 新建主网卡时必填，至少一个；不会自动使用默认安全组。使用 port_id 时忽略——那张网卡的安全组在创建它时已经定了
-	SecurityGroupIds []string `json:"security_group_ids,omitempty"`
+	SecurityGroupIds []openapi_types.UUID `json:"security_group_ids,omitempty"`
 
 	// SubnetId 在该子网内新建主网卡。与 port_id 二选一
 	SubnetId *openapi_types.UUID `json:"subnet_id,omitempty"`
